@@ -1,9 +1,10 @@
 package com.ohseat.ohseatback.repository;
 
-import com.ohseat.ohseatback.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.ohseat.ohseatback.domain.User;
+import org.apache.ibatis.annotations.Mapper;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+@Mapper
+public interface UserRepository {
+    // 회원가입
+    void joinUser(User user);
 }
