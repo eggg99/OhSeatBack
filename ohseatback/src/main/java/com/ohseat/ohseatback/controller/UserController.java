@@ -23,8 +23,20 @@ public class UserController {
      */
 
     @PostMapping("/join")
-    public ResponseEntity joinUser(@RequestBody User user) {
+    public ResponseEntity<String> joinUser(@RequestBody User user) {
         userService.joinUser(user);
         return ResponseEntity.ok("회원가입 성공!");
     }
+
+    /**
+     * 마이페이지
+     * @return
+     */
+    
+    @GetMapping("/mypage")
+    public ResponseEntity<User> getUserById(@RequestParam Integer userId) {
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(user);
+    }
+
 }

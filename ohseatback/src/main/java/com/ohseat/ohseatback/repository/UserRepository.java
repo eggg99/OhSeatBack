@@ -7,4 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserRepository {
     // 회원가입
     void joinUser(User user);
+
+    //마이페이지
+    User selectUserById(Integer userId);
 }

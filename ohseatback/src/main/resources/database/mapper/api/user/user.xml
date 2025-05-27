@@ -8,4 +8,12 @@
         INSERT INTO users (email, name, nickname, password, phone_number)
         VALUES (#{email}, #{name}, #{nickname}, #{password}, #{phoneNumber})
     </insert>
+
+    <!-- 마이페이지 조회 -->
+    <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
+        SELECT user_id, name, email, nickname, password, phone_number
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
