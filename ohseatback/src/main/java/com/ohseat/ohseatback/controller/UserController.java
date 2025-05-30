@@ -37,7 +37,7 @@ public class UserController {
      * @return 회원 시퀀스
      */
     
-//  암호화 작업 필요, User 리턴으로 변경 완료(확장성 고려), 예외처리 완료
+//  암호화 작업 필요, 리턴 타입 User 변경 완료(확장성 고려), 예외처리 완료
     @PostMapping("/login")
     public ResponseEntity<User> loginUser(@RequestBody User user) {
         // email, password가 같은 userId 값을 반환
