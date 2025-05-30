@@ -11,7 +11,7 @@
 
     <!--  로그인  -->
     <select id="findByEmail" parameterType="String" resultType="com.ohseat.ohseatback.domain.User">
-        SELECT user_id, email, password
+        SELECT user_id, email, nickname, password
         FROM users
         WHERE email = #{email}
     </select>

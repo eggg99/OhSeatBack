@@ -5,10 +5,7 @@ import com.ohseat.ohseatback.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -40,16 +37,39 @@ public class UserController {
      * @return 회원 시퀀스
      */
     
-//  User 리턴으로 변경, 암호화 작업 필요, 예외처리 필요
+//  암호화 작업 필요, User 리턴으로 변경 완료(확장성 고려), 예외처리 완료
     @PostMapping("/login")
-    public ResponseEntity<Integer> loginUser(@RequestBody User user) {
-//    public ResponseEntity<Integer> loginUser(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<User> loginUser(@RequestBody User user) {
         // email, password가 같은 userId 값을 반환
         System.out.println("★★★ loginUser() 진입 ★★★");
-        Integer userId = userService.findByEmail(user.getEmail(), user.getPassword());
-//        Integer userId = userService.findByEmail(email, password);
-        return ResponseEntity.ok(userId); //에러 방지
+
+        User returnUser = userService.findByEmail(user.getEmail(), user.getPassword());
+//        Map<String, Integer> resultMap = new HashMap<>();
+//        resultMap.put("userId", userId);
+
+        if (returnUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(returnUser); //에러 방지
     }
+
+/*
+    // userId만 보낼 경우
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Integer>> loginUser(@RequestBody User user) {
+        // email, password가 같은 userId 값을 반환
+        System.out.println("★★★ loginUser() 진입 ★★★");
+
+        Integer userId = userService.findByEmail(user.getEmail(), user.getPassword());
+        Map<String, Integer> resultMap = new HashMap<>();
+        resultMap.put("userId", userId);
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(resultMap); //에러 방지
+    }
+*/
 
     /**
      * 마이페이지
@@ -60,11 +80,9 @@ public class UserController {
     @GetMapping("/mypage")
     public ResponseEntity<User> getUserById(@RequestParam Integer userId) {
         User user = userService.getUserById(userId);
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(user);
     }
-
 }

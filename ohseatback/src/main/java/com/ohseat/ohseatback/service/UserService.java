@@ -26,10 +26,10 @@ public class UserService {
     }
     
     // 로그인
-    public Integer findByEmail(String email, String password) {
+    public User findByEmail(String email, String password) {
         User user = userRepository.findByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
-            return user.getUserId();
+            return user;
         }
         return null;
     }
