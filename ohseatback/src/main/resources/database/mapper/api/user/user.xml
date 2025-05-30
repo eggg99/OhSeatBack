@@ -9,9 +9,16 @@
         VALUES (#{email}, #{name}, #{nickname}, #{password}, #{phoneNumber})
     </insert>
 
+    <!--  로그인  -->
+    <select id="findByEmail" parameterType="String" resultType="com.ohseat.ohseatback.domain.User">
+        SELECT user_id, email, password
+        FROM users
+        WHERE email = #{email}
+    </select>
+
     <!-- 마이페이지 조회 -->
     <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
-        SELECT user_id, name, email, nickname, password, phone_number
+        SELECT user_id, name, email, nickname, password, phone_number, created_at
         FROM users
         WHERE user_id = #{userId}
     </select>

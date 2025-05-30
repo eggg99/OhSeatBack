@@ -8,6 +8,9 @@ public interface UserRepository {
     // 회원가입
     void joinUser(User user);
 
+    // 로그인
+    User findByEmail(String email);
+
     //마이페이지
     User selectUserById(Integer userId);
 }
