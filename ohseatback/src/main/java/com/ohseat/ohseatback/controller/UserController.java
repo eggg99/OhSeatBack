@@ -7,19 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
-
-/*
-    @GetMapping("/")
-    public void home() {
-        System.out.println("home");
-    }
-*/
 
     /**
      * 회원가입
@@ -37,39 +33,24 @@ public class UserController {
      * @return 회원 시퀀스
      */
     
-//  암호화 작업 필요, 리턴 타입 User 변경 완료(확장성 고려), 예외처리 완료
+//  암호화 작업 완료, 리턴 타입 User 변경 완료(확장성 고려), 예외처리 완료
     @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
         // email, password가 같은 userId 값을 반환
-        System.out.println("★★★ loginUser() 진입 ★★★");
 
         User returnUser = userService.findByEmail(user.getEmail(), user.getPassword());
-//        Map<String, Integer> resultMap = new HashMap<>();
-//        resultMap.put("userId", userId);
 
         if (returnUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(returnUser); //에러 방지
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("userId", String.valueOf(returnUser.getUserId()));
+        resultMap.put("email", returnUser.getEmail());
+        resultMap.put("nickname", returnUser.getNickname());
+
+        return ResponseEntity.ok(resultMap);
     }
-
-/*
-    // userId만 보낼 경우
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Integer>> loginUser(@RequestBody User user) {
-        // email, password가 같은 userId 값을 반환
-        System.out.println("★★★ loginUser() 진입 ★★★");
-
-        Integer userId = userService.findByEmail(user.getEmail(), user.getPassword());
-        Map<String, Integer> resultMap = new HashMap<>();
-        resultMap.put("userId", userId);
-
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(resultMap); //에러 방지
-    }
-*/
 
     /**
      * 마이페이지
