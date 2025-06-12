@@ -1,6 +1,7 @@
 package com.ohseat.ohseatback.controller;
 
 import com.ohseat.ohseatback.domain.User;
+import com.ohseat.ohseatback.dto.UserUpdateRequest;
 import com.ohseat.ohseatback.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,14 +31,12 @@ public class UserController {
 
     /**
      * 로그인
-     * @return 회원 시퀀스
+     * @return 회원 시퀀스, 이메일, 닉네임
      */
     
-//  암호화 작업 완료, 리턴 타입 User 변경 완료(확장성 고려), 예외처리 완료
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
         // email, password가 같은 userId 값을 반환
-
         User returnUser = userService.findByEmail(user.getEmail(), user.getPassword());
 
         if (returnUser == null) {
@@ -53,11 +52,9 @@ public class UserController {
     }
 
     /**
-     * 마이페이지
-     * @return user 정보
+     * 마이페이지 조회
+     * @return user
      */
-
-    // 수정, 삭제 기능 만들기
     @GetMapping("/mypage")
     public ResponseEntity<User> getUserById(@RequestParam Integer userId) {
         User user = userService.getUserById(userId);
@@ -65,5 +62,29 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 마이페이지 수정
+     * @param request
+     * @return userId
+     */
+    @PutMapping("/mypage")
+    public ResponseEntity<Integer> updateMyPage(@RequestBody UserUpdateRequest request) {
+        Integer currentUserId = request.getUserId();
+        userService.updateMyPage(currentUserId, request);
+        return ResponseEntity.ok(currentUserId);
+    }
+
+
+    /**
+     * 마이페이지 삭제
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/mypage/{userId}")
+    public ResponseEntity<String> deleteMyPage(@PathVariable Integer userId) {
+        userService.deleteMyPage(userId);
+        return ResponseEntity.ok("회원정보 삭제 완료");
     }
 }

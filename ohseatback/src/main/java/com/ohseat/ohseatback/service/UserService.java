@@ -1,6 +1,8 @@
 package com.ohseat.ohseatback.service;
 
 import com.ohseat.ohseatback.domain.User;
+import com.ohseat.ohseatback.dto.UserUpdateRequest;
+import com.ohseat.ohseatback.exception.UserNotFoundException;
 import com.ohseat.ohseatback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,30 @@ public class UserService {
         return null;
     }
 
-
     // 마이페이지 조회
     public User getUserById(Integer userId) {
         return userRepository.selectUserById(userId);
+    }
+    
+    // 마이페이지 수정
+    public Integer updateMyPage(Integer userId, UserUpdateRequest request) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setNickname(request.getNickname());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        int updatedRows = userRepository.updateUserById(user);
+        if (updatedRows == 0) {
+            throw new UserNotFoundException("수정할 사용자 정보가 없습니다.");
+        }
+        return userId;
+    }
+    
+    
+    // 마이페이지 삭제
+    public void deleteMyPage(Integer userId) {
+        userRepository.deleteUserById(userId);
     }
 
 }

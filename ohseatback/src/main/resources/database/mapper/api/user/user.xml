@@ -23,4 +23,17 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--  마이페이지 수정  -->
+    <update id="updateUserById" parameterType="com.ohseat.ohseatback.domain.User">
+        UPDATE users
+        SET nickname = #{nickname}, password = #{password}, phone_number = #{phoneNumber}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!--  마이페이지 삭제  -->
+    <delete id="deleteUserById" parameterType="int">
+        DELETE FROM users
+        WHERE user_id = #{userId}
+    </delete>
+
 </mapper>
