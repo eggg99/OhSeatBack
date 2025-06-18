@@ -2,6 +2,7 @@ package com.ohseat.ohseatback.controller;
 
 import com.ohseat.ohseatback.domain.User;
 import com.ohseat.ohseatback.dto.UserUpdateRequest;
+import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,9 @@ public class UserController {
         User returnUser = userService.findByEmail(user.getEmail(), user.getPassword());
 
         if (returnUser == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "이메일 또는 비밀번호가 일치하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
         Map<String, String> resultMap = new HashMap<>();
@@ -71,7 +74,8 @@ public class UserController {
      */
     @PutMapping("/mypage")
     public ResponseEntity<Integer> updateMyPage(@RequestBody UserUpdateRequest request) {
-        Integer currentUserId = request.getUserId();
+        Integer currentUserId = SecurityUtil.getCurrentUserId();
+        System.out.println("currentUserId : " + currentUserId);
         userService.updateMyPage(currentUserId, request);
         return ResponseEntity.ok(currentUserId);
     }
