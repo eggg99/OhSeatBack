@@ -9,8 +9,18 @@
         VALUES (#{email}, #{name}, #{nickname}, #{password}, #{phoneNumber})
     </insert>
 
+    <!--  이메일 중복 확인  -->
+    <select id="existsByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM users WHERE email = #{email}
+    </select>
+
+    <!--  닉네임 중복 확인  -->
+    <select id="existsByNickname" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM users WHERE nickname = #{nickname}
+    </select>
+
     <!--  로그인  -->
-    <select id="findByEmail" parameterType="String" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="findByEmail" parameterType="string" resultType="com.ohseat.ohseatback.domain.User">
         SELECT user_id, email, nickname, password
         FROM users
         WHERE email = #{email}

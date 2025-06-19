@@ -1,9 +1,12 @@
 package com.ohseat.ohseatback.controller;
 
 import com.ohseat.ohseatback.domain.User;
+import com.ohseat.ohseatback.dto.LoginRequest;
 import com.ohseat.ohseatback.dto.UserUpdateRequest;
+import com.ohseat.ohseatback.jwt.JwtTokenProvider;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
 
     @Autowired
     private UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 회원가입
@@ -36,20 +41,23 @@ public class UserController {
      */
     
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody LoginRequest loginRequest) {
         // email, password가 같은 userId 값을 반환
-        User returnUser = userService.findByEmail(user.getEmail(), user.getPassword());
+        User user = userService.findByEmail(loginRequest.getEmail());
 
-        if (returnUser == null) {
+        if (user == null || !userService.checkPassword(user, loginRequest.getPassword())) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "이메일 또는 비밀번호가 일치하지 않습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
+        String token = jwtTokenProvider.createToken(user.getUserId());
+
         Map<String, String> resultMap = new HashMap<>();
-        resultMap.put("userId", String.valueOf(returnUser.getUserId()));
-        resultMap.put("email", returnUser.getEmail());
-        resultMap.put("nickname", returnUser.getNickname());
+        resultMap.put("userId", String.valueOf(user.getUserId()));
+        resultMap.put("email", user.getEmail());
+        resultMap.put("nickname", user.getNickname());
+        resultMap.put("token", token);
 
         return ResponseEntity.ok(resultMap);
     }

@@ -8,8 +8,15 @@ public interface UserRepository {
     // 회원가입
     void joinUser(User user);
 
+    // 이메일 중복 확인
+    int existsByEmail(String email);
+
+    // 닉네임 중복 확인
+    int existsByNickname(String nickname);
+
     // 로그인
     User findByEmail(String email);
+    boolean checkPassword(User user, String rawPassword);
 
     //마이페이지 조회
     User selectUserById(Integer userId);
