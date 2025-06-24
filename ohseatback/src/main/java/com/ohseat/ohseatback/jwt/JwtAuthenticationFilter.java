@@ -25,6 +25,14 @@ public class JwtAuthenticationFilter extends GenericFilter {
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String path = httpRequest.getRequestURI();
+
+        // 로그인, 회원가입 요청 JWT 검사 생략
+        if (path.startsWith("/api/user/login") || path.startsWith("/api/user/join")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String header = httpRequest.getHeader("Authorization");
 
         if(header != null && header.startsWith("Bearer ")) {

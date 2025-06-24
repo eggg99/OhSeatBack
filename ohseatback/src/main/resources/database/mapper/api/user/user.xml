@@ -19,6 +19,11 @@
         SELECT COUNT(*) FROM users WHERE nickname = #{nickname}
     </select>
 
+    <!--  핸드폰 번호 중복 확인  -->
+    <select id="existsByPhoneNumber" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM users WHERE phone_number = #{phoneNumber}
+    </select>
+
     <!--  로그인  -->
     <select id="findByEmail" parameterType="string" resultType="com.ohseat.ohseatback.domain.User">
         SELECT user_id, email, nickname, password
@@ -28,7 +33,7 @@
 
     <!-- 마이페이지 조회 -->
     <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
-        SELECT user_id, name, email, nickname, password, phone_number, created_at
+        SELECT user_id, name, email, nickname, phone_number, created_at
         FROM users
         WHERE user_id = #{userId}
     </select>
@@ -36,7 +41,21 @@
     <!--  마이페이지 수정  -->
     <update id="updateUserById" parameterType="com.ohseat.ohseatback.domain.User">
         UPDATE users
-        SET nickname = #{nickname}, password = #{password}, phone_number = #{phoneNumber}
+        SET nickname = #{nickname}, phone_number = #{phoneNumber}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!--  비밀번호 조회  -->
+    <select id="selectUserWithPasswordById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
+        SELECT user_id, name, email, nickname, phone_number, password, created_at
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <!--  비밀번호 수정  -->
+    <update id="updatePasswordById" parameterType="com.ohseat.ohseatback.domain.User">
+        UPDATE users
+        SET  password = #{password}
         WHERE user_id = #{userId}
     </update>
 

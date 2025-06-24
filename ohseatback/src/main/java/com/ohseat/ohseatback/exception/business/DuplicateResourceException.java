@@ -1,4 +1,4 @@
-package com.ohseat.ohseatback.exception;
+package com.ohseat.ohseatback.exception.business;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,11 +1,17 @@
 package com.ohseat.ohseatback.controller;
 
 import com.ohseat.ohseatback.domain.User;
+import com.ohseat.ohseatback.dto.JoinRequest;
 import com.ohseat.ohseatback.dto.LoginRequest;
+import com.ohseat.ohseatback.dto.PasswordChangeRequest;
 import com.ohseat.ohseatback.dto.UserUpdateRequest;
+import com.ohseat.ohseatback.exception.business.InvalidPasswordException;
+import com.ohseat.ohseatback.exception.business.UnauthorizedException;
+import com.ohseat.ohseatback.exception.business.UserNotFoundException;
 import com.ohseat.ohseatback.jwt.JwtTokenProvider;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,9 +35,17 @@ public class UserController {
      * @return
      */
 
+/*
     @PostMapping("/join")
     public ResponseEntity<String> joinUser(@RequestBody User user) {
         userService.joinUser(user);
+        return ResponseEntity.ok("회원가입 성공!");
+    }
+*/
+
+    @PostMapping("/join")
+    public ResponseEntity<String> joinUser(@Valid @RequestBody JoinRequest request) {
+        userService.joinUser(request);
         return ResponseEntity.ok("회원가입 성공!");
     }
 
@@ -45,10 +59,12 @@ public class UserController {
         // email, password가 같은 userId 값을 반환
         User user = userService.findByEmail(loginRequest.getEmail());
 
-        if (user == null || !userService.checkPassword(user, loginRequest.getPassword())) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "이메일 또는 비밀번호가 일치하지 않습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        if (user == null) {
+            throw new UserNotFoundException("이메일이 존재하지 않습니다.");
+        }
+
+        if (!userService.checkPassword(user, loginRequest.getPassword())) {
+            throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
         String token = jwtTokenProvider.createToken(user.getUserId());
@@ -70,7 +86,7 @@ public class UserController {
     public ResponseEntity<User> getUserById(@RequestParam Integer userId) {
         User user = userService.getUserById(userId);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new UserNotFoundException("회원정보가 존재하지 않습니다.");
         }
         return ResponseEntity.ok(user);
     }
@@ -88,6 +104,20 @@ public class UserController {
         return ResponseEntity.ok(currentUserId);
     }
 
+    /**
+     * 비밀번호 수정
+     */
+    @PostMapping("/changePw")
+    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+
+        if (userId == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+
+        userService.changePassword(userId, request);
+        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+    }
 
     /**
      * 마이페이지 삭제
