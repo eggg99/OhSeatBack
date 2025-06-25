@@ -99,7 +99,6 @@ public class UserController {
     @PutMapping("/mypage")
     public ResponseEntity<Integer> updateMyPage(@RequestBody UserUpdateRequest request) {
         Integer currentUserId = SecurityUtil.getCurrentUserId();
-        System.out.println("currentUserId : " + currentUserId);
         userService.updateMyPage(currentUserId, request);
         return ResponseEntity.ok(currentUserId);
     }

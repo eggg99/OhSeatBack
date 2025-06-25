@@ -25,6 +25,12 @@ public interface UserRepository {
     User selectUserById(Integer userId);
 
     // 마이페이지 수정
+    User findById(Integer userId);
+
+    int countByNickname(User user);
+
+    int countByPhoneNumber(User user);
+
     int updateUserById(User user);
 
     // 비밀번호 조회

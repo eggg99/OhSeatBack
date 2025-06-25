@@ -15,9 +15,6 @@ public class SecurityUtil {
             return null;
         }
 
-        System.out.println("auth = " + authentication);
-        System.out.println("auth.getPrincipal() = " + authentication.getPrincipal());
-
         Object principal = authentication.getPrincipal();
         if (principal instanceof CustomUserDetails) {
             return ((CustomUserDetails) principal).getUserId();

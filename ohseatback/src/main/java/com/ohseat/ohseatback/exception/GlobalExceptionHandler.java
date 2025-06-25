@@ -47,6 +47,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("VALIDATION_FAILED", message, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NoChangesDetectedException.class)
+    public ResponseEntity<ErrorResponse> handleNoChangesDetected(NoChangesDetectedException ex) {
+        return buildErrorResponse("NO_CHANGES_DETECTED", ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
 
     /** 시스템 오류 예외 처리 */
     @ExceptionHandler(NullPointerException.class)

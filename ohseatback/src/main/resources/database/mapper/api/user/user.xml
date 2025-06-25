@@ -39,6 +39,26 @@
     </select>
 
     <!--  마이페이지 수정  -->
+    <select id="findById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
+        SELECT user_id, nickname, phone_number
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="countByNickname" parameterType="com.ohseat.ohseatback.domain.User" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE nickname = #{nickname}
+        AND user_id != #{userId}
+    </select>
+
+    <select id="countByPhoneNumber" parameterType="com.ohseat.ohseatback.domain.User" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE phone_number = #{phoneNumber}
+        AND user_id != #{userId}
+    </select>
+
     <update id="updateUserById" parameterType="com.ohseat.ohseatback.domain.User">
         UPDATE users
         SET nickname = #{nickname}, phone_number = #{phoneNumber}
