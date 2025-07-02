@@ -66,6 +66,14 @@ public class UserService {
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
 
+    // 이메일 찾기
+    public String findEmail(User user) {
+        return userRepository.findEmail(user);
+    }
+
+    // 비밀번호 찾기
+
+
     // 마이페이지 조회
     public User getUserById(Integer userId) {
         return userRepository.selectUserById(userId);
@@ -118,11 +126,11 @@ public class UserService {
             throw new UserNotFoundException("회원을 찾을 수 없습니다.");
         }
 
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            System.out.println("request.getCurrentPassword() : " + request.getCurrentPassword());
-            System.out.println("user.getPassword() : " +  user.getPassword());
-            throw new InvalidPasswordException("현재 비밀번호가 일치하지 않습니다.");
-        }
+//        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+//            System.out.println("request.getCurrentPassword() : " + request.getCurrentPassword());
+//            System.out.println("user.getPassword() : " +  user.getPassword());
+//            throw new InvalidPasswordException("현재 비밀번호가 일치하지 않습니다.");
+//        }
 
         String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
         user.setPassword(encodedNewPassword);

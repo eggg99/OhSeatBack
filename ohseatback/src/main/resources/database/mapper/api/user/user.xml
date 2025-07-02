@@ -31,6 +31,18 @@
         WHERE email = #{email}
     </select>
 
+    <!--  이메일 찾기  -->
+    <select id="findEmail" parameterType="com.ohseat.ohseatback.domain.User" resultType="string">
+        SELECT email
+        FROM users
+        WHERE name = #{name}
+        AND phone_number = #{phoneNumber}
+    </select>
+
+
+    <!--  비밀번호 찾기  -->
+
+
     <!-- 마이페이지 조회 -->
     <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
         SELECT user_id, name, email, nickname, phone_number, created_at

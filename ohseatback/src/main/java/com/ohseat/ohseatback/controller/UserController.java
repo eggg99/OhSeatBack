@@ -79,6 +79,25 @@ public class UserController {
     }
 
     /**
+     *  이메일 찾기
+     */
+    @PostMapping("/findEmail")
+    public ResponseEntity<String> findEmail(@RequestBody User user) {
+        String userEmail = userService.findEmail(user);
+
+        if (userEmail ==  null) {
+            throw new UserNotFoundException("회원을 찾을 수 없습니다.");
+        }
+        return ResponseEntity.ok(userEmail);
+    }
+
+
+    /**
+     *  비밀번호 찾기
+     */
+
+
+    /**
      * 마이페이지 조회
      * @return user
      */

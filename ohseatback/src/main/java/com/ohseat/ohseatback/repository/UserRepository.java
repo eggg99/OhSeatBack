@@ -19,7 +19,12 @@ public interface UserRepository {
 
     // 로그인
     User findByEmail(String email);
-//    boolean checkPassword(User user, String rawPassword);
+
+    // 이메일 찾기
+    String findEmail(User user);
+
+    // 비밀번호 찾기
+
 
     //마이페이지 조회
     User selectUserById(Integer userId);

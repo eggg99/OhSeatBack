@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class PasswordChangeRequest {
 
-    @JsonProperty("originPwd")
-    private String currentPassword;
+//    @JsonProperty("originPwd")
+//    private String currentPassword;
 
     @JsonProperty("password")
     private String newPassword;
