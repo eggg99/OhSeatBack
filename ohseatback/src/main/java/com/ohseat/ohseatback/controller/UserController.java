@@ -9,6 +9,7 @@ import com.ohseat.ohseatback.exception.business.InvalidPasswordException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.exception.business.UserNotFoundException;
 import com.ohseat.ohseatback.jwt.JwtTokenProvider;
+import com.ohseat.ohseatback.security.CustomUserDetails;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.service.UserService;
 import jakarta.validation.Valid;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -95,6 +98,22 @@ public class UserController {
     /**
      *  비밀번호 찾기
      */
+    @PostMapping("/findPw")
+    public ResponseEntity<Map<String, Object>> findPassword(@RequestBody User user) {
+        Integer userId = userService.getUserIdIfUserInfoMatched(user);
+
+        if (userId == null) {
+            throw new UserNotFoundException("회원 정보가 일치하지 않습니다.");
+        }
+
+        String token = jwtTokenProvider.createChangePwToken(userId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "비밀번호 찾기 성공");
+        response.put("changePwToken", token);
+
+        return ResponseEntity.ok(response);
+    }
 
 
     /**
@@ -127,10 +146,22 @@ public class UserController {
      */
     @PostMapping("/changePw")
     public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request) {
-        Integer userId = SecurityUtil.getCurrentUserId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (userId == null) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new UnauthorizedException("인증 정보가 없습니다.");
+        }
+
+        Integer userId;
+
+        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            // 로그인 상태 (기존 토큰)
+            userId = userDetails.getUserId();
+        } else if (authentication.getPrincipal() instanceof Integer id) {
+            // 비밀번호 찾기 전용 changePwToken
+            userId = id;
+        } else {
+            throw new UnauthorizedException("유효하지 않은 인증입니다.");
         }
 
         userService.changePassword(userId, request);

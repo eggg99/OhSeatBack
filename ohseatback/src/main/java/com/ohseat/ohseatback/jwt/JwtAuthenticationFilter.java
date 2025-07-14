@@ -27,8 +27,8 @@ public class JwtAuthenticationFilter extends GenericFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getRequestURI();
 
-        // 로그인, 회원가입 요청 JWT 검사 생략
-        if (path.startsWith("/api/user/login") || path.startsWith("/api/user/join")) {
+        // 로그인, 회원가입, 비밀번호 찾기 요청 JWT 검사 생략
+        if (path.startsWith("/api/user/login") || path.startsWith("/api/user/join") || path.startsWith("/api/user/findPw")) {
             chain.doFilter(request, response);
             return;
         }
@@ -37,17 +37,29 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
         if(header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
+
             if (jwtTokenProvider.validateToken(token)) {
-                Integer userId = jwtTokenProvider.getUserIdFromToken(token);
-//                var userDetails = userDetailsService.loadUserByUsername(userId);
-                CustomUserDetails userDetails = userDetailsService.loadUserById(userId);
+                String tokenType = jwtTokenProvider.getTokenType(token);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                if("changePw".equals(tokenType)) {
+                    //비밀번호 변경 토큰이면 userId만 꺼내 인증 처리
+                    Integer userId = jwtTokenProvider.getUserIdFromToken(token);
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userId, null, null);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // 기존 로그인용 토큰 처리
+                    Integer userId = jwtTokenProvider.getUserIdFromToken(token);
+                    CustomUserDetails userDetails = userDetailsService.loadUserById(userId);
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
 
             }
         }

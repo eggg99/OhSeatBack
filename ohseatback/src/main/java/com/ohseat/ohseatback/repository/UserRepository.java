@@ -24,7 +24,7 @@ public interface UserRepository {
     String findEmail(User user);
 
     // 비밀번호 찾기
-
+    int getUserIdIfUserInfoMatched(User user);
 
     //마이페이지 조회
     User selectUserById(Integer userId);

@@ -39,9 +39,14 @@
         AND phone_number = #{phoneNumber}
     </select>
 
-
     <!--  비밀번호 찾기  -->
-
+    <select id="getUserIdIfUserInfoMatched" parameterType="com.ohseat.ohseatback.domain.User" resultType="int">
+        SELECT user_id
+        FROM users
+        WHERE name = #{name}
+        AND phone_number = #{phoneNumber}
+        AND email = #{email}
+    </select>
 
     <!-- 마이페이지 조회 -->
     <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">

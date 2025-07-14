@@ -9,6 +9,8 @@ public class PasswordChangeRequest {
 //    @JsonProperty("originPwd")
 //    private String currentPassword;
 
+    private Integer userId;
+
     @JsonProperty("password")
     private String newPassword;
 

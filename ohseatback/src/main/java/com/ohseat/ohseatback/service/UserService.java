@@ -72,6 +72,9 @@ public class UserService {
     }
 
     // 비밀번호 찾기
+    public Integer getUserIdIfUserInfoMatched(User user) {
+        return userRepository.getUserIdIfUserInfoMatched(user);
+    }
 
 
     // 마이페이지 조회
