@@ -11,6 +11,7 @@ import com.ohseat.ohseatback.exception.business.UserNotFoundException;
 import com.ohseat.ohseatback.jwt.JwtTokenProvider;
 import com.ohseat.ohseatback.security.CustomUserDetails;
 import com.ohseat.ohseatback.security.SecurityUtil;
+import com.ohseat.ohseatback.service.RecaptchaService;
 import com.ohseat.ohseatback.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RecaptchaService recaptchaService;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     /**
@@ -100,6 +105,13 @@ public class UserController {
      */
     @PostMapping("/findPw")
     public ResponseEntity<Map<String, Object>> findPassword(@RequestBody User user) {
+        // 캡차 토큰 검증
+        if (!recaptchaService.verifyCaptcha(user.getCaptchaToken())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "캡차 인증에 실패했습니다."));
+        }
+
         Integer userId = userService.getUserIdIfUserInfoMatched(user);
 
         if (userId == null) {
