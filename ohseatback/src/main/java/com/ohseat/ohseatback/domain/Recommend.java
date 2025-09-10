@@ -7,7 +7,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Recommend {
     // Getters & Setters
-    private Integer area_id;
-    private String area_name;
-
+    private Integer multiplexId;
+    private String multiplexName;
+    private Integer areaId;
+    private String areaName;
+    private String cinemaId;
+    private String cinemaName;
+    private String cinemaAddr;
+    private String screenId;
+    private String screenName;
 }
