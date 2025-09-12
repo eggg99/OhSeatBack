@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Recommend {
+public class Cinema {
     // Getters & Setters
     private Integer multiplexId;
     private String multiplexName;

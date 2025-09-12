@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohseat.ohseatback.mapper.RecommendMapper">
+    <!--영화관 리스트 조회-->
+    <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.Cinema">
+        SELECT c.cinema_id , c.multiplex_id , c.area_id , c.cinema_name , c.cinema_addr , m.multiplex_name , a.area_name
+          FROM cinema c
+          JOIN multiplex m ON c.multiplex_id = m.multiplex_id
+          JOIN area a ON c.area_id = a.area_id
+         WHERE c.multiplex_id = #{multiplexId}
+           AND c.area_id = #{areaId}
+    </select>
+
+    <!--상영관 리스트 조회-->
+    <select id="getScreenList" resultType="com.ohseat.ohseatback.domain.Cinema">
+        SELECT screen_id , multiplex_id , cinema_id , screen_name
+        FROM screen
+        WHERE multiplex_id = #{multiplexId}
+          AND cinema_id = #{cinemaId}
+    </select>
+
+    <!-- 게시글 리스트 조회 -->
+    <select id="getPostList" resultType="com.ohseat.ohseatback.domain.PostDomain">
+        SELECT *
+        FROM post
+        WHERE cinema_id = #{cinemaId}
+        <if test="screenId != 'all'">
+            AND screen_id = #{screenId}
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 게시글 댓글 개수 조회 -->
+    <select id="countPosts" resultType="long">
+        SELECT COUNT(*)
+        FROM post
+        WHERE cinema_id = #{cinemaId}
+        <if test="screenId != 'all'">
+            AND screen_id = #{screenId}
+        </if>
+    </select>
+
+    <!-- 유저 정보 조회 -->
+    <select id="getUserList" resultType="com.ohseat.ohseatback.domain.User">
+        SELECT user_id, nickname
+        FROM users
+        WHERE user_id IN
+        <foreach collection="userIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- comment 개수 -->
+    <select id="getCommentCountMap" resultType="map">
+        SELECT post_id, COUNT(*) AS commentCount
+        FROM comment
+        WHERE post_id IN
+        <foreach collection="postIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY post_id
+    </select>
+
+    <!-- 댓글 리스트 조회 -->
+    <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.CommentDomain">
+        SELECT *
+        FROM comment
+        WHERE post_id IN
+        <foreach item="id" collection="postIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>
