@@ -40,4 +40,11 @@ public interface RecommendMapper {
 
     // 댓글 리스트 조회
     List<CommentDomain> getCommentList(@Param("postIds") List<Integer> postIds);
+
+    // 게시글 상세 조회
+    PostDomain getPostDetail(Integer postId);
+    User getUser(Integer userId);
+    Long getCommentCount(Integer postId);
+
+    void insertComment(Integer postId, Integer commenterId, String content);
 }

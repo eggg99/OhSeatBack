@@ -42,7 +42,7 @@
         </if>
     </select>
 
-    <!-- 유저 정보 조회 -->
+    <!-- 유저 정보 리스트 조회 -->
     <select id="getUserList" resultType="com.ohseat.ohseatback.domain.User">
         SELECT user_id, nickname
         FROM users
@@ -50,6 +50,13 @@
         <foreach collection="userIds" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+
+    <!-- 유저 정보 1명 조회 -->
+    <select id="getUser" resultType="com.ohseat.ohseatback.domain.User">
+        SELECT user_id, nickname
+        FROM users
+        WHERE user_id =#{id}
     </select>
 
     <!-- comment 개수 -->
@@ -63,6 +70,13 @@
         GROUP BY post_id
     </select>
 
+    <!-- comment 1개 개수 조회 -->
+    <select id="getCommentCount" resultType="Long">
+        SELECT  post_id, COUNT(*) AS commentCount
+        FROM comment
+        WHERE post_id =#{id}
+    </select>
+
     <!-- 댓글 리스트 조회 -->
     <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.CommentDomain">
         SELECT *
@@ -72,4 +86,15 @@
             #{id}
         </foreach>
     </select>
+
+    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.PostDomain">
+        SELECT *
+        FROM post
+        WHERE post_id = #{postId}
+    </select>
+
+    <insert id="insertComment">
+        INSERT INTO comments (post_id, commenter_id, content)
+        VALUES (#{postId}, #{commenterId}, #{content})
+    </insert>
 </mapper>

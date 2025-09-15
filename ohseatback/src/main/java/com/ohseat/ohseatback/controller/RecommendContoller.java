@@ -1,9 +1,7 @@
 package com.ohseat.ohseatback.controller;
 
 import com.ohseat.ohseatback.domain.Cinema;
-import com.ohseat.ohseatback.domain.PostDomain;
-import com.ohseat.ohseatback.dto.recommend.CommentDTO;
-import com.ohseat.ohseatback.dto.recommend.PostListDTO;
+import com.ohseat.ohseatback.dto.recommend.PostDTO;
 import com.ohseat.ohseatback.service.RecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/rcmd")
@@ -36,15 +33,27 @@ public class RecommendContoller {
 
     // 게시글 리스트 조회 (페이징)
     @GetMapping("/postList")
-    public ResponseEntity<Page<PostListDTO>> getPostList(
+    public ResponseEntity<Page<PostDTO>> getPostList(
             @RequestParam String cinemaId,
             @RequestParam String screenId,
             @RequestParam(defaultValue = "latest") String orderType,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<PostListDTO> postList = recommendService.getPostList(cinemaId, screenId, orderType, page, size);
+        Page<PostDTO> postList = recommendService.getPostList(cinemaId, screenId, orderType, page, size);
         return ResponseEntity.ok(postList);
+    }
+
+    @GetMapping("/postDetail/{postId}")
+    public ResponseEntity<PostDTO> getPostDetail(@PathVariable Integer postId) {
+        PostDTO postDomain = recommendService.getPostDetail(postId);
+        return ResponseEntity.ok(postDomain);
+    }
+
+    @PutMapping("/comment")
+    public ResponseEntity<String> putComment(@RequestParam String comment, @RequestParam Integer commenterId, @RequestParam Integer postId) {
+//        recommendService.putPost
+        return ResponseEntity.ok("댓글 ");
     }
 
 

@@ -1,15 +1,13 @@
 package com.ohseat.ohseatback.service;
 
 import com.ohseat.ohseatback.domain.Cinema;
-import com.ohseat.ohseatback.domain.CommentDomain;
 import com.ohseat.ohseatback.domain.PostDomain;
 import com.ohseat.ohseatback.domain.User;
-import com.ohseat.ohseatback.dto.recommend.PostListDTO;
+import com.ohseat.ohseatback.dto.recommend.PostDTO;
 import com.ohseat.ohseatback.mapper.RecommendMapper;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,7 @@ public class RecommendService {
     }
 
     // 게시글 리스트 조회 (페이징)
-    public Page<PostListDTO> getPostList(String cinemaId, String screenId, String orderType, int page, int size) {
+    public Page<PostDTO> getPostList(String cinemaId, String screenId, String orderType, int page, int size) {
         // 1. Pageable 생성 (CustomPageUtils 활용)
         Pageable pageable = CustomPageUtils.getPageable(page, size);
 
@@ -74,9 +72,9 @@ public class RecommendService {
 
 
         // 5. Domain → DTO 변환
-        List<PostListDTO> dtoList = postList.stream()
+        List<PostDTO> dtoList = postList.stream()
                 .map(post -> {
-                    PostListDTO dto = new PostListDTO();
+                    PostDTO dto = new PostDTO();
                     dto.setPostId(post.getPostId());
                     dto.setTitle(post.getTitle());
                     dto.setContent(post.getContent());
@@ -93,22 +91,49 @@ public class RecommendService {
                 .collect(Collectors.toList());
 
         // 6. 정렬
-        Comparator<PostListDTO> comparator;
+        Comparator<PostDTO> comparator;
         switch (orderType) {
             case "views":
-                comparator = Comparator.comparing(PostListDTO::getViews).reversed();
+                comparator = Comparator.comparing(PostDTO::getViews).reversed();
                 break;
             case "comments":
-                comparator = Comparator.comparing(PostListDTO::getCommentCount).reversed();
+                comparator = Comparator.comparing(PostDTO::getCommentCount).reversed();
                 break;
             case "latest":
             default:
-                comparator = Comparator.comparing(PostListDTO::getCreatedAt).reversed();
+                comparator = Comparator.comparing(PostDTO::getCreatedAt).reversed();
         }
         dtoList.sort(comparator);
 
         // 7. Page 객체로 반환 (page 계산은 CustomPageUtils에 맡김)
         long totalCount = recommendMapper.countPosts(cinemaId, screenId);
         return new PageImpl<>(dtoList, pageable, totalCount);
+    }
+
+    public PostDTO getPostDetail(Integer postId) {
+        // 1. 게시글 1개 조회
+        PostDomain post = recommendMapper.getPostDetail(postId);
+
+        // 2. 작성자 1명 조회
+        User author = recommendMapper.getUser(post.getAuthorId());
+
+        // 3. 댓글 수 조회 (이미 commentCountMap 같은 걸 사용한다면)
+        Long commentCount = recommendMapper.getCommentCount(post.getPostId());
+
+        // 4. DTO 생성
+        PostDTO dto = new PostDTO();
+        dto.setPostId(post.getPostId());
+        dto.setTitle(post.getTitle());
+        dto.setContent(post.getContent());
+        dto.setViews(post.getViews());
+        dto.setCreatedAt(post.getCreatedAt());
+        dto.setAuthorNickname(author != null ? author.getNickname() : null);
+        dto.setCommentCount(commentCount);
+
+        return dto;
+    }
+
+    public void insertComment(Integer postId, Integer commenterId, String content) {
+        recommendMapper.insertComment(postId, commenterId, content);
     }
 }
