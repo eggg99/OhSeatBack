@@ -1,6 +1,8 @@
 package com.ohseat.ohseatback.controller;
 
 import com.ohseat.ohseatback.domain.Cinema;
+import com.ohseat.ohseatback.dto.recommend.CinemaDTO;
+import com.ohseat.ohseatback.dto.recommend.CommentDTO;
 import com.ohseat.ohseatback.dto.recommend.PostDTO;
 import com.ohseat.ohseatback.service.RecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,8 @@ public class RecommendContoller {
 
     // 영화관 리스트 조회
     @GetMapping("/cinemaList")
-    public ResponseEntity<List<Cinema>> getCinemaList(@RequestParam Integer multiplexId, @RequestParam Integer areaId) {
-        List<Cinema> cinema = recommendService.getCinemaList(multiplexId, areaId);
+    public ResponseEntity<List<CinemaDTO>> getCinemaList(@RequestParam Integer multiplexId, @RequestParam Integer areaId) {
+        List<CinemaDTO> cinema = recommendService.getCinemaList(multiplexId, areaId);
         return ResponseEntity.ok(cinema);
     }
 
@@ -50,10 +52,16 @@ public class RecommendContoller {
         return ResponseEntity.ok(postDomain);
     }
 
+    @GetMapping("/commentList")
+    public ResponseEntity<List<CommentDTO>> getCommentList(@RequestParam Integer postId) {
+        List<CommentDTO> comment = recommendService.getCommentList(postId);
+        return ResponseEntity.ok(comment);
+    }
+
     @PutMapping("/comment")
-    public ResponseEntity<String> putComment(@RequestParam String comment, @RequestParam Integer commenterId, @RequestParam Integer postId) {
-//        recommendService.putPost
-        return ResponseEntity.ok("댓글 ");
+    public ResponseEntity<String> putComment(@RequestBody CommentDTO dto) {
+        recommendService.putComment(dto.getCommenterId(), dto.getPostId(), dto.getContent());
+        return ResponseEntity.ok("댓글 추가 완료");
     }
 
 

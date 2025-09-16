@@ -3,13 +3,13 @@
 
 <mapper namespace="com.ohseat.ohseatback.mapper.RecommendMapper">
     <!--영화관 리스트 조회-->
-    <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.Cinema">
-        SELECT c.cinema_id , c.multiplex_id , c.area_id , c.cinema_name , c.cinema_addr , m.multiplex_name , a.area_name
-          FROM cinema c
-          JOIN multiplex m ON c.multiplex_id = m.multiplex_id
-          JOIN area a ON c.area_id = a.area_id
-         WHERE c.multiplex_id = #{multiplexId}
-           AND c.area_id = #{areaId}
+    <select id="getCinemaList" resultType="com.ohseat.ohseatback.dto.recommend.CinemaDTO">
+        SELECT *
+        FROM cinema c
+        WHERE c.multiplex_id = #{multiplexId}
+        <if test="areaId != '00'">
+          and c.area_id = #{areaId};
+        </if>
     </select>
 
     <!--상영관 리스트 조회-->
@@ -17,15 +17,20 @@
         SELECT screen_id , multiplex_id , cinema_id , screen_name
         FROM screen
         WHERE multiplex_id = #{multiplexId}
-          AND cinema_id = #{cinemaId}
+        <if test="cinemaId != 'all_c'">
+        AND cinema_id = #{cinemaId}
+        </if>
     </select>
 
     <!-- 게시글 리스트 조회 -->
     <select id="getPostList" resultType="com.ohseat.ohseatback.domain.PostDomain">
         SELECT *
         FROM post
-        WHERE cinema_id = #{cinemaId}
-        <if test="screenId != 'all'">
+        WHERE 1=1
+        <if test="cinemaId != 'all_c'">
+            AND cinema_id = #{cinemaId}
+        </if>
+        <if test="screenId != 'all_s'">
             AND screen_id = #{screenId}
         </if>
         ORDER BY created_at DESC
@@ -37,8 +42,8 @@
         SELECT COUNT(*)
         FROM post
         WHERE cinema_id = #{cinemaId}
-        <if test="screenId != 'all'">
-            AND screen_id = #{screenId}
+        <if test="screenId != 'all_s'">
+        AND screen_id = #{screenId}
         </if>
     </select>
 
@@ -81,10 +86,7 @@
     <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.CommentDomain">
         SELECT *
         FROM comment
-        WHERE post_id IN
-        <foreach item="id" collection="postIds" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        WHERE post_id = #{postId}
     </select>
 
     <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.PostDomain">
@@ -93,8 +95,8 @@
         WHERE post_id = #{postId}
     </select>
 
-    <insert id="insertComment">
-        INSERT INTO comments (post_id, commenter_id, content)
-        VALUES (#{postId}, #{commenterId}, #{content})
+    <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.CommentDomain">
+        INSERT INTO comment (commenter_id, post_id, content)
+        VALUES (#{commenterId}, #{postId}, #{content})
     </insert>
 </mapper>

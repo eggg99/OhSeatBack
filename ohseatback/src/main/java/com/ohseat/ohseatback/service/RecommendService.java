@@ -1,8 +1,11 @@
 package com.ohseat.ohseatback.service;
 
 import com.ohseat.ohseatback.domain.Cinema;
+import com.ohseat.ohseatback.domain.CommentDomain;
 import com.ohseat.ohseatback.domain.PostDomain;
 import com.ohseat.ohseatback.domain.User;
+import com.ohseat.ohseatback.dto.recommend.CinemaDTO;
+import com.ohseat.ohseatback.dto.recommend.CommentDTO;
 import com.ohseat.ohseatback.dto.recommend.PostDTO;
 import com.ohseat.ohseatback.mapper.RecommendMapper;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
@@ -21,7 +24,7 @@ public class RecommendService {
     private final RecommendMapper recommendMapper;
 
     // 영화관 리스트 조회
-    public List<Cinema> getCinemaList(Integer multiplexId, Integer areaId) {
+    public List<CinemaDTO> getCinemaList(Integer multiplexId, Integer areaId) {
         return recommendMapper.getCinemaList(multiplexId, areaId);
     }
 
@@ -133,7 +136,43 @@ public class RecommendService {
         return dto;
     }
 
-    public void insertComment(Integer postId, Integer commenterId, String content) {
-        recommendMapper.insertComment(postId, commenterId, content);
+    public List<CommentDTO> getCommentList(Integer postId) {
+        List<CommentDomain> commentDomain = recommendMapper.getCommentList(postId);
+
+        // 1. 모든 댓글 작성자 ID 수집
+        List<Integer> commenterIds = commentDomain.stream()
+                .map(CommentDomain::getCommenterId)
+                .distinct() // 중복 제거
+                .collect(Collectors.toList());
+
+        // 2. 한 번에 유저 조회 (IN 절 사용)
+        List<User> users = recommendMapper.getUserList(commenterIds);
+        Map<Integer, User> userMap = users.stream()
+                .collect(Collectors.toMap(User::getUserId, user -> user));
+
+        List<CommentDTO> dtoList = commentDomain.stream()
+                .map(comment -> {
+                    CommentDTO dto = new CommentDTO();
+                    dto.setCommentId(comment.getCommentId());
+                    dto.setPostId(comment.getPostId());
+                    dto.setCommenterId(comment.getCommenterId());
+                    dto.setContent(comment.getContent());
+                    dto.setCreatedAt(comment.getCreatedAt());
+
+                    User user = userMap.get(comment.getCommenterId());
+                    if (user != null) {
+                        dto.setAuthorNickname(user.getNickname());
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return dtoList;
     }
+
+    public void putComment(Integer commenterId, Integer postId, String content) {
+        recommendMapper.putComment(commenterId, postId, content);
+    }
+
+
 }
