@@ -48,11 +48,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/api/cinesquare/{id}",
+                                "/api/cinesquare/list",
+                                "/api/rcmd/**",
                                 "/api/user/findPw",
                                 "/api/user/findEmail",
                                 "/api/user/login",
-                                "/api/user/join",
-                                "/api/rcmd/**").permitAll() // 로그인, 회원가입은 인증 없이 허용
+                                "/api/user/join").permitAll() // 로그인, 회원가입은 인증 없이 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
