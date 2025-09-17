@@ -107,4 +107,19 @@
         INSERT INTO post (author_id, multiplex_id, area_id, cinema_id, screen_id, title, content)
         VALUES (#{userId}, #{multiplexId}, #{areaId}, #{cinemaId}, #{screenId}, #{title}, #{content})
     </insert>
+
+    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.PostDomain">
+        UPDATE post
+        SET multiplex_id = #{multiplexId},
+            area_id = #{areaId},
+            cinema_id = #{cinemaId},
+            screen_id = #{screenId},
+            title = #{title},
+            content = #{content}
+        WHERE post_id = #{postId}
+    </update>
+    <delete id="deletePost" parameterType="int">
+        DELETE FROM post
+        WHERE post_id = #{postId}
+    </delete>
 </mapper>

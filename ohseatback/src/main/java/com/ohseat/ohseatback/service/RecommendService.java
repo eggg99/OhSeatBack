@@ -177,5 +177,17 @@ public class RecommendService {
         recommendMapper.putComment(commenterId, postId, content);
     }
 
+    public void putPost(Integer userId, Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content) {
+        recommendMapper.putPost(userId, multiplexId, areaId, cinemaId, screenId, title, content);
+    }
+
+    public void updatePost(Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content, Integer postId) {
+        recommendMapper.updatePost(multiplexId, areaId, cinemaId, screenId, title, content, postId);
+    }
+
+    public void deletePost(Integer postId) {
+        recommendMapper.deletePost(postId);
+    }
+
 
 }
