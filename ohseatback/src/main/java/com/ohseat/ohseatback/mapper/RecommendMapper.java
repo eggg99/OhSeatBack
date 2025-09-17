@@ -5,6 +5,7 @@ import com.ohseat.ohseatback.domain.CommentDomain;
 import com.ohseat.ohseatback.domain.PostDomain;
 import com.ohseat.ohseatback.domain.User;
 import com.ohseat.ohseatback.dto.recommend.CinemaDTO;
+import com.ohseat.ohseatback.dto.recommend.ScreenDTO;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,10 +19,12 @@ public interface RecommendMapper {
     List<CinemaDTO> getCinemaList(Integer multiplexId, Integer areaId);
 
     // 상영관 리스트 조회
-    List<Cinema> getScreenList(Integer multiplexId, String cinemaId);
+    List<ScreenDTO> getScreenList(Integer multiplexId, String cinemaId);
 
     // 게시글 리스트 조회
     List<PostDomain> getPostList(
+            @Param("multiplexId") Integer multiplexId,
+            @Param("areaId") Integer areaId,
             @Param("cinemaId") String cinemaId,
             @Param("screenId") String screenId,
             @Param("limit") int limit,
@@ -37,6 +40,7 @@ public interface RecommendMapper {
     List<User> getUserList(@Param("userIds") List<Integer> userIds);
 
     // 게시글 댓글 개수 조회
+    @MapKey("postIds")
     List<Map<String, Object>> getCommentCountMap(@Param("postIds") List<Integer> postIds);
 
 
@@ -50,4 +54,7 @@ public interface RecommendMapper {
     List<CommentDomain> getCommentList(@Param("postId") Integer postId);
     // 댓글 입력
     void putComment(Integer commenterId, Integer postId, String content);
+
+    // 포스트 등록
+    void putPost(Integer userId, Integer multiplexId, Integer areaId, Integer cinemaId, Integer screenId, String title, String content);
 }

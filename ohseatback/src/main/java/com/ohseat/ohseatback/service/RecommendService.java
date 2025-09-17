@@ -7,6 +7,7 @@ import com.ohseat.ohseatback.domain.User;
 import com.ohseat.ohseatback.dto.recommend.CinemaDTO;
 import com.ohseat.ohseatback.dto.recommend.CommentDTO;
 import com.ohseat.ohseatback.dto.recommend.PostDTO;
+import com.ohseat.ohseatback.dto.recommend.ScreenDTO;
 import com.ohseat.ohseatback.mapper.RecommendMapper;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,19 @@ public class RecommendService {
     }
 
     // 상영관 리스트 조회
-    public List<Cinema> getScreenList(Integer multiplexId, String cinemaId) {
+    public List<ScreenDTO> getScreenList(Integer multiplexId, String cinemaId) {
         return recommendMapper.getScreenList(multiplexId, cinemaId);
     }
 
     // 게시글 리스트 조회 (페이징)
-    public Page<PostDTO> getPostList(String cinemaId, String screenId, String orderType, int page, int size) {
+    public Page<PostDTO> getPostList(Integer multiplexId, Integer areaId, String cinemaId, String screenId, String orderType, int page, int size) {
         // 1. Pageable 생성 (CustomPageUtils 활용)
         Pageable pageable = CustomPageUtils.getPageable(page, size);
 
         // 2. DB 조회
         List<PostDomain> postList = recommendMapper.getPostList(
+                multiplexId,
+                areaId,
                 cinemaId,
                 screenId,
                 pageable.getPageSize(),

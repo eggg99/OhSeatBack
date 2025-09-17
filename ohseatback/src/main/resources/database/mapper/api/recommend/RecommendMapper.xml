@@ -8,36 +8,39 @@
         FROM cinema c
         WHERE c.multiplex_id = #{multiplexId}
         <if test="areaId != '00'">
-          and c.area_id = #{areaId};
+            AND c.area_id = #{areaId};
         </if>
     </select>
 
     <!--상영관 리스트 조회-->
-    <select id="getScreenList" resultType="com.ohseat.ohseatback.domain.Cinema">
-        SELECT screen_id , multiplex_id , cinema_id , screen_name
-        FROM screen
-        WHERE multiplex_id = #{multiplexId}
+    <select id="getScreenList" resultType="com.ohseat.ohseatback.dto.recommend.ScreenDTO">
+        SELECT *
+        FROM screen s
+        WHERE s.multiplex_id = #{multiplexId}
         <if test="cinemaId != 'all_c'">
-        AND cinema_id = #{cinemaId}
+            AND s.cinema_id = #{cinemaId}
         </if>
     </select>
 
     <!-- 게시글 리스트 조회 -->
     <select id="getPostList" resultType="com.ohseat.ohseatback.domain.PostDomain">
         SELECT *
-        FROM post
-        WHERE 1=1
+        FROM post p
+        WHERE p.multiplex_id = #{multiplexId}
+        <if test="areaId != '00'">
+            AND p.area_id = #{areaId}
+        </if>
         <if test="cinemaId != 'all_c'">
-            AND cinema_id = #{cinemaId}
+            AND p.cinema_id = #{cinemaId}
         </if>
         <if test="screenId != 'all_s'">
-            AND screen_id = #{screenId}
+            AND p.screen_id = #{screenId}
         </if>
-        ORDER BY created_at DESC
+        ORDER BY p.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <!-- 게시글 댓글 개수 조회 -->
+    <!-- 게시글 개수 조회 -->
     <select id="countPosts" resultType="long">
         SELECT COUNT(*)
         FROM post
@@ -77,7 +80,7 @@
 
     <!-- comment 1개 개수 조회 -->
     <select id="getCommentCount" resultType="Long">
-        SELECT  post_id, COUNT(*) AS commentCount
+        SELECT  COUNT(*)
         FROM comment
         WHERE post_id =#{id}
     </select>
@@ -98,5 +101,10 @@
     <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.CommentDomain">
         INSERT INTO comment (commenter_id, post_id, content)
         VALUES (#{commenterId}, #{postId}, #{content})
+    </insert>
+
+    <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.PostDomain">
+        INSERT INTO post (author_id, multiplex_id, area_id, cinema_id, screen_id, title, content)
+        VALUES (#{userId}, #{multiplexId}, #{areaId}, #{cinemaId}, #{screenId}, #{title}, #{content})
     </insert>
 </mapper>
