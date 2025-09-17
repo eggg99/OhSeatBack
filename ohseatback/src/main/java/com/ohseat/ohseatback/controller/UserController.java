@@ -132,6 +132,7 @@ public class UserController {
      * 마이페이지 조회
      * @return user
      */
+    // 토큰 필요
     @GetMapping("/mypage")
     public ResponseEntity<User> getUserById(@RequestParam Integer userId) {
         User user = userService.getUserById(userId);

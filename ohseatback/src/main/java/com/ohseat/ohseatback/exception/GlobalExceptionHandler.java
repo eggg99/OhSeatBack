@@ -3,6 +3,8 @@ package com.ohseat.ohseatback.exception;
 import com.ohseat.ohseatback.exception.business.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,6 +38,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("UNAUTHORIZED", ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    // 게시글 관련 예외
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePostNotFound(PostNotFoundException ex) {
+        return buildErrorResponse("POST_NOT_FOUND", ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     // 유효성 검사 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
@@ -52,6 +60,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("NO_CHANGES_DETECTED", ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    /** Spring Security 관련 예외 처리 */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        return buildErrorResponse("ACCESS_DENIED", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException ex) {
+        return buildErrorResponse("AUTHENTICATION_FAILED", "인증에 실패했습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED);
+    }
 
     /** 시스템 오류 예외 처리 */
     @ExceptionHandler(NullPointerException.class)

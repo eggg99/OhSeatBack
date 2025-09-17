@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // REST API 테스트 편의를 위해 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/findPw", "/api/user/findEmail", "/api/user/login", "/api/user/join").permitAll() // 로그인, 회원가입은 인증 없이 허용
+                        .requestMatchers("/api/cinesquare/{id}", "/api/cinesquare/list", "/api/user/findPw", "/api/user/findEmail", "/api/user/login", "/api/user/join").permitAll() // 로그인, 회원가입은 인증 없이 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
