@@ -87,8 +87,8 @@ public class RecommendContoller {
     }
 
     // 게시글 변경
-    @PostMapping("/post/{postId}")
-    public ResponseEntity<String> updatePost(@RequestBody PostDomain domain) {
+    @PostMapping("/post/edit/{postId}")
+    public ResponseEntity<String> updatePost(@RequestBody PostDomain domain, @PathVariable Integer postId) {
         recommendService.updatePost(
                 domain.getMultiplexId(),
                 domain.getAreaId(),
@@ -96,7 +96,7 @@ public class RecommendContoller {
                 domain.getScreenId(),
                 domain.getTitle(),
                 domain.getContent(),
-                domain.getPostId()
+                postId
         );
         return ResponseEntity.ok("포스트 수정 완료");
     }

@@ -17,4 +17,8 @@ public class PostDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년MM월dd일 HH시mm분", timezone = "Asia/Seoul")
     private Timestamp createdAt;
     private Long commentCount;
+    private Integer multiplexId;
+    private Integer areaId;
+    private String cinemaId;
+    private String screenId;
 }

@@ -135,6 +135,10 @@ public class RecommendService {
         dto.setCreatedAt(post.getCreatedAt());
         dto.setAuthorNickname(author != null ? author.getNickname() : null);
         dto.setCommentCount(commentCount);
+        dto.setMultiplexId(post.getMultiplexId());
+        dto.setAreaId(post.getAreaId());
+        dto.setCinemaId(post.getCinemaId());
+        dto.setScreenId(post.getScreenId());
 
         return dto;
     }
