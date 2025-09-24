@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 @Data
 public class CineSquare {
     private Integer postId;
-    private String category;    // notice, free, event ...
+    private Integer categoryId;
+    private String categoryName;    // notice, free, event ...
     private String title;
     private String content;
     private Integer views;

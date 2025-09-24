@@ -19,8 +19,8 @@ public class CineSquareService {
         return cineSquareRepository.selectPostById(postId);
     }
 
-    public List<CineSquare> getAllPosts(String category) {
-        return cineSquareRepository.selectAllPosts(category);
+    public List<CineSquare> getAllPosts(Integer categoryId) {
+        return cineSquareRepository.selectAllPosts(categoryId);
     }
 
     public void updatePost(CineSquare post) {

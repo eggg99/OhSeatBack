@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 @Data
 public class CineSquareResponse {
     private Integer postId;
-    private String category;
+    private Integer categoryId;
+    private String categoryName;
     private String title;
     private String content;
     private Integer views;

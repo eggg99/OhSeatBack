@@ -9,7 +9,7 @@ import java.util.List;
 public interface CineSquareRepository {
     void insertPost(CineSquare post);
     CineSquare selectPostById(Integer postId);
-    List<CineSquare> selectAllPosts(String category);
+    List<CineSquare> selectAllPosts(Integer categoryId);
     void updatePost(CineSquare post);
     void deletePost(Integer postId, Integer authorId);
 }

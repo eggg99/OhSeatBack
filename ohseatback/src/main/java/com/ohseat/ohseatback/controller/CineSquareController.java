@@ -25,8 +25,8 @@ public class CineSquareController {
 
     // 카테고리별 전체 글 조회
     @GetMapping("/list")
-    public List<CineSquareResponse> getAllPosts(@RequestParam String category) {
-        List<CineSquare> posts = cineSquareService.getAllPosts(category);
+    public List<CineSquareResponse> getAllPosts(@RequestParam Integer categoryId) {
+        List<CineSquare> posts = cineSquareService.getAllPosts(categoryId);
 
         if (posts.isEmpty()) {
             throw new PostNotFoundException("해당 카테고리의 게시글이 없습니다.");
@@ -51,7 +51,7 @@ public class CineSquareController {
     @PostMapping
     public void createPost(@RequestBody CineSquareRequest request) {
         CineSquare post = new CineSquare();
-        post.setCategory(request.getCategory());
+        post.setCategoryId(request.getCategoryId());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setAuthorId(SecurityUtil.getCurrentUserId());
@@ -71,7 +71,7 @@ public class CineSquareController {
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
         }
 
-        existingPost.setCategory(request.getCategory());
+        existingPost.setCategoryId(request.getCategoryId());
         existingPost.setTitle(request.getTitle());
         existingPost.setContent(request.getContent());
 
@@ -96,7 +96,8 @@ public class CineSquareController {
     private CineSquareResponse toResponseDto(CineSquare post) {
         CineSquareResponse dto = new CineSquareResponse();
         dto.setPostId(post.getPostId());
-        dto.setCategory(post.getCategory());
+        dto.setCategoryId(post.getCategoryId());
+        dto.setCategoryName(post.getCategoryName());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setViews(post.getViews());

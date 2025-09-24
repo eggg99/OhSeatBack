@@ -5,7 +5,7 @@ import lombok.Data;
 /** 작성, 수정용 */
 @Data
 public class CineSquareRequest {
-    private String category;
+    private Integer categoryId;
     private String title;
     private String content;
 }

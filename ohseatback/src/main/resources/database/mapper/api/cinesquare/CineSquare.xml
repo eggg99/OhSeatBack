@@ -5,18 +5,39 @@
 
     <!--  글 작성  -->
     <insert id="insertPost" parameterType="com.ohseat.ohseatback.domain.CineSquare">
-        INSERT INTO cinesquare (category, title, content, author_id, created_at, views)
-        VALUES (#{category}, #{title}, #{content}, #{authorId}, NOW(), 0)
+        INSERT INTO cinesquare (category_id, title, content, author_id, created_at, views)
+        VALUES (#{categoryId}, #{title}, #{content}, #{authorId}, NOW(), 0)
     </insert>
 
     <!--  단건 조회  -->
     <select id="selectPostById" parameterType="int" resultType="com.ohseat.ohseatback.domain.CineSquare">
-        SELECT * FROM cinesquare WHERE post_id = #{postId}
+        SELECT cs.post_id       AS postId,
+            cs.category_id   AS categoryId,
+            c.category_name  AS categoryName,
+            cs.title         AS title,
+            cs.content       AS content,
+            cs.views         AS views,
+            cs.created_at    AS createdAt,
+            cs.author_id     AS authorId
+        FROM cinesquare cs
+        JOIN category c ON cs.category_id = c.category_id
+        WHERE cs.post_id = #{postId}
     </select>
 
     <!--  전체 조회(카테고리별)  -->
-    <select id="selectAllPosts" parameterType="string" resultType="com.ohseat.ohseatback.domain.CineSquare">
-        SELECT * FROM cinesquare WHERE category = #{category} ORDER BY created_at DESC
+    <select id="selectAllPosts" parameterType="int" resultType="com.ohseat.ohseatback.domain.CineSquare">
+        SELECT cs.post_id       AS postId,
+            cs.category_id   AS categoryId,
+            c.category_name  AS categoryName,
+            cs.title         AS title,
+            cs.content       AS content,
+            cs.views         AS views,
+            cs.created_at    AS createdAt,
+            cs.author_id     AS authorId
+        FROM cinesquare cs
+        JOIN category c ON cs.category_id = c.category_id
+        WHERE cs.category_id = #{categoryId}
+        ORDER BY cs.created_at DESC
     </select>
 
     <!--  글 수정  -->
