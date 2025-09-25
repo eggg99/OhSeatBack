@@ -8,8 +8,10 @@ import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.service.CineSquareService;
+import com.ohseat.ohseatback.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.units.qual.C;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class CineSquareController {
 
     private final CineSquareService cineSquareService;
+    private final UserService userService;
 
     // 카테고리별 전체 글 조회
     @GetMapping("/list")
@@ -39,28 +42,30 @@ public class CineSquareController {
 
     // 단건 조회
     @GetMapping("/{postId}")
-    public CineSquareResponse getPost(@PathVariable Integer postId) {
+    public ResponseEntity<CineSquareResponse> getPost(@PathVariable Integer postId) {
         CineSquare post = cineSquareService.getPost(postId);
         if (post == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
         }
-        return toResponseDto(post);
+        return ResponseEntity.ok(toResponseDto(post));
     }
 
-    // 글 작성
+    // 게시글 작성
     @PostMapping
-    public void createPost(@RequestBody CineSquareRequest request) {
+    public ResponseEntity<String> createPost(@RequestBody CineSquareRequest request) {
         CineSquare post = new CineSquare();
         post.setCategoryId(request.getCategoryId());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setAuthorId(SecurityUtil.getCurrentUserId());
         cineSquareService.createPost(post);
+
+        return ResponseEntity.ok("포스트 등록 완료");
     }
 
-    // 글 수정
+    // 게시글 수정
     @PutMapping("/{postId}")
-    public void updatePost(@PathVariable Integer postId,
+    public ResponseEntity<String> updatePost(@PathVariable Integer postId,
                            @RequestBody CineSquareRequest request) {
         CineSquare existingPost = cineSquareService.getPost(postId);
         if (existingPost == null) {
@@ -76,11 +81,13 @@ public class CineSquareController {
         existingPost.setContent(request.getContent());
 
         cineSquareService.updatePost(existingPost);
+
+        return ResponseEntity.ok("포스트 수정 완료");
     }
 
-    // 글 삭제
+    // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable Integer postId) {
+    public ResponseEntity<String> deletePost(@PathVariable Integer postId) {
         CineSquare existingPost = cineSquareService.getPost(postId);
         if (existingPost == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
@@ -91,6 +98,8 @@ public class CineSquareController {
         }
 
         cineSquareService.deletePost(postId, SecurityUtil.getCurrentUserId());
+
+        return ResponseEntity.ok("포스트 삭제 완료");
     }
 
     private CineSquareResponse toResponseDto(CineSquare post) {
@@ -103,6 +112,10 @@ public class CineSquareController {
         dto.setViews(post.getViews());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setAuthorId(post.getAuthorId());
+
+        // UserService 닉네임 조회
+        dto.setAuthorNickname(userService.getUserById(post.getAuthorId()).getNickname());
+
         return dto;
     }
 

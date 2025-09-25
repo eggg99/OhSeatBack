@@ -76,7 +76,6 @@ public class UserService {
         return userRepository.getUserIdIfUserInfoMatched(user);
     }
 
-
     // 마이페이지 조회
     public User getUserById(Integer userId) {
         return userRepository.selectUserById(userId);

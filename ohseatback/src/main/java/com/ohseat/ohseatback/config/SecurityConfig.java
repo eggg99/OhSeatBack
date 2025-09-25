@@ -7,6 +7,7 @@ import com.ohseat.ohseatback.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -48,8 +49,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/cinesquare/{id}",
-                                "/api/cinesquare/list",
+                                HttpMethod.GET, "/api/cinesquare/**",
                                 "/api/rcmd/**",
                                 "/api/user/findPw",
                                 "/api/user/findEmail",

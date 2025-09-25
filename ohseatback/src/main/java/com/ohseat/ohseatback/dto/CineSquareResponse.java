@@ -15,4 +15,5 @@ public class CineSquareResponse {
     private Integer views;
     private LocalDateTime createdAt;
     private Integer authorId;
+    private String authorNickname;
 }
