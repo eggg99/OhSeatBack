@@ -1,11 +1,17 @@
 package com.ohseat.ohseatback.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 /** 조회용 */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CineSquareResponse {
     private Integer postId;
     private Integer categoryId;

@@ -6,11 +6,13 @@ import com.ohseat.ohseatback.dto.CineSquareRequest;
 import com.ohseat.ohseatback.dto.CineSquareResponse;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
+import com.ohseat.ohseatback.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.service.CineSquareService;
 import com.ohseat.ohseatback.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.units.qual.C;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,20 +26,28 @@ import java.util.stream.Collectors;
 public class CineSquareController {
 
     private final CineSquareService cineSquareService;
-    private final UserService userService;
+    private final CineSquareMapper cineSquareMapper;
 
     // 카테고리별 전체 글 조회
     @GetMapping("/list")
-    public List<CineSquareResponse> getAllPosts(@RequestParam Integer categoryId) {
-        List<CineSquare> posts = cineSquareService.getAllPosts(categoryId);
+    public ResponseEntity<Page<CineSquareResponse>> getAllPosts(
+            @RequestParam Integer categoryId,
+            @RequestParam(defaultValue = "latest") String orderType,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<CineSquareResponse> posts = cineSquareService.getAllPosts(categoryId, orderType, page, size);
+//        List<CineSquare> posts = cineSquareService.getAllPosts(categoryId);
 
         if (posts.isEmpty()) {
             throw new PostNotFoundException("해당 카테고리의 게시글이 없습니다.");
         }
 
-        return posts.stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
+        return ResponseEntity.ok(posts);
+
+//        return posts.stream()
+//                .map(this::toResponseDto)
+//                .collect(Collectors.toList());
     }
 
     // 단건 조회
@@ -47,7 +57,7 @@ public class CineSquareController {
         if (post == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
         }
-        return ResponseEntity.ok(toResponseDto(post));
+        return ResponseEntity.ok(cineSquareMapper.toResponseDto(post));
     }
 
     // 게시글 작성
@@ -100,23 +110,6 @@ public class CineSquareController {
         cineSquareService.deletePost(postId, SecurityUtil.getCurrentUserId());
 
         return ResponseEntity.ok("포스트 삭제 완료");
-    }
-
-    private CineSquareResponse toResponseDto(CineSquare post) {
-        CineSquareResponse dto = new CineSquareResponse();
-        dto.setPostId(post.getPostId());
-        dto.setCategoryId(post.getCategoryId());
-        dto.setCategoryName(post.getCategoryName());
-        dto.setTitle(post.getTitle());
-        dto.setContent(post.getContent());
-        dto.setViews(post.getViews());
-        dto.setCreatedAt(post.getCreatedAt());
-        dto.setAuthorId(post.getAuthorId());
-
-        // UserService 닉네임 조회
-        dto.setAuthorNickname(userService.getUserById(post.getAuthorId()).getNickname());
-
-        return dto;
     }
 
 }
