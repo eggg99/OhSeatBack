@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ohseat.ohseatback.repository.UserRepository">
+<mapper namespace="com.ohseat.ohseatback.domain.user.mapper.UserRepository">
 
     <!-- 회원가입 -->
-    <insert id="joinUser" parameterType="com.ohseat.ohseatback.domain.User">
+    <insert id="joinUser" parameterType="com.ohseat.ohseatback.domain.user.entity.User">
         INSERT INTO users (email, name, nickname, password, phone_number)
         VALUES (#{email}, #{name}, #{nickname}, #{password}, #{phoneNumber})
     </insert>
@@ -25,14 +25,14 @@
     </select>
 
     <!--  로그인  -->
-    <select id="findByEmail" parameterType="string" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="findByEmail" parameterType="string" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, email, nickname, password
         FROM users
         WHERE email = #{email}
     </select>
 
     <!--  이메일 찾기  -->
-    <select id="findEmail" parameterType="com.ohseat.ohseatback.domain.User" resultType="string">
+    <select id="findEmail" parameterType="com.ohseat.ohseatback.domain.user.entity.User" resultType="string">
         SELECT email
         FROM users
         WHERE name = #{name}
@@ -40,7 +40,7 @@
     </select>
 
     <!--  비밀번호 찾기  -->
-    <select id="getUserIdIfUserInfoMatched" parameterType="com.ohseat.ohseatback.domain.User" resultType="int">
+    <select id="getUserIdIfUserInfoMatched" parameterType="com.ohseat.ohseatback.domain.user.entity.User" resultType="int">
         SELECT user_id
         FROM users
         WHERE name = #{name}
@@ -49,48 +49,48 @@
     </select>
 
     <!-- 마이페이지 조회 -->
-    <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, name, email, nickname, phone_number, created_at
         FROM users
         WHERE user_id = #{userId}
     </select>
 
     <!--  마이페이지 수정  -->
-    <select id="findById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="findById" parameterType="int" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, nickname, phone_number
         FROM users
         WHERE user_id = #{userId}
     </select>
 
-    <select id="countByNickname" parameterType="com.ohseat.ohseatback.domain.User" resultType="int">
+    <select id="countByNickname" parameterType="com.ohseat.ohseatback.domain.user.entity.User" resultType="int">
         SELECT COUNT(*)
         FROM users
         WHERE nickname = #{nickname}
         AND user_id != #{userId}
     </select>
 
-    <select id="countByPhoneNumber" parameterType="com.ohseat.ohseatback.domain.User" resultType="int">
+    <select id="countByPhoneNumber" parameterType="com.ohseat.ohseatback.domain.user.entity.User" resultType="int">
         SELECT COUNT(*)
         FROM users
         WHERE phone_number = #{phoneNumber}
         AND user_id != #{userId}
     </select>
 
-    <update id="updateUserById" parameterType="com.ohseat.ohseatback.domain.User">
+    <update id="updateUserById" parameterType="com.ohseat.ohseatback.domain.user.entity.User">
         UPDATE users
         SET nickname = #{nickname}, phone_number = #{phoneNumber}
         WHERE user_id = #{userId}
     </update>
 
     <!--  비밀번호 조회  -->
-    <select id="selectUserWithPasswordById" parameterType="int" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="selectUserWithPasswordById" parameterType="int" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, name, email, nickname, phone_number, password, created_at
         FROM users
         WHERE user_id = #{userId}
     </select>
 
     <!--  비밀번호 수정  -->
-    <update id="updatePasswordById" parameterType="com.ohseat.ohseatback.domain.User">
+    <update id="updatePasswordById" parameterType="com.ohseat.ohseatback.domain.user.entity.User">
         UPDATE users
         SET  password = #{password}
         WHERE user_id = #{userId}

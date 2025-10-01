@@ -1,6 +1,6 @@
 package com.ohseat.ohseatback.security;
 
-import com.ohseat.ohseatback.domain.User;
+import com.ohseat.ohseatback.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

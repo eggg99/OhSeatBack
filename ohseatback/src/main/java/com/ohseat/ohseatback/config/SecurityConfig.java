@@ -34,13 +34,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
-    /*
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService userDetailsService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
-    }
-    */
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -65,8 +58,6 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
-//                .httpBasic(Customizer.withDefaults()); // 기본 인증 (테스트용)
-
     }
 
     @Bean

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ohseat.ohseatback.mapper.RecommendMapper">
+<mapper namespace="com.ohseat.ohseatback.domain.recommend.mapper.RecommendMapper">
     <!--영화관 리스트 조회-->
-    <select id="getCinemaList" resultType="com.ohseat.ohseatback.dto.recommend.CinemaDTO">
+    <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.recommend.dto.CinemaDTO">
         SELECT *
         FROM cinema c
         WHERE c.multiplex_id = #{multiplexId}
@@ -13,7 +13,7 @@
     </select>
 
     <!--상영관 리스트 조회-->
-    <select id="getScreenList" resultType="com.ohseat.ohseatback.dto.recommend.ScreenDTO">
+    <select id="getScreenList" resultType="com.ohseat.ohseatback.domain.recommend.dto.ScreenDTO">
         SELECT *
         FROM screen s
         WHERE s.multiplex_id = #{multiplexId}
@@ -23,7 +23,7 @@
     </select>
 
     <!-- 게시글 리스트 조회 -->
-    <select id="getPostList" resultType="com.ohseat.ohseatback.domain.PostDomain">
+    <select id="getPostList" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT *
         FROM post p
         WHERE p.multiplex_id = #{multiplexId}
@@ -51,7 +51,7 @@
     </select>
 
     <!-- 유저 정보 리스트 조회 -->
-    <select id="getUserList" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="getUserList" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, nickname
         FROM users
         WHERE user_id IN
@@ -61,7 +61,7 @@
     </select>
 
     <!-- 유저 정보 1명 조회 -->
-    <select id="getUser" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="getUser" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, nickname
         FROM users
         WHERE user_id =#{id}
@@ -86,29 +86,29 @@
     </select>
 
     <!-- 댓글 리스트 조회 -->
-    <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.CommentDomain">
+    <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         SELECT *
         FROM comment
         WHERE post_id = #{postId}
     </select>
 
-    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.PostDomain">
+    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT *
         FROM post
         WHERE post_id = #{postId}
     </select>
 
-    <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.CommentDomain">
+    <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         INSERT INTO comment (commenter_id, post_id, content)
         VALUES (#{commenterId}, #{postId}, #{content})
     </insert>
 
-    <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.PostDomain">
+    <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         INSERT INTO post (author_id, multiplex_id, area_id, cinema_id, screen_id, title, content)
         VALUES (#{userId}, #{multiplexId}, #{areaId}, #{cinemaId}, #{screenId}, #{title}, #{content})
     </insert>
 
-    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.PostDomain">
+    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         UPDATE post
         SET multiplex_id = #{multiplexId},
             area_id = #{areaId},
