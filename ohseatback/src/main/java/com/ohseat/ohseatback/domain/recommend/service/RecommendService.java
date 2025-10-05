@@ -138,7 +138,7 @@ public class RecommendService {
         dto.setAreaId(post.getAreaId());
         dto.setCinemaId(post.getCinemaId());
         dto.setScreenId(post.getScreenId());
-
+        dto.setAuthorId(String.valueOf(post.getAuthorId()));
         return dto;
     }
 
@@ -192,5 +192,8 @@ public class RecommendService {
         recommendMapper.deletePost(postId);
     }
 
+    public void deleteComment(Integer commentId) {
+        recommendMapper.deleteComment(commentId);
+    }
 
 }

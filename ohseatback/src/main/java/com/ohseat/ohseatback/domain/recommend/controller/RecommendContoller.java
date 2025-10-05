@@ -107,6 +107,13 @@ public class RecommendContoller {
         return ResponseEntity.ok("포스트 삭제 완료");
     }
 
+    // 댓글 삭제
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Integer commentId) {
+        recommendService.deleteComment(commentId);
+        return ResponseEntity.ok("댓글 삭제 완료");
+    }
+
 
 
 }

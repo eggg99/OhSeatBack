@@ -60,5 +60,7 @@ public interface RecommendMapper {
     void updatePost(Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content, Integer postId);
     // 포스트 삭제
     void deletePost(Integer postId);
+    // 댓글 삭제
+    void deleteComment(Integer commentId);
 
 }

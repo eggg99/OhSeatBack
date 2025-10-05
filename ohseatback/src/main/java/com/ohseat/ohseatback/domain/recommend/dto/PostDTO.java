@@ -21,4 +21,5 @@ public class PostDTO {
     private Integer areaId;
     private String cinemaId;
     private String screenId;
+    private String authorId;
 }

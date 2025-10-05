@@ -122,4 +122,8 @@
         DELETE FROM post
         WHERE post_id = #{postId}
     </delete>
+    <delete id="deleteComment" parameterType="int">
+        DELETE FROM comment
+        WHERE comment_id = #{commentId}
+    </delete>
 </mapper>
