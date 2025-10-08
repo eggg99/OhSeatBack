@@ -1,5 +1,6 @@
 package com.ohseat.ohseatback.domain.recommend.service;
 
+import com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity;
 import com.ohseat.ohseatback.domain.recommend.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.recommend.entity.PostDomain;
 import com.ohseat.ohseatback.domain.user.entity.User;
@@ -25,7 +26,17 @@ public class RecommendService {
 
     // 영화관 리스트 조회
     public List<CinemaDTO> getCinemaList(Integer multiplexId, Integer areaId) {
-        return recommendMapper.getCinemaList(multiplexId, areaId);
+        List<CinemaEntity> list = recommendMapper.getCinemaList(multiplexId, areaId);
+        if (list == null || list.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Domain → DTO 변환
+        List<CinemaDTO> dtoList = list.stream()
+                .map(CinemaDTO::of)
+                .toList();
+
+        return dtoList;
     }
 
     // 상영관 리스트 조회
@@ -195,5 +206,8 @@ public class RecommendService {
     public void deleteComment(Integer commentId) {
         recommendMapper.deleteComment(commentId);
     }
+
+    // 조회수 증가
+    public void incrementViewCount(Integer postId) { recommendMapper.incrementViewCount(postId);}
 
 }

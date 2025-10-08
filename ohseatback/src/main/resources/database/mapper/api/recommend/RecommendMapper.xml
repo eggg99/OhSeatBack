@@ -3,12 +3,12 @@
 
 <mapper namespace="com.ohseat.ohseatback.domain.recommend.mapper.RecommendMapper">
     <!--영화관 리스트 조회-->
-    <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.recommend.dto.CinemaDTO">
+    <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity">
         SELECT *
         FROM cinema c
         WHERE c.multiplex_id = #{multiplexId}
         <if test="areaId != '00'">
-            AND c.area_id = #{areaId};
+            AND c.area_id = #{areaId}
         </if>
     </select>
 
@@ -126,4 +126,11 @@
         DELETE FROM comment
         WHERE comment_id = #{commentId}
     </delete>
+
+    <!-- 조회수 증가 -->
+    <update id="incrementViewCount" parameterType="int">
+        UPDATE post
+        SET views = views + 1
+        WHERE post_id = #{postId}
+    </update>
 </mapper>

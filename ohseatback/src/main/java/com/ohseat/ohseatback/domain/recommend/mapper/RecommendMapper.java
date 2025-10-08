@@ -1,5 +1,6 @@
 package com.ohseat.ohseatback.domain.recommend.mapper;
 
+import com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity;
 import com.ohseat.ohseatback.domain.recommend.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.recommend.entity.PostDomain;
 import com.ohseat.ohseatback.domain.user.entity.User;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Mapper
 public interface RecommendMapper {
     // 영화관 리스트 조회
-    List<CinemaDTO> getCinemaList(Integer multiplexId, Integer areaId);
+    List<CinemaEntity> getCinemaList(Integer multiplexId, Integer areaId);
 
     // 상영관 리스트 조회
     List<ScreenDTO> getScreenList(Integer multiplexId, String cinemaId);
@@ -62,5 +63,6 @@ public interface RecommendMapper {
     void deletePost(Integer postId);
     // 댓글 삭제
     void deleteComment(Integer commentId);
-
+    // 조회수 증가
+    void incrementViewCount(Integer postId);
 }

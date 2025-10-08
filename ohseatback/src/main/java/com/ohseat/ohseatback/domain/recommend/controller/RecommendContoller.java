@@ -22,9 +22,16 @@ public class RecommendContoller {
 
     // 영화관 리스트 조회
     @GetMapping("/cinemaList")
-    public ResponseEntity<List<CinemaDTO>> getCinemaList(@RequestParam Integer multiplexId, @RequestParam Integer areaId) {
-        List<CinemaDTO> cinema = recommendService.getCinemaList(multiplexId, areaId);
-        return ResponseEntity.ok(cinema);
+    public ResponseEntity<?> getCinemaList(
+            @RequestParam(required = false) Integer multiplexId,
+            @RequestParam(required = false) Integer areaId) {
+
+        if (multiplexId == null) {
+            return ResponseEntity.badRequest().body("멀티플렉스 값이 비었습니다.");
+        }
+
+        List<CinemaDTO> cinemaList = recommendService.getCinemaList(multiplexId, areaId);
+        return ResponseEntity.ok(cinemaList);
     }
 
     // 상영관 리스트 조회
@@ -114,6 +121,12 @@ public class RecommendContoller {
         return ResponseEntity.ok("댓글 삭제 완료");
     }
 
+    // 조회수 증가
+    @PostMapping("/incrementViews/{postId}")
+    public ResponseEntity<String>  increaseViewCount(@PathVariable Integer postId) {
+        recommendService.incrementViewCount(postId);
+        return ResponseEntity.ok("조회수 증가 완료");
+    }
 
 
 }
