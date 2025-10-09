@@ -9,6 +9,7 @@ import com.ohseat.ohseatback.domain.recommend.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.recommend.dto.PostDTO;
 import com.ohseat.ohseatback.domain.recommend.dto.ScreenDTO;
 import com.ohseat.ohseatback.domain.recommend.mapper.RecommendMapper;
+import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
@@ -102,6 +103,7 @@ public class RecommendService {
                                     .orElse(null)
                     );
                     dto.setCommentCount(Long.valueOf(commentCountMap.getOrDefault(post.getPostId(), 0)));
+                    dto.setLikeCount(post.getLikeCount());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -127,6 +129,8 @@ public class RecommendService {
     }
 
     public PostDTO getPostDetail(Integer postId) {
+        int isLikeYn = 0;
+
         // 1. 게시글 1개 조회
         PostDomain post = recommendMapper.getPostDetail(postId);
 
@@ -135,6 +139,11 @@ public class RecommendService {
 
         // 3. 댓글 수 조회 (이미 commentCountMap 같은 걸 사용한다면)
         Long commentCount = recommendMapper.getCommentCount(post.getPostId());
+
+        // 4. 현재 로그인 유저 좋아요 여부
+        if(SecurityUtil.getCurrentUserId()!= null){
+            isLikeYn = recommendMapper.isPostLike(post.getPostId(), SecurityUtil.getCurrentUserId());
+        }
 
         // 4. DTO 생성
         PostDTO dto = new PostDTO();
@@ -150,6 +159,8 @@ public class RecommendService {
         dto.setCinemaId(post.getCinemaId());
         dto.setScreenId(post.getScreenId());
         dto.setAuthorId(String.valueOf(post.getAuthorId()));
+        dto.setLikeCount(post.getLikeCount());
+        dto.setLiked(isLikeYn == 1);
         return dto;
     }
 
@@ -209,5 +220,33 @@ public class RecommendService {
 
     // 조회수 증가
     public void incrementViewCount(Integer postId) { recommendMapper.incrementViewCount(postId);}
+
+    // 좋아요 업데이트
+    public Map<String, Boolean> updatePostLike (Integer postId) {
+        Boolean Liked = false;
+        Map<String, Boolean> result = new HashMap<>();
+        Integer userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            result.put("Liked", false);
+            return result; // 로그인 안 되어 있으면 그냥 리턴
+        }
+        int isLikeYn = recommendMapper.isPostLike(postId, userId);
+
+        boolean liked;
+
+        if (isLikeYn == 0) {    // 좋아요를 누른 적이 없을때 -> 좋아요를 추가
+            recommendMapper.insertPostLike(postId, userId);
+            recommendMapper.insertPostLikeCount(postId);
+            liked = true;
+        } else {                // 좋아요를 눌렀을 때 -> 좋아요를 취소
+            recommendMapper.deletePostLike(postId, userId);
+            recommendMapper.deletePostLikeCount(postId);
+            liked = false;
+        }
+
+        result.put("Liked", liked);
+        return result;
+
+    }
 
 }

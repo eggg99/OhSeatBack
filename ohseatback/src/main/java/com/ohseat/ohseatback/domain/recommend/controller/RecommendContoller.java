@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rcmd")
@@ -126,6 +127,12 @@ public class RecommendContoller {
     public ResponseEntity<String>  increaseViewCount(@PathVariable Integer postId) {
         recommendService.incrementViewCount(postId);
         return ResponseEntity.ok("조회수 증가 완료");
+    }
+
+    @PostMapping("/post/like/{postId}")
+    public ResponseEntity<Map<String, Boolean>> likePost(@PathVariable Integer postId) {
+        Map<String, Boolean> result= recommendService.updatePostLike(postId);
+        return ResponseEntity.ok(result);
     }
 
 

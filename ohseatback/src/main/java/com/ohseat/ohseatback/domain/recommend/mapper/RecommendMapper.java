@@ -65,4 +65,12 @@ public interface RecommendMapper {
     void deleteComment(Integer commentId);
     // 조회수 증가
     void incrementViewCount(Integer postId);
+    // 유저의 좋아요 여부
+    int isPostLike(Integer postId, Integer userId);
+    // 좋아요 추가
+    void insertPostLike(Integer postId, Integer userId);
+    void insertPostLikeCount(Integer postId);
+    // 좋아요 취소
+    void deletePostLike(Integer postId, Integer userId);
+    void deletePostLikeCount(Integer postId);
 }

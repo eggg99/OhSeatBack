@@ -92,22 +92,26 @@
         WHERE post_id = #{postId}
     </select>
 
+    <!--게시글 상세 조회 -->
     <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT *
         FROM post
         WHERE post_id = #{postId}
     </select>
 
+    <!--댓글 작성 -->
     <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         INSERT INTO comment (commenter_id, post_id, content)
         VALUES (#{commenterId}, #{postId}, #{content})
     </insert>
 
+    <!-- 게시글 작성 -->
     <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         INSERT INTO post (author_id, multiplex_id, area_id, cinema_id, screen_id, title, content)
         VALUES (#{userId}, #{multiplexId}, #{areaId}, #{cinemaId}, #{screenId}, #{title}, #{content})
     </insert>
 
+    <!--게시글 수정-->
     <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         UPDATE post
         SET multiplex_id = #{multiplexId},
@@ -118,10 +122,14 @@
             content = #{content}
         WHERE post_id = #{postId}
     </update>
+
+    <!--게시글 삭제-->
     <delete id="deletePost" parameterType="int">
         DELETE FROM post
         WHERE post_id = #{postId}
     </delete>
+
+    <!--댓글 삭제-->
     <delete id="deleteComment" parameterType="int">
         DELETE FROM comment
         WHERE comment_id = #{commentId}
@@ -133,4 +141,36 @@
         SET views = views + 1
         WHERE post_id = #{postId}
     </update>
+
+    <!--유저의 좋아요 여부 -->
+    <select id="isPostLike" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostLikeDomain">
+        select count(*)
+        from post_like
+        where post_id=#{postId}
+        and post_like_user_id=#{userId}
+    </select>
+
+    <!--좋아요 추가-->
+    <insert id="insertPostLike" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostLikeDomain">
+        INSERT INTO post_like (post_id, post_like_user_id)
+        VALUES (#{postId}, #{userId});
+    </insert>
+    <update id="insertPostLikeCount" parameterType="int">
+        update post
+        set like_count = like_count+1
+        where post_id = #{postId}
+    </update>
+
+    <!--좋아요 취소-->
+    <delete id="deletePostLike" parameterType="int">
+        delete from post_like
+        where post_id = #{postId}
+        and post_like_user_id=#{userId}
+    </delete>
+    <update id="deletePostLikeCount" parameterType="int">
+        update post
+        set like_count = like_count-1
+        where post_id = #{postId}
+    </update>
+
 </mapper>

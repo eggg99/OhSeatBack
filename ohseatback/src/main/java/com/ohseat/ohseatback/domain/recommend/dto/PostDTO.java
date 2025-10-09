@@ -14,6 +14,9 @@ public class PostDTO {
     private String content;
     private String authorNickname;
     private Integer views;
+    private Integer likeCount;
+    private boolean liked;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년MM월dd일 HH시mm분", timezone = "Asia/Seoul")
     private Timestamp createdAt;
     private Long commentCount;
