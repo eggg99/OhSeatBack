@@ -13,6 +13,9 @@ public class CinemaDTO {
     private String cinemaName;
     private String cinemaAddr;
 
+    private Integer postCount;
+    private Integer totalLike;
+
     // 변환용 생성자
     public CinemaDTO(CinemaEntity entity) {
         this.multiplexId = entity.getMultiplexId();

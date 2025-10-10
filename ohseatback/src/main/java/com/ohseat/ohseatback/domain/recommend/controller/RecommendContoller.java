@@ -21,6 +21,12 @@ public class RecommendContoller {
     @Autowired
     private RecommendService recommendService;
 
+    @GetMapping("/trendingCinema")
+    public ResponseEntity<CinemaDTO> getTrendingCinema() {
+        CinemaDTO trendingCinema = recommendService.getTrendingCinema();
+        return ResponseEntity.ok(trendingCinema);
+    }
+
     // 영화관 리스트 조회
     @GetMapping("/cinemaList")
     public ResponseEntity<?> getCinemaList(
@@ -80,8 +86,8 @@ public class RecommendContoller {
 
     // 게시글 작성
     @PutMapping("/post/reg")
-    public ResponseEntity<String> putPost(@RequestBody PostDomain domain) {
-        recommendService.putPost(
+    public ResponseEntity<Integer> putPost(@RequestBody PostDomain domain) {
+        Integer postId = recommendService.putPost(
                 domain.getAuthorId(),
                 domain.getMultiplexId(),
                 domain.getAreaId(),
@@ -90,7 +96,7 @@ public class RecommendContoller {
                 domain.getTitle(),
                 domain.getContent()
         );
-        return ResponseEntity.ok("포스트 등록 완료");
+        return ResponseEntity.ok(postId);
     }
 
     // 게시글 변경

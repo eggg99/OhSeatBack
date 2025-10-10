@@ -25,6 +25,10 @@ import java.util.stream.Collectors;
 public class RecommendService {
     private final RecommendMapper recommendMapper;
 
+    public CinemaDTO getTrendingCinema() {
+        return recommendMapper.getTrendingCinema();
+    }
+
     // 영화관 리스트 조회
     public List<CinemaDTO> getCinemaList(Integer multiplexId, Integer areaId) {
         List<CinemaEntity> list = recommendMapper.getCinemaList(multiplexId, areaId);
@@ -167,6 +171,10 @@ public class RecommendService {
     public List<CommentDTO> getCommentList(Integer postId) {
         List<CommentDomain> commentDomain = recommendMapper.getCommentList(postId);
 
+        if(commentDomain.isEmpty()) {
+            return new ArrayList<>(); // 댓글 없으면 빈 리스트 반환
+        }
+
         // 1. 모든 댓글 작성자 ID 수집
         List<Integer> commenterIds = commentDomain.stream()
                 .map(CommentDomain::getCommenterId)
@@ -202,8 +210,18 @@ public class RecommendService {
         recommendMapper.putComment(commenterId, postId, content);
     }
 
-    public void putPost(Integer userId, Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content) {
-        recommendMapper.putPost(userId, multiplexId, areaId, cinemaId, screenId, title, content);
+    public Integer putPost(Integer userId, Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content) {
+        PostDomain domain = new PostDomain();
+        domain.setAuthorId(userId);
+        domain.setMultiplexId(multiplexId);
+        domain.setAreaId(areaId);
+        domain.setCinemaId(cinemaId);
+        domain.setScreenId(screenId);
+        domain.setTitle(title);
+        domain.setContent(content);
+
+        recommendMapper.putPost(domain);
+        return domain.getPostId(); // insert 후 MyBatis가 채워줌
     }
 
     public void updatePost(Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content, Integer postId) {

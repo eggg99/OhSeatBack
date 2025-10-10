@@ -15,6 +15,9 @@ import java.util.Map;
 
 @Mapper
 public interface RecommendMapper {
+
+    CinemaDTO getTrendingCinema();
+
     // 영화관 리스트 조회
     List<CinemaEntity> getCinemaList(Integer multiplexId, Integer areaId);
 
@@ -56,7 +59,7 @@ public interface RecommendMapper {
     void putComment(Integer commenterId, Integer postId, String content);
 
     // 포스트 등록
-    void putPost(Integer userId, Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content);
+    void putPost(PostDomain domain);
     // 포스트 업데이트
     void updatePost(Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content, Integer postId);
     // 포스트 삭제
