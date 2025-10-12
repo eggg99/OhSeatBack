@@ -22,8 +22,8 @@ public class RecommendContoller {
     private RecommendService recommendService;
 
     @GetMapping("/trendingCinema")
-    public ResponseEntity<CinemaDTO> getTrendingCinema() {
-        CinemaDTO trendingCinema = recommendService.getTrendingCinema();
+    public ResponseEntity<List<CinemaDTO>> getTrendingCinema() {
+        List<CinemaDTO> trendingCinema = recommendService.getTrendingCinema();
         return ResponseEntity.ok(trendingCinema);
     }
 
@@ -52,7 +52,7 @@ public class RecommendContoller {
     @GetMapping("/postList")
     public ResponseEntity<Page<PostDTO>> getPostList(
             @RequestParam Integer multiplexId,
-            @RequestParam Integer areaId,
+            @RequestParam String areaId,
             @RequestParam String cinemaId,
             @RequestParam String screenId,
             @RequestParam(defaultValue = "latest") String orderType,

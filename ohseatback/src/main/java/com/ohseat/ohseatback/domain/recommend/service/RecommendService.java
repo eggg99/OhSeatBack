@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class RecommendService {
     private final RecommendMapper recommendMapper;
 
-    public CinemaDTO getTrendingCinema() {
+    public List<CinemaDTO> getTrendingCinema() {
         return recommendMapper.getTrendingCinema();
     }
 
@@ -50,7 +50,7 @@ public class RecommendService {
     }
 
     // 게시글 리스트 조회 (페이징)
-    public Page<PostDTO> getPostList(Integer multiplexId, Integer areaId, String cinemaId, String screenId, String orderType, int page, int size) {
+    public Page<PostDTO> getPostList(Integer multiplexId, String areaId, String cinemaId, String screenId, String orderType, int page, int size) {
         // 1. Pageable 생성 (CustomPageUtils 활용)
         Pageable pageable = CustomPageUtils.getPageable(page, size);
 
@@ -96,6 +96,7 @@ public class RecommendService {
         List<PostDTO> dtoList = postList.stream()
                 .map(post -> {
                     PostDTO dto = new PostDTO();
+                    dto.setMultiplexId(post.getMultiplexId());
                     dto.setPostId(post.getPostId());
                     dto.setTitle(post.getTitle());
                     dto.setContent(post.getContent());

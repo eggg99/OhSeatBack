@@ -16,7 +16,7 @@ import java.util.Map;
 @Mapper
 public interface RecommendMapper {
 
-    CinemaDTO getTrendingCinema();
+    List<CinemaDTO> getTrendingCinema();
 
     // 영화관 리스트 조회
     List<CinemaEntity> getCinemaList(Integer multiplexId, Integer areaId);
@@ -27,7 +27,7 @@ public interface RecommendMapper {
     // 게시글 리스트 조회
     List<PostDomain> getPostList(
             @Param("multiplexId") Integer multiplexId,
-            @Param("areaId") Integer areaId,
+            @Param("areaId") String areaId,
             @Param("cinemaId") String cinemaId,
             @Param("screenId") String screenId,
             @Param("limit") int limit,
