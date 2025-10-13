@@ -14,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/cinesquare")
 @RequiredArgsConstructor
@@ -24,19 +27,23 @@ public class CineSquareController {
 
     // 카테고리별 전체 글 조회
     @GetMapping("/list")
-    public ResponseEntity<Page<CineSquareResponse>> getAllPosts(
+    public ResponseEntity<List<CineSquareResponse>> getAllPosts(
             @RequestParam Integer categoryId,
-            @RequestParam(defaultValue = "latest") String orderType,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false) Integer lastPostId,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "latest") String orderType
     ) {
-        Page<CineSquareResponse> posts = cineSquareService.getAllPosts(categoryId, orderType, page, size);
+        List<CineSquare> posts = cineSquareService.getPostsByScroll(categoryId, lastPostId, limit, orderType);
 
         if (posts.isEmpty()) {
-            throw new PostNotFoundException("해당 카테고리의 게시글이 없습니다.");
+            throw new PostNotFoundException("더 이상 불러올 게시글이 없습니다.");
         }
 
-        return ResponseEntity.ok(posts);
+        List<CineSquareResponse> dtoList = posts.stream()
+                .map(cineSquareMapper::toResponseDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtoList);
     }
 
     // 단건 조회
@@ -65,7 +72,7 @@ public class CineSquareController {
     // 게시글 수정
     @PutMapping("/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Integer postId,
-                           @RequestBody CineSquareRequest request) {
+                                             @RequestBody CineSquareRequest request) {
         CineSquare existingPost = cineSquareService.getPost(postId);
         if (existingPost == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");

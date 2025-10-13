@@ -12,50 +12,46 @@
     <!--  단건 조회  -->
     <select id="selectPostById" parameterType="int" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
         SELECT
-            cs.post_id       AS postId,
-            cs.category_id   AS categoryId,
-            c.category_name  AS categoryName,
-            cs.title         AS title,
-            cs.content       AS content,
-            cs.views         AS views,
-            cs.created_at    AS createdAt,
-            cs.author_id     AS authorId
+        cs.post_id       AS postId,
+        cs.category_id   AS categoryId,
+        c.category_name  AS categoryName,
+        cs.title         AS title,
+        cs.content       AS content,
+        cs.views         AS views,
+        cs.created_at    AS createdAt,
+        cs.author_id     AS authorId
         FROM cinesquare cs
         JOIN category c ON cs.category_id = c.category_id
         WHERE cs.post_id = #{postId}
     </select>
 
     <!--  카테고리별 전체 글 조회 (페이징 + 정렬) -->
-    <select id="selectPostsByCategory" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
+    <select id="selectPostsByScroll" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
         SELECT
-            cs.post_id       AS postId,
-            cs.category_id   AS categoryId,
-            c.category_name  AS categoryName,
-            cs.title         AS title,
-            cs.content       AS content,
-            cs.views         AS views,
-            cs.created_at    AS createdAt,
-            cs.author_id     AS authorId
+        cs.post_id       AS postId,
+        cs.category_id   AS categoryId,
+        c.category_name  AS categoryName,
+        cs.title         AS title,
+        cs.content       AS content,
+        cs.views         AS views,
+        cs.created_at    AS createdAt,
+        cs.author_id     AS authorId
         FROM cinesquare cs
         JOIN category c ON cs.category_id = c.category_id
-        WHERE cs.category_id = #{categoryId}
-        ORDER BY
-            <choose>
-                <when test="orderBy != null and orderBy != ''">
-                    ${orderBy}
-                </when>
-                <otherwise>
-                    cs.created_at DESC
-                </otherwise>
-            </choose>
-        LIMIT #{limit} OFFSET #{offset}
-    </select>
+        <where>
+            <!-- categoryId가 0이 아니면 필터 적용 -->
+            <if test="categoryId != 0">
+                cs.category_id = #{categoryId}
+            </if>
 
-    <!--  카테고리별 전체 글 개수  -->
-    <select id="countPostsByCategory" resultType="int">
-        SELECT COUNT(*)
-        FROM cinesquare
-        WHERE category_id = #{categoryId}
+            <!-- 무한스크롤 lastPostId 조건 -->
+            <if test="lastPostId != null">
+                AND cs.post_id &lt; #{lastPostId}
+            </if>
+        </where>
+
+        ORDER BY ${orderBy}
+        LIMIT #{limit}
     </select>
 
     <!--  글 수정  -->

@@ -26,8 +26,7 @@ public class CineSquareService {
         return cineSquareRepository.selectPostById(postId);
     }
 
-    public Page<CineSquareResponse> getAllPosts(Integer categoryId, String orderType, int page, int size) {
-        int offset = (page - 1) * size;
+    public List<CineSquare> getPostsByScroll(Integer categoryId, Integer lastPostId, int limit, String orderType) {
 
         // orderType에 따라 정렬 컬럼 결정
         String orderBy = "cs.created_at DESC"; // default 최신순
@@ -39,18 +38,8 @@ public class CineSquareService {
 //            orderBy = "cs.comments DESC";
 //        }
 
-        // DB 조회
-        List<CineSquare> posts = cineSquareRepository.selectPostsByCategory(categoryId, size, offset, orderBy);
+        return cineSquareRepository.selectPostsByScroll(categoryId, lastPostId, limit, orderBy);
 
-        // 전체 글 개수 조회
-        int total = cineSquareRepository.countPostsByCategory(categoryId);
-
-        // DTO 변환
-        List<CineSquareResponse> dtoList = posts.stream()
-                .map(cineSquareMapper::toResponseDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(dtoList, PageRequest.of(page - 1, size), total);
     }
 
     public void updatePost(CineSquare post) {

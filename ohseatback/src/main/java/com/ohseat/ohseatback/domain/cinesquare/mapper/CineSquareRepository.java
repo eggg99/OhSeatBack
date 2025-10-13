@@ -11,24 +11,21 @@ import java.util.List;
 public interface CineSquareRepository {
     // 게시글 등록
     void insertPost(CineSquare post);
-    
+
     // 단건 조회
     CineSquare selectPostById(Integer postId);
-    
-    // 카테고리별 게시글 조회 (페이징 + 정렬)
-    List<CineSquare> selectPostsByCategory(
+
+    // 카테고리별 게시글 무한 스크롤 조회
+    List<CineSquare> selectPostsByScroll(
             @Param("categoryId") Integer categoryId,
+            @Param("lastPostId") Integer lastPostId,
             @Param("limit") int limit,
-            @Param("offset") int offset,
             @Param("orderBy") String orderBy
     );
-    
-    // 전체 글 개수 조회
-    int countPostsByCategory(@Param("categoryId") Integer categoryId);
-    
+
     // 게시글 수정
     void updatePost(CineSquare post);
-    
+
     // 게시글 삭제
     void deletePost(Integer postId, Integer authorId);
 }
