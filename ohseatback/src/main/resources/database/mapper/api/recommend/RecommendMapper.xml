@@ -24,7 +24,7 @@
         ORDER BY
             post_count DESC,
             total_like desc
-            limit 1;
+            limit 5;
     </select>
     <!--영화관 리스트 조회-->
     <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity">
@@ -50,16 +50,19 @@
     <select id="getPostList" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT *
         FROM post p
-        WHERE p.multiplex_id = #{multiplexId}
-        <if test="areaId != '00'">
-            AND p.area_id = #{areaId}
-        </if>
-        <if test="cinemaId != 'all_c'">
-            AND p.cinema_id = #{cinemaId}
-        </if>
-        <if test="screenId != 'all_s'">
-            AND p.screen_id = #{screenId}
-        </if>
+        WHERE 1=1
+            <if test="multiplexId != 0">
+                AND p.multiplex_id = #{multiplexId}
+            </if>
+            <if test="areaId != '00'">
+                AND p.area_id = #{areaId}
+            </if>
+            <if test="cinemaId != 'all_c'">
+                AND p.cinema_id = #{cinemaId}
+            </if>
+            <if test="screenId != 'all_s'">
+                AND p.screen_id = #{screenId}
+            </if>
         ORDER BY p.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
