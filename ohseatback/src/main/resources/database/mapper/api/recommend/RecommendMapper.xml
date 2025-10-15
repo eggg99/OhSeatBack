@@ -1,19 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ohseat.ohseatback.mapper.RecommendMapper">
+<mapper namespace="com.ohseat.ohseatback.domain.recommend.mapper.RecommendMapper">
+    <!--둘러보기 - 최근언급많이 된 영화관 조회-->
+    <select id="getTrendingCinema" resultType="com.ohseat.ohseatback.domain.recommend.dto.CinemaDTO">
+        SELECT
+            p.cinema_id,
+            c.multiplex_id,
+            c.area_id,
+            c.cinema_name,
+            c.cinema_addr,
+            COUNT(*) AS post_count,
+            SUM(p.like_count) AS total_like
+        FROM post p
+                 JOIN cinema c ON p.cinema_id = c.cinema_id
+        WHERE p.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        GROUP BY
+            p.cinema_id,
+            c.multiplex_id,
+            c.area_id,
+            c.cinema_name,
+            c.cinema_addr
+        ORDER BY
+            post_count DESC,
+            total_like desc
+            limit 1;
+    </select>
     <!--영화관 리스트 조회-->
-    <select id="getCinemaList" resultType="com.ohseat.ohseatback.dto.recommend.CinemaDTO">
+    <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity">
         SELECT *
         FROM cinema c
         WHERE c.multiplex_id = #{multiplexId}
         <if test="areaId != '00'">
-            AND c.area_id = #{areaId};
+            AND c.area_id = #{areaId}
         </if>
     </select>
 
     <!--상영관 리스트 조회-->
-    <select id="getScreenList" resultType="com.ohseat.ohseatback.dto.recommend.ScreenDTO">
+    <select id="getScreenList" resultType="com.ohseat.ohseatback.domain.recommend.dto.ScreenDTO">
         SELECT *
         FROM screen s
         WHERE s.multiplex_id = #{multiplexId}
@@ -23,7 +47,7 @@
     </select>
 
     <!-- 게시글 리스트 조회 -->
-    <select id="getPostList" resultType="com.ohseat.ohseatback.domain.PostDomain">
+    <select id="getPostList" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT *
         FROM post p
         WHERE p.multiplex_id = #{multiplexId}
@@ -51,7 +75,7 @@
     </select>
 
     <!-- 유저 정보 리스트 조회 -->
-    <select id="getUserList" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="getUserList" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, nickname
         FROM users
         WHERE user_id IN
@@ -61,7 +85,7 @@
     </select>
 
     <!-- 유저 정보 1명 조회 -->
-    <select id="getUser" resultType="com.ohseat.ohseatback.domain.User">
+    <select id="getUser" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, nickname
         FROM users
         WHERE user_id =#{id}
@@ -86,29 +110,33 @@
     </select>
 
     <!-- 댓글 리스트 조회 -->
-    <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.CommentDomain">
+    <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         SELECT *
         FROM comment
         WHERE post_id = #{postId}
     </select>
 
-    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.PostDomain">
+    <!--게시글 상세 조회 -->
+    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT *
         FROM post
         WHERE post_id = #{postId}
     </select>
 
-    <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.CommentDomain">
+    <!--댓글 작성 -->
+    <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         INSERT INTO comment (commenter_id, post_id, content)
         VALUES (#{commenterId}, #{postId}, #{content})
     </insert>
 
-    <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.PostDomain">
+    <!-- 게시글 작성 -->
+    <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO post (author_id, multiplex_id, area_id, cinema_id, screen_id, title, content)
-        VALUES (#{userId}, #{multiplexId}, #{areaId}, #{cinemaId}, #{screenId}, #{title}, #{content})
+        VALUES (#{authorId}, #{multiplexId}, #{areaId}, #{cinemaId}, #{screenId}, #{title}, #{content})
     </insert>
 
-    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.PostDomain">
+    <!--게시글 수정-->
+    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         UPDATE post
         SET multiplex_id = #{multiplexId},
             area_id = #{areaId},
@@ -118,8 +146,55 @@
             content = #{content}
         WHERE post_id = #{postId}
     </update>
+
+    <!--게시글 삭제-->
     <delete id="deletePost" parameterType="int">
         DELETE FROM post
         WHERE post_id = #{postId}
     </delete>
+
+    <!--댓글 삭제-->
+    <delete id="deleteComment" parameterType="int">
+        DELETE FROM comment
+        WHERE comment_id = #{commentId}
+    </delete>
+
+    <!-- 조회수 증가 -->
+    <update id="incrementViewCount" parameterType="int">
+        UPDATE post
+        SET views = views + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!--유저의 좋아요 여부 -->
+    <select id="isPostLike" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostLikeDomain">
+        select count(*)
+        from post_like
+        where post_id=#{postId}
+        and post_like_user_id=#{userId}
+    </select>
+
+    <!--좋아요 추가-->
+    <insert id="insertPostLike" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostLikeDomain">
+        INSERT INTO post_like (post_id, post_like_user_id)
+        VALUES (#{postId}, #{userId});
+    </insert>
+    <update id="insertPostLikeCount" parameterType="int">
+        update post
+        set like_count = like_count+1
+        where post_id = #{postId}
+    </update>
+
+    <!--좋아요 취소-->
+    <delete id="deletePostLike" parameterType="int">
+        delete from post_like
+        where post_id = #{postId}
+        and post_like_user_id=#{userId}
+    </delete>
+    <update id="deletePostLikeCount" parameterType="int">
+        update post
+        set like_count = like_count-1
+        where post_id = #{postId}
+    </update>
+
 </mapper>

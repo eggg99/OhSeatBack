@@ -7,6 +7,7 @@ import com.ohseat.ohseatback.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -33,13 +34,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
-    /*
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService userDetailsService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
-    }
-    */
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -47,21 +41,23 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // REST API 테스트 편의를 위해 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // GET 전용 API (페이징, 조회용)
+                        .requestMatchers(HttpMethod.GET, "/api/cinesquare/**").permitAll()
+
+                        // POST/PUT/DELETE 포함 모든 메서드 허용 API (로그인, 회원가입, 비밀번호 찾기 등)
                         .requestMatchers(
-                                "/api/cinesquare/{id}",
-                                "/api/cinesquare/list",
                                 "/api/rcmd/**",
                                 "/api/user/findPw",
                                 "/api/user/findEmail",
                                 "/api/user/login",
-                                "/api/user/join").permitAll() // 로그인, 회원가입은 인증 없이 허용
-                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
+                                "/api/user/join").permitAll()
+
+                        // 나머지 요청은 인증 필요
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
-//                .httpBasic(Customizer.withDefaults()); // 기본 인증 (테스트용)
-
     }
 
     @Bean

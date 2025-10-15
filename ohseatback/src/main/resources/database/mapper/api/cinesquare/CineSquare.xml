@@ -1,26 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ohseat.ohseatback.repository.CineSquareRepository">
+<mapper namespace="com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository">
 
     <!--  글 작성  -->
-    <insert id="insertPost" parameterType="com.ohseat.ohseatback.domain.CineSquare">
-        INSERT INTO cinesquare (category, title, content, author_id, created_at, views)
-        VALUES (#{category}, #{title}, #{content}, #{authorId}, NOW(), 0)
+    <insert id="insertPost" parameterType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
+        INSERT INTO cinesquare (category_id, title, content, author_id, created_at, views)
+        VALUES (#{categoryId}, #{title}, #{content}, #{authorId}, NOW(), 0)
     </insert>
 
     <!--  단건 조회  -->
-    <select id="selectPostById" parameterType="int" resultType="com.ohseat.ohseatback.domain.CineSquare">
-        SELECT * FROM cinesquare WHERE post_id = #{postId}
+    <select id="selectPostById" parameterType="int" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
+        SELECT
+        cs.post_id       AS postId,
+        cs.category_id   AS categoryId,
+        c.category_name  AS categoryName,
+        cs.title         AS title,
+        cs.content       AS content,
+        cs.views         AS views,
+        cs.created_at    AS createdAt,
+        cs.author_id     AS authorId
+        FROM cinesquare cs
+        JOIN category c ON cs.category_id = c.category_id
+        WHERE cs.post_id = #{postId}
     </select>
 
-    <!--  전체 조회(카테고리별)  -->
-    <select id="selectAllPosts" parameterType="string" resultType="com.ohseat.ohseatback.domain.CineSquare">
-        SELECT * FROM cinesquare WHERE category = #{category} ORDER BY created_at DESC
+    <!--  카테고리별 전체 글 조회 (페이징 + 정렬) -->
+    <select id="selectPostsByScroll" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
+        SELECT
+        cs.post_id       AS postId,
+        cs.category_id   AS categoryId,
+        c.category_name  AS categoryName,
+        cs.title         AS title,
+        cs.content       AS content,
+        cs.views         AS views,
+        cs.created_at    AS createdAt,
+        cs.author_id     AS authorId
+        FROM cinesquare cs
+        JOIN category c ON cs.category_id = c.category_id
+        <where>
+            <!-- categoryId가 0이 아니면 필터 적용 -->
+            <if test="categoryId != 0">
+                cs.category_id = #{categoryId}
+            </if>
+
+            <!-- 무한스크롤 lastPostId 조건 -->
+            <if test="lastPostId != null">
+                AND cs.post_id &lt; #{lastPostId}
+            </if>
+        </where>
+
+        ORDER BY ${orderBy}
+        LIMIT #{limit}
     </select>
 
     <!--  글 수정  -->
-    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.CineSquare">
+    <update id="updatePost" parameterType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
         UPDATE cinesquare
         SET title = #{title}, content = #{content}
         WHERE post_id = #{postId} AND author_id = #{authorId}

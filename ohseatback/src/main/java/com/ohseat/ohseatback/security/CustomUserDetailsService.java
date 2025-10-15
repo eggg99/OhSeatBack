@@ -1,7 +1,7 @@
 package com.ohseat.ohseatback.security;
 
-import com.ohseat.ohseatback.domain.User;
-import com.ohseat.ohseatback.repository.UserRepository;
+import com.ohseat.ohseatback.domain.user.entity.User;
+import com.ohseat.ohseatback.domain.user.mapper.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
