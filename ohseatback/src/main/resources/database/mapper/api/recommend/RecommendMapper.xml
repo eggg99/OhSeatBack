@@ -48,8 +48,12 @@
 
     <!-- 게시글 리스트 조회 -->
     <select id="getPostList" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
-        SELECT *
+        SELECT  p.*,
+                m.multiplex_name,
+                c.cinema_name
         FROM post p
+        LEFT JOIN multiplex m ON p.multiplex_id = m.multiplex_id
+        LEFT JOIN cinema c ON p.cinema_id = c.cinema_id
         WHERE 1=1
             <if test="multiplexId != 0">
                 AND p.multiplex_id = #{multiplexId}
@@ -64,16 +68,18 @@
                 AND p.screen_id = #{screenId}
             </if>
         ORDER BY p.created_at DESC
-        LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <!-- 게시글 개수 조회 -->
     <select id="countPosts" resultType="long">
         SELECT COUNT(*)
         FROM post
-        WHERE cinema_id = #{cinemaId}
+        WHERE 1=1
+        <if test="cinemaId != 'all_c'">
+            AND p.cinema_id = #{cinemaId}
+        </if>
         <if test="screenId != 'all_s'">
-        AND screen_id = #{screenId}
+            AND screen_id = #{screenId}
         </if>
     </select>
 

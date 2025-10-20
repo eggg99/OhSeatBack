@@ -59,9 +59,7 @@ public class RecommendService {
                 multiplexId,
                 areaId,
                 cinemaId,
-                screenId,
-                pageable.getPageSize(),
-                pageable.getOffset()
+                screenId
         );
 
         // 3. User 매핑
@@ -97,6 +95,8 @@ public class RecommendService {
                 .map(post -> {
                     PostDTO dto = new PostDTO();
                     dto.setMultiplexId(post.getMultiplexId());
+                    dto.setCinemaId(post.getCinemaId());
+                    dto.setScreenId(post.getScreenId());
                     dto.setPostId(post.getPostId());
                     dto.setTitle(post.getTitle());
                     dto.setContent(post.getContent());
@@ -109,6 +109,8 @@ public class RecommendService {
                     );
                     dto.setCommentCount(Long.valueOf(commentCountMap.getOrDefault(post.getPostId(), 0)));
                     dto.setLikeCount(post.getLikeCount());
+                    dto.setMultiplexName(post.getMultiplexName());
+                    dto.setCinemaName(post.getCinemaName());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -129,8 +131,12 @@ public class RecommendService {
         dtoList.sort(comparator);
 
         // 7. Page 객체로 반환 (page 계산은 CustomPageUtils에 맡김)
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), dtoList.size());
+        List<PostDTO> pagedList = dtoList.subList(start, end);
+
         long totalCount = recommendMapper.countPosts(cinemaId, screenId);
-        return new PageImpl<>(dtoList, pageable, totalCount);
+        return new PageImpl<>(pagedList, pageable, totalCount);
     }
 
     public PostDTO getPostDetail(Integer postId) {

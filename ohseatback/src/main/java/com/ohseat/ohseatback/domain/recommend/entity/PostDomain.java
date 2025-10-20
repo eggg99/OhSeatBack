@@ -25,4 +25,6 @@ public class PostDomain {
     private Integer areaId;
     private String cinemaId;
     private String screenId;
+    private String multiplexName;
+    private String cinemaName;
 }

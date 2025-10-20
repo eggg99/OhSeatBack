@@ -25,4 +25,6 @@ public class PostDTO {
     private String cinemaId;
     private String screenId;
     private String authorId;
+    private String multiplexName;
+    private String cinemaName;
 }
