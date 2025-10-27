@@ -1,6 +1,7 @@
 package com.ohseat.ohseatback.domain.cinesquare.controller;
 
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
@@ -108,4 +109,10 @@ public class CineSquareController {
         return ResponseEntity.ok("포스트 삭제 완료");
     }
 
+    @GetMapping("/location")
+    public ResponseEntity<LocationResponse> getLocation(@RequestParam("x") Double longitude,
+                                                        @RequestParam("y") Double latitude) {
+        LocationResponse location = cineSquareService.getLocation(longitude, latitude);
+        return ResponseEntity.ok(location);
+    }
 }
