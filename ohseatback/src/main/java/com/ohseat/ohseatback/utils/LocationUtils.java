@@ -15,6 +15,7 @@ import java.util.Map;
 public class LocationUtils {
 
     private static final String KAKAO_API_URL = "https://dapi.kakao.com/v2/local/geo/coord2address.json";
+    private static final String KAKAO_SEARCH_API_URL = "https://dapi.kakao.com/v2/local/search/keyword.json";
     @Value("${kakao.api.key}")
     private String KAKAO_API_KEY;
 
@@ -55,6 +56,41 @@ public class LocationUtils {
             }
         }
 
+        // documents가 비어있거나 address가 없으면 city, district는 기본값 "" 유지
+        return locationResponse;
+    }
+
+    public LocationResponse searchLocation(String searchValue) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", KAKAO_API_KEY);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(KAKAO_SEARCH_API_URL)
+                .queryParam("query", searchValue);
+        System.out.println(uriBuilder.toUriString());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+                uriBuilder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                Map.class
+        );
+        Map<String, Object> body = response.getBody();
+        LocationResponse locationResponse = new LocationResponse();
+
+        if (body != null) {
+            List<?> documents = (List<?>) body.get("documents");
+            if (documents != null && !documents.isEmpty()) {
+                Map<String, Object> doc = (Map<String, Object>) documents.get(0);
+                Map<String, Object> address = (Map<String, Object>) doc.get("address");
+
+                if (address != null) {
+                    locationResponse.setCity((String) address.getOrDefault("region_1depth_name", ""));
+                    locationResponse.setDistrict((String) address.getOrDefault("region_2depth_name", ""));
+                }
+            }
+        }
         // documents가 비어있거나 address가 없으면 city, district는 기본값 "" 유지
         return locationResponse;
     }

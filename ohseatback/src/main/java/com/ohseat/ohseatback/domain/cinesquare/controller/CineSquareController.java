@@ -5,6 +5,7 @@ import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
+import com.ohseat.ohseatback.domain.cinesquare.service.LocationService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
@@ -25,6 +26,7 @@ public class CineSquareController {
 
     private final CineSquareService cineSquareService;
     private final CineSquareMapper cineSquareMapper;
+    private final LocationService locationService;
 
     // 카테고리별 전체 글 조회
     @GetMapping("/list")
@@ -113,6 +115,12 @@ public class CineSquareController {
     public ResponseEntity<LocationResponse> getLocation(@RequestParam("x") Double longitude,
                                                         @RequestParam("y") Double latitude) {
         LocationResponse location = cineSquareService.getLocation(longitude, latitude);
+        return ResponseEntity.ok(location);
+    }
+
+    @GetMapping("/searchLocation")
+    public ResponseEntity<List<LocationResponse>> searchLocation(@RequestParam("searchValue") String searchValue) {
+        List<LocationResponse> location = locationService.search(searchValue);
         return ResponseEntity.ok(location);
     }
 }

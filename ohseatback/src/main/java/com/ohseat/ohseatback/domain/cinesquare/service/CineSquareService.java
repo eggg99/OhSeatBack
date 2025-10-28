@@ -57,4 +57,8 @@ public class CineSquareService {
         return locationUtils.getLocation(longitude, latitude);
     }
 
+    public LocationResponse searchLocation (String searchValue) {
+        return locationUtils.searchLocation(searchValue);
+    }
+
 }
