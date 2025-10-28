@@ -18,8 +18,6 @@ public class LocationUtils {
     @Value("${kakao.api.key}")
     private String KAKAO_API_KEY;
 
-//    private static final String KAKAO_API_KEY = "KakaoAK f2b6f05d5df8b3011f9aac5ffcd6eeab";
-
     /**
      * 위도, 경도를 기반으로 LocationResponse DTO 반환
      */
