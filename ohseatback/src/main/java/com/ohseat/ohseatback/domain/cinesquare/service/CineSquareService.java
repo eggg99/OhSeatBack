@@ -1,9 +1,11 @@
 package com.ohseat.ohseatback.domain.cinesquare.service;
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
+import com.ohseat.ohseatback.utils.LocationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +21,7 @@ public class CineSquareService {
 
     private final CineSquareRepository cineSquareRepository;
     private final CineSquareMapper cineSquareMapper;
+    private final LocationUtils locationUtils;
 
     public void createPost(CineSquare post) { cineSquareRepository.insertPost(post); }
 
@@ -48,6 +51,10 @@ public class CineSquareService {
 
     public void deletePost(Integer postId, Integer authorId) {
         cineSquareRepository.deletePost(postId, authorId);
+    }
+
+    public LocationResponse getLocation (double longitude, double latitude) {
+        return locationUtils.getLocation(longitude, latitude);
     }
 
 }
