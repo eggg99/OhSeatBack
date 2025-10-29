@@ -1,10 +1,12 @@
 package com.ohseat.ohseatback.domain.cinesquare.service;
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
 import jakarta.transaction.Transactional;
+import com.ohseat.ohseatback.utils.LocationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 public class CineSquareService {
 
     private final CineSquareRepository cineSquareRepository;
+    private final CineSquareMapper cineSquareMapper;
+    private final LocationUtils locationUtils;
 
     // 게시글 등록
     public void createPost(CineSquare post) { cineSquareRepository.insertPost(post); }
@@ -64,6 +68,14 @@ public class CineSquareService {
     // 게시글 삭제
     public void deletePost(Integer postId, Integer authorId) {
         cineSquareRepository.deletePost(postId, authorId);
+    }
+
+    public LocationResponse getLocation (double longitude, double latitude) {
+        return locationUtils.getLocation(longitude, latitude);
+    }
+
+    public LocationResponse searchLocation (String searchValue) {
+        return locationUtils.searchLocation(searchValue);
     }
 
 }
