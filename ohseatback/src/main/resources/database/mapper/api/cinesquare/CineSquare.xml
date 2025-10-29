@@ -25,6 +25,13 @@
         WHERE cs.post_id = #{postId}
     </select>
 
+    <!--  조회수 증가  -->
+    <update id="increaseViewCount" parameterType="int">
+        UPDATE cinesquare
+        SET views = views + 1
+        WHERE post_id = ${postId}
+    </update>
+
     <!--  카테고리별 전체 글 조회 (페이징 + 정렬) -->
     <select id="selectPostsByScroll" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
         SELECT
