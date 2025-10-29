@@ -8,4 +8,6 @@ public class CineSquareRequest {
     private Integer categoryId;
     private String title;
     private String content;
+    private String city;
+    private String district;
 }

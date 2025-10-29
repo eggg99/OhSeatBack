@@ -63,10 +63,14 @@ public class CineSquareController {
     @PostMapping
     public ResponseEntity<String> createPost(@RequestBody CineSquareRequest request) {
         CineSquare post = new CineSquare();
+
         post.setCategoryId(request.getCategoryId());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setAuthorId(SecurityUtil.getCurrentUserId());
+        post.setCity(request.getCity());
+        post.setDistrict(request.getDistrict());
+
         cineSquareService.createPost(post);
 
         return ResponseEntity.ok("포스트 등록 완료");
