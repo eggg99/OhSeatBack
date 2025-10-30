@@ -48,12 +48,18 @@ public class LocationService {
     // 시도명, 시군구명 둘 다 포함 검색
     public List<LocationResponse> search(String keyword) {
         List<LocationResponse> result = new ArrayList<>();
+        String[] keywords = keyword.trim().split("\\s+");
 
         locationCache.values().forEach(list ->
                 list.stream()
-                        .filter(l -> l.getCity().contains(keyword) || l.getDistrict().contains(keyword))
+                        .filter(l -> {
+                            // 모든 키워드가 city나 district에 포함되어야 함
+                            return Arrays.stream(keywords)
+                                    .allMatch(k -> l.getCity().contains(k) || l.getDistrict().contains(k));
+                        })
                         .forEach(result::add)
         );
+
         return result;
     }
 
