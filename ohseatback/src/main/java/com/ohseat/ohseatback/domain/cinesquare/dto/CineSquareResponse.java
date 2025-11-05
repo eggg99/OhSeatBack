@@ -22,4 +22,6 @@ public class CineSquareResponse {
     private LocalDateTime createdAt;
     private Integer authorId;
     private String authorNickname;
+    private String city;
+    private String district;
 }

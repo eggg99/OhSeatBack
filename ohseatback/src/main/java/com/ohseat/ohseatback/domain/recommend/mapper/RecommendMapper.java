@@ -74,4 +74,7 @@ public interface RecommendMapper {
     // 좋아요 취소
     void deletePostLike(Integer postId, Integer userId);
     void deletePostLikeCount(Integer postId);
+
+    // 상영관 리스트 조회
+    List<PostDomain> getPostListRecentTop3();
 }

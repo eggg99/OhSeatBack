@@ -5,8 +5,8 @@
 
     <!--  글 작성  -->
     <insert id="insertPost" parameterType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
-        INSERT INTO cinesquare (category_id, title, content, author_id, created_at, views)
-        VALUES (#{categoryId}, #{title}, #{content}, #{authorId}, NOW(), 0)
+        INSERT INTO cinesquare (category_id, title, content, author_id, created_at, views, city, district)
+        VALUES (#{categoryId}, #{title}, #{content}, #{authorId}, NOW(), 0, #{city}, #{district})
     </insert>
 
     <!--  단건 조회  -->
@@ -19,11 +19,20 @@
         cs.content       AS content,
         cs.views         AS views,
         cs.created_at    AS createdAt,
-        cs.author_id     AS authorId
+        cs.author_id     AS authorId,
+        cs.city          AS city,
+        cs.district      AS district
         FROM cinesquare cs
         JOIN category c ON cs.category_id = c.category_id
         WHERE cs.post_id = #{postId}
     </select>
+
+    <!--  조회수 증가  -->
+    <update id="increaseViewCount" parameterType="int">
+        UPDATE cinesquare
+        SET views = views + 1
+        WHERE post_id = ${postId}
+    </update>
 
     <!--  카테고리별 전체 글 조회 (페이징 + 정렬) -->
     <select id="selectPostsByScroll" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
@@ -35,7 +44,9 @@
         cs.content       AS content,
         cs.views         AS views,
         cs.created_at    AS createdAt,
-        cs.author_id     AS authorId
+        cs.author_id     AS authorId,
+        cs.city          AS city,
+        cs.district      AS district
         FROM cinesquare cs
         JOIN category c ON cs.category_id = c.category_id
         <where>

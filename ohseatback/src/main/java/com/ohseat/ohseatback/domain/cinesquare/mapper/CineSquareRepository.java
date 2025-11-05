@@ -15,6 +15,9 @@ public interface CineSquareRepository {
     // 단건 조회
     CineSquare selectPostById(Integer postId);
 
+    // 조회수 증가
+    void increaseViewCount(Integer postId);
+
     // 카테고리별 게시글 무한 스크롤 조회
     List<CineSquare> selectPostsByScroll(
             @Param("categoryId") Integer categoryId,

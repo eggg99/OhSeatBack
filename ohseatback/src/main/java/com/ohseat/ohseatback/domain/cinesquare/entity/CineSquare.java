@@ -14,4 +14,7 @@ public class CineSquare {
     private Integer views;
     private LocalDateTime createdAt;
     private Integer authorId;
+    // 위치
+    private String city;
+    private String district;
 }

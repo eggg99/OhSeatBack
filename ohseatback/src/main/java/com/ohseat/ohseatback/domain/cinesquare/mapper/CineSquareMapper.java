@@ -24,6 +24,8 @@ public class CineSquareMapper {
                 .createdAt(post.getCreatedAt())
                 .authorId(post.getAuthorId())
                 .authorNickname(userService.getUserById(post.getAuthorId()).getNickname())
+                .city(post.getCity())
+                .district(post.getDistrict())
                 .build();
     }
 
