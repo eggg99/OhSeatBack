@@ -1,9 +1,13 @@
 package com.ohseat.ohseatback.domain.cinesquare.dto;
 
-import lombok.Data;
+import lombok.*;
 
 /** 작성, 수정용 */
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CineSquareRequest {
     private Integer categoryId;
     private String title;

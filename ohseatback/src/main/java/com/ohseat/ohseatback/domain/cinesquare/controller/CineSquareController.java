@@ -6,16 +6,21 @@ import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.service.LocationService;
+import com.ohseat.ohseatback.domain.file.dto.FileResponse;
+import com.ohseat.ohseatback.domain.file.entity.FileEntity;
+import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.domain.cinesquare.service.CineSquareService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +32,7 @@ public class CineSquareController {
     private final CineSquareService cineSquareService;
     private final CineSquareMapper cineSquareMapper;
     private final LocationService locationService;
+    private final FileService fileService;
 
     // 카테고리별 전체 글 조회
     @GetMapping("/list")
@@ -43,7 +49,14 @@ public class CineSquareController {
         }
 
         List<CineSquareResponse> dtoList = posts.stream()
-                .map(cineSquareMapper::toResponseDto)
+                .map(post -> {
+                    CineSquareResponse dto = cineSquareMapper.toResponseDto(post);
+                    dto.setFiles(fileService.getFiles("CINESQUARE_POST", post.getPostId())
+                            .stream()
+                            .map(FileResponse::from)
+                            .collect(Collectors.toList()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtoList);
@@ -56,14 +69,23 @@ public class CineSquareController {
         if (post == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
         }
-        return ResponseEntity.ok(cineSquareMapper.toResponseDto(post));
+
+        CineSquareResponse response = cineSquareMapper.toResponseDto(post);
+        response.setFiles(fileService.getFiles("CINESQUARE_POST", postId)
+                .stream()
+                .map(FileResponse::from)
+                .collect(Collectors.toList())
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     // 게시글 작성
-    @PostMapping
-    public ResponseEntity<String> createPost(@RequestBody CineSquareRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> createPost(@RequestPart("data") CineSquareRequest request,
+                                             @RequestPart(value = "files", required = false)List<MultipartFile> files) throws IOException {
+        // 1. 게시글 저장
         CineSquare post = new CineSquare();
-
         post.setCategoryId(request.getCategoryId());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
@@ -73,46 +95,30 @@ public class CineSquareController {
 
         cineSquareService.createPost(post);
 
-        return ResponseEntity.ok("포스트 등록 완료");
+        // 2. 파일 저장 (있을 때만)
+        if (files != null && !files.isEmpty()) {
+            fileService.saveFiles(files, "CINESQUARE_POST", post.getPostId());
+        }
+
+        return ResponseEntity.ok("게시글 등록 완료");
     }
 
     // 게시글 수정
-    @PutMapping("/{postId}")
+    @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updatePost(@PathVariable Integer postId,
-                                             @RequestBody CineSquareRequest request) {
-        CineSquare existingPost = cineSquareService.getPost(postId);
-        if (existingPost == null) {
-            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
-        }
-
-        if (!existingPost.getAuthorId().equals(SecurityUtil.getCurrentUserId())) {
-            throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
-        }
-
-        existingPost.setCategoryId(request.getCategoryId());
-        existingPost.setTitle(request.getTitle());
-        existingPost.setContent(request.getContent());
-
-        cineSquareService.updatePost(existingPost);
-
-        return ResponseEntity.ok("포스트 수정 완료");
+                                             @RequestPart("data") CineSquareRequest request,
+                                             @RequestPart(value = "new_files", required = false) List<MultipartFile> newFiles,
+                                             @RequestPart(value = "delete_files_ids", required = false) List<Integer> deleteFileIds
+    ) throws IOException {
+        cineSquareService.updatePost(postId, request, newFiles, deleteFileIds);
+        return ResponseEntity.ok("게시글 수정 완료");
     }
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable Integer postId) {
-        CineSquare existingPost = cineSquareService.getPost(postId);
-        if (existingPost == null) {
-            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
-        }
-
-        if (!existingPost.getAuthorId().equals(SecurityUtil.getCurrentUserId())) {
-            throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
-        }
-
-        cineSquareService.deletePost(postId, SecurityUtil.getCurrentUserId());
-
-        return ResponseEntity.ok("포스트 삭제 완료");
+    public ResponseEntity<String> deletePost(@PathVariable Integer postId) throws IOException {
+        cineSquareService.deletePostWithFiles(postId, SecurityUtil.getCurrentUserId());
+        return ResponseEntity.ok("게시글 삭제 완료");
     }
 
     @GetMapping("/location")

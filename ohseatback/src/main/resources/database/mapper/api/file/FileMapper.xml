@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohseat.ohseatback.domain.file.mapper.FileMapper">
+
+    <!--  파일 등록  -->
+    <insert id="insertFile" parameterType="com.ohseat.ohseatback.domain.file.entity.FileEntity" useGeneratedKeys="true" keyProperty="fileId">
+        INSERT INTO files (file_name, file_url, file_size, file_type, entity_id, entity_type, uploaded_at)
+        VALUES (#{fileName}, #{fileUrl}, #{fileSize}, #{fileType}, #{entityId}, #{entityType}, NOW())
+    </insert>
+
+    <!--  단건 조회  -->
+    <select id="selectFileById" resultType="com.ohseat.ohseatback.domain.file.entity.FileEntity">
+        SELECT file_id, file_name, file_url, file_size, file_type, entity_id, entity_type, uploaded_at
+        FROM files
+        WHERE file_id = #{fileId}
+    </select>
+
+    <!--  특정 게시글/댓글/회원의 파일 목록 조회  -->
+    <select id="selectFilesByEntity" resultType="com.ohseat.ohseatback.domain.file.entity.FileEntity">
+        SELECT file_id, file_name, file_url, file_size, file_type, entity_id, entity_type, uploaded_at
+        FROM files
+        WHERE entity_type = #{entityType}
+        AND entity_id = #{entityId}
+        ORDER BY file_id ASC
+    </select>
+
+    <!--  파일 삭제  -->
+    <delete id="deleteFile">
+        DELETE FROM files WHERE file_id = #{fileId}
+    </delete>
+
+</mapper>
