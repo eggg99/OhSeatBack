@@ -141,5 +141,10 @@ public class RecommendContoller {
         return ResponseEntity.ok(result);
     }
 
-
+    // 게시글 최신 3개 조회 - 메인
+    @GetMapping("/post/top3List")
+    public ResponseEntity<List<PostDTO>> getPostList() {
+        List<PostDTO> postList = recommendService.getPostListRecentTop3();
+        return ResponseEntity.ok(postList);
+    }
 }

@@ -169,7 +169,7 @@ public class RecommendService {
         dto.setAreaId(post.getAreaId());
         dto.setCinemaId(post.getCinemaId());
         dto.setScreenId(post.getScreenId());
-        dto.setAuthorId(String.valueOf(post.getAuthorId()));
+        dto.setAuthorId((post.getAuthorId()));
         dto.setLikeCount(post.getLikeCount());
         dto.setLiked(isLikeYn == 1);
         return dto;
@@ -273,5 +273,25 @@ public class RecommendService {
         return result;
 
     }
+
+    public List<PostDTO> getPostListRecentTop3() {
+        List<PostDomain> domainList = recommendMapper.getPostListRecentTop3();
+        List<PostDTO> top3List = domainList.stream().map(post -> {
+            PostDTO dto = new PostDTO();
+            dto.setPostId(post.getPostId());
+            dto.setMultiplexName(post.getMultiplexName());
+            dto.setCinemaName(post.getCinemaName());
+            dto.setScreenName(post.getScreenName());
+            dto.setCinemaId(post.getCinemaId());
+            dto.setScreenId(post.getScreenId());
+            dto.setAuthorId(post.getAuthorId());
+            dto.setContent(post.getContent());
+            dto.setCreatedAt(post.getCreatedAt());
+                    return dto;
+        }).collect(Collectors.toList());
+        return top3List;
+    }
+
+
 
 }

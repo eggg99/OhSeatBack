@@ -27,4 +27,5 @@ public class PostDomain {
     private String screenId;
     private String multiplexName;
     private String cinemaName;
+    private String screenName;
 }

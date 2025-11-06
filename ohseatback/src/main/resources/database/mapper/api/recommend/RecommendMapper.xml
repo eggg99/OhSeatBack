@@ -103,7 +103,7 @@
     <!-- comment 개수 -->
     <select id="getCommentCountMap" resultType="map">
         SELECT post_id, COUNT(*) AS commentCount
-        FROM comment
+        FROM post_comment
         WHERE post_id IN
         <foreach collection="postIds" item="id" open="(" separator="," close=")">
             #{id}
@@ -114,14 +114,14 @@
     <!-- comment 1개 개수 조회 -->
     <select id="getCommentCount" resultType="Long">
         SELECT  COUNT(*)
-        FROM comment
+        FROM post_comment
         WHERE post_id =#{id}
     </select>
 
     <!-- 댓글 리스트 조회 -->
     <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         SELECT *
-        FROM comment
+        FROM post_comment
         WHERE post_id = #{postId}
     </select>
 
@@ -164,7 +164,7 @@
 
     <!--댓글 삭제-->
     <delete id="deleteComment" parameterType="int">
-        DELETE FROM comment
+        DELETE FROM post_comment
         WHERE comment_id = #{commentId}
     </delete>
 
@@ -205,5 +205,24 @@
         set like_count = like_count-1
         where post_id = #{postId}
     </update>
+
+    <select id="getPostListRecentTop3" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
+        select
+            p.post_id,
+            m.multiplex_name,
+            c.cinema_name ,
+            s.screen_name,
+            p.cinema_id,
+            p.screen_id,
+            p.author_id,
+            p.content,
+            p.created_at
+        from post p, multiplex m, cinema c, screen s
+        where p.multiplex_id = m.multiplex_id
+          and p.cinema_id = c.cinema_id
+          and p.screen_id = s.screen_id
+        order by created_at desc
+            limit 3;
+    </select>
 
 </mapper>
