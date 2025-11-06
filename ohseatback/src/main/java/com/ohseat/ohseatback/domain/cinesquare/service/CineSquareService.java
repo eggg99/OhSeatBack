@@ -1,10 +1,16 @@
 package com.ohseat.ohseatback.domain.cinesquare.service;
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
 import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
+import com.ohseat.ohseatback.domain.file.entity.FileEntity;
+import com.ohseat.ohseatback.domain.file.service.FileService;
+import com.ohseat.ohseatback.exception.business.PostNotFoundException;
+import com.ohseat.ohseatback.exception.business.UnauthorizedException;
+import com.ohseat.ohseatback.security.SecurityUtil;
 import jakarta.transaction.Transactional;
 import com.ohseat.ohseatback.utils.LocationUtils;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,8 +29,8 @@ import java.util.stream.Collectors;
 public class CineSquareService {
 
     private final CineSquareRepository cineSquareRepository;
-    private final CineSquareMapper cineSquareMapper;
     private final LocationUtils locationUtils;
+    private final FileService fileService;
 
     // 게시글 등록
     public void createPost(CineSquare post) { cineSquareRepository.insertPost(post); }
@@ -32,9 +40,7 @@ public class CineSquareService {
     public CineSquare getPost(Integer postId) {
         // 1) 존재 여부 확인
         CineSquare post = cineSquareRepository.selectPostById(postId);
-        if (post == null) {
-            return null;
-        }
+        if (post == null) return null;
 
         // 2) 조회수 증가
         cineSquareRepository.increaseViewCount(postId);
@@ -47,26 +53,54 @@ public class CineSquareService {
     public List<CineSquare> getPostsByScroll(Integer categoryId, Integer lastPostId, int limit, String orderType) {
 
         // orderType에 따라 정렬 컬럼 결정
-        String orderBy = "cs.created_at DESC"; // default 최신순
-        if ("views".equals(orderType)) {
-            orderBy = "cs.views DESC";
-        }
-        // 댓글순
-//        else if ("comments".equals(orderType)) {
-//            orderBy = "cs.comments DESC";
-//        }
+        String orderBy = switch (orderType) {
+            case "views" -> "cs.views DESC";
+            case "comments" -> "cs.comments DESC";
+            default -> "cs.created_at DESC"; // default 최신순
+        };
 
         return cineSquareRepository.selectPostsByScroll(categoryId, lastPostId, limit, orderBy);
 
     }
 
     // 게시글 수정
-    public void updatePost(CineSquare post) {
-        cineSquareRepository.updatePost(post);
+    @Transactional
+    public void updatePost(Integer postId, CineSquareRequest request,
+                           List<MultipartFile> newFiles, List<Integer> deleteFileIds) throws IOException {
+        CineSquare existing = cineSquareRepository.selectPostById(postId);
+        if (existing == null) throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+        if (!existing.getAuthorId().equals(SecurityUtil.getCurrentUserId()))
+            throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
+
+        existing.setCategoryId(request.getCategoryId());
+        existing.setTitle(request.getTitle());
+        existing.setContent(request.getContent());
+        cineSquareRepository.updatePost(existing);
+
+        if (deleteFileIds != null) {
+            for (Integer fileId : deleteFileIds) {
+                fileService.deleteFile(fileId);
+            }
+        }
+
+        if (newFiles != null && !newFiles.isEmpty()) {
+            fileService.saveFiles(newFiles, "CINESQUARE_POST", postId);
+        }
     }
 
     // 게시글 삭제
-    public void deletePost(Integer postId, Integer authorId) {
+    @Transactional
+    public void deletePostWithFiles(Integer postId, Integer authorId) throws IOException {
+        CineSquare post = cineSquareRepository.selectPostById(postId);
+        if (post == null) throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+        if (!post.getAuthorId().equals(authorId))
+            throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
+
+        List<FileEntity> files = fileService.getFiles("CINESQUARE_POST", postId);
+        for(FileEntity file : files) {
+            fileService.deleteFile(file.getFileId());
+        }
+
         cineSquareRepository.deletePost(postId, authorId);
     }
 

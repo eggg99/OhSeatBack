@@ -4,7 +4,7 @@
 <mapper namespace="com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository">
 
     <!--  글 작성  -->
-    <insert id="insertPost" parameterType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
+    <insert id="insertPost" parameterType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO cinesquare (category_id, title, content, author_id, created_at, views, city, district)
         VALUES (#{categoryId}, #{title}, #{content}, #{authorId}, NOW(), 0, #{city}, #{district})
     </insert>
