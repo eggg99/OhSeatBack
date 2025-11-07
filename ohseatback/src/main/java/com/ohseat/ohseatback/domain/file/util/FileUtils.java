@@ -36,6 +36,7 @@ public class FileUtils {
                 .fileType(ext)
                 .entityType(entityType)
                 .entityId(entityId)
+                .isRepresentative("N")  // default
                 .build();
     }
 

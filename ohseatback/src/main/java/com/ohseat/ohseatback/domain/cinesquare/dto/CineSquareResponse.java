@@ -26,5 +26,9 @@ public class CineSquareResponse {
     private String authorNickname;
     private String city;
     private String district;
-    private List<FileResponse> files;   // 첨부파일 리스트 추가
+
+    // 파일 관련
+    private List<FileResponse> files;           // 단건 조회 시 전체 파일 리스트
+    private FileResponse representativeFile;    // 목록 조회 시 대표 이미지 1개
+    private Integer totalFiles;                 // 목록 조회 시 파일 총 개수
 }
