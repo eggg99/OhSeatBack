@@ -31,13 +31,15 @@ public class BoxofficeService {
     @Value("${tmdb.api.key}")
     private String TMDB_KEY;
 
+
     public List<BoxofficeResponse> getBoxofficeWithPoster() {
         List<BoxofficeResponse> list = new ArrayList<>();
 
         try {
-            // 오늘날짜 포맷팅
-            LocalDate today = LocalDate.now();
-            String targetDt = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            // 어제날짜 포맷팅
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            String targetDt = yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
 
             // 영화진흥위원회 박스오피스 조회
             String kobisUrl = KOBIS_URL
