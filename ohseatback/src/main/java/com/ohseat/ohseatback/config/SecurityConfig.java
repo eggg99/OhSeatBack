@@ -51,6 +51,8 @@ public class SecurityConfig {
                                 "/api/user/findEmail",
                                 "/api/user/login",
                                 "/api/user/join").permitAll()
+                        // 파일 허용
+                        .requestMatchers("/uploads/**").permitAll()
 
                         // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
