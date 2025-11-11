@@ -14,8 +14,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.web.client.RestClientException;
+import org.json.JSONException;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoxofficeService {
@@ -47,6 +53,15 @@ public class BoxofficeService {
                     + "&targetDt=" + targetDt;
 
             JSONObject kobisJson = new JSONObject(restTemplate.getForObject(kobisUrl, String.class));
+
+            // faultInfo가 존재할 경우 처리
+            if (kobisJson.has("faultInfo")) {
+                JSONObject fault = kobisJson.getJSONObject("faultInfo");
+                String message = fault.optString("message", "알 수 없는 오류");
+                String errorCode = fault.optString("errorCode", "unknown");
+                log.warn("KOBIS API 오류 발생 - code: {}, message: {}", errorCode, message);
+                return Collections.emptyList(); // 혹은 기본 응답 리턴
+            }
             JSONArray boxOfficeList = kobisJson
                     .getJSONObject("boxOfficeResult")
                     .getJSONArray("dailyBoxOfficeList");
@@ -69,8 +84,12 @@ public class BoxofficeService {
                         .posterUrl(posterUrl)
                         .build());
             }
+        } catch (RestClientException e) {
+            log.error("KOBIS API 통신 실패", e);
+        } catch (JSONException e) {
+            log.error("KOBIS API 응답 파싱 실패", e);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("박스오피스 데이터 처리 중 예외 발생", e);
         }
 
         return list;
@@ -85,18 +104,31 @@ public class BoxofficeService {
                     + "&language=ko-KR";
 
 
-            JSONObject json = new JSONObject(restTemplate.getForObject(url, String.class));
+            String response = restTemplate.getForObject(url, String.class);
+            if (response == null) {
+                log.warn("TMDB API 응답이 null 입니다. 영화명: {}", movieNm);
+                return "";
+            }
+
+            JSONObject json = new JSONObject(response);
             JSONArray results = json.optJSONArray("results");
 
             if (results != null && results.length() > 0) {
                 String posterPath = results.getJSONObject(0).optString("poster_path", "");
                 if (!posterPath.isEmpty()) {
                     return "https://image.tmdb.org/t/p/w500" + posterPath;
+                } else {
+                    log.info("TMDB 결과에 poster_path 없음. 영화명: {}", movieNm);
                 }
+            } else {
+                log.info("TMDB 검색 결과 없음. 영화명: {}", movieNm);
             }
+        } catch (RestClientException e) {
+            log.error("TMDB API 호출 실패. 영화명: {}", movieNm, e);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("TMDB 포스터 처리 중 예외 발생. 영화명: {}", movieNm, e);
         }
+
         return "";
     }
 }
