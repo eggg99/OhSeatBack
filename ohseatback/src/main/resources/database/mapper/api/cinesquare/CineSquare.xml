@@ -78,4 +78,67 @@
         WHERE post_id = #{postId} AND author_id = #{authorId}
     </delete>
 
+    <!--  댓글 목록  -->
+    <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO">
+        SELECT
+        c.comment_id AS commentId,
+        c.post_id AS postId,
+        c.commenter_id AS commenterId,
+        u.nickname AS authorNickname,
+        c.content,
+        c.created_at AS createdAt
+        FROM comments_cinesquare c
+        JOIN users u ON c.commenter_id = u.user_id
+        WHERE c.post_id = #{postId}
+        ORDER BY c.created_at DESC
+    </select>
+
+    <!--  댓글 추가  -->
+    <insert id="insertComment">
+        INSERT INTO comments_cinesquare (commenter_id, post_id, content)
+        VALUES (#{commenterId}, #{postId}, #{content})
+    </insert>
+
+    <!--  댓글 삭제  -->
+    <delete id="deleteComment">
+        DELETE FROM comments_cinesquare
+        WHERE comment_id = #{commentId}
+    </delete>
+
+    <!--  좋아요 여부 확인  -->
+    <select id="isPostLiked" resultType="int">
+        SELECT COUNT(*)
+        FROM post_like_cinesquare
+        WHERE post_id = #{postId}
+        AND post_like_user_id = #{userId}
+    </select>
+
+    <!--  좋아요 추가  -->
+    <insert id="insertPostLike">
+        INSERT INTO post_like_cinesquare (post_id, post_like_user_id)
+        VALUES (#{postId}, #{userId})
+    </insert>
+
+    <!--  좋아요 삭제  -->
+    <delete id="deletePostLike">
+        DELETE FROM post_like_cinesquare
+        WHERE post_id = #{postId}
+        AND post_like_user_id = #{userId}
+    </delete>
+
+    <!--  좋아요 카운트 증가  -->
+    <update id="increasePostLikeCount">
+        UPDATE cinesquare
+        SET like_count = like_count + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!--  좋아요 카운트 감소  -->
+    <update id="decreasePostLikeCount">
+        UPDATE cinesquare
+        SET like_count = like_count - 1
+        WHERE post_id = #{postId}
+        AND like_count > 0
+    </update>
+
 </mapper>

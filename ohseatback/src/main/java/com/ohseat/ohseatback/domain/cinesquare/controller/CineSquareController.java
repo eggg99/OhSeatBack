@@ -1,6 +1,7 @@
 package com.ohseat.ohseatback.domain.cinesquare.controller;
 
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -149,5 +151,32 @@ public class CineSquareController {
     public ResponseEntity<List<LocationResponse>> searchLocation(@RequestParam("searchValue") String searchValue) {
         List<LocationResponse> location = locationService.search(searchValue);
         return ResponseEntity.ok(location);
+    }
+
+    // 댓글 목록 조회
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Integer postId) {
+        return ResponseEntity.ok(cineSquareService.getCommentList(postId));
+    }
+
+    // 댓글 작성
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<String> addComment(@PathVariable Integer postId, @RequestBody Map<String, String> body) {
+        cineSquareService.insertComment(postId, body.get("content"));
+        return ResponseEntity.ok("댓글 작성 완료");
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Integer commentId) {
+        cineSquareService.deleteComment(commentId);
+        return ResponseEntity.ok("댓글 삭제 완료");
+    }
+
+    // 좋아요 토글
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<Map<String, Boolean>> toggleLike(@PathVariable Integer postId) {
+        boolean liked = cineSquareService.toggleLike(postId);
+        return ResponseEntity.ok(Map.of("liked", liked));
     }
 }

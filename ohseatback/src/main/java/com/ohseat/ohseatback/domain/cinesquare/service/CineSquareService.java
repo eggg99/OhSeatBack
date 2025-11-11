@@ -1,27 +1,28 @@
 package com.ohseat.ohseatback.domain.cinesquare.service;
 
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
+import com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
+import com.ohseat.ohseatback.domain.cinesquare.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
 import com.ohseat.ohseatback.domain.file.entity.FileEntity;
 import com.ohseat.ohseatback.domain.file.service.FileService;
+import com.ohseat.ohseatback.domain.user.entity.User;
+import com.ohseat.ohseatback.domain.user.mapper.UserRepository;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import jakarta.transaction.Transactional;
 import com.ohseat.ohseatback.utils.LocationUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,6 +111,44 @@ public class CineSquareService {
 
     public LocationResponse searchLocation (String searchValue) {
         return locationUtils.searchLocation(searchValue);
+    }
+
+    // 댓글 목록 조회
+    public List<CommentDTO> getCommentList(Integer postId) {
+        return cineSquareRepository.getCommentList(postId);
+    }
+
+    // 댓글 작성
+    public void insertComment(Integer postId, String content) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            throw new IllegalStateException("로그인 필요");
+        }
+        cineSquareRepository.insertComment(userId, postId, content);
+    }
+
+    // 댓글 삭제
+    public void deleteComment(Integer commentId) {
+        cineSquareRepository.deleteComment(commentId);
+    }
+
+    // 좋아요 토글
+    public boolean toggleLike(Integer postId) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            throw new IllegalStateException("로그인 필요");
+        }
+
+        int liked = cineSquareRepository.isPostLiked(postId, userId);
+        if (liked == 0) {
+            cineSquareRepository.insertPostLike(postId, userId);
+            cineSquareRepository.increasePostLikeCount(postId);
+            return true;
+        } else {
+            cineSquareRepository.deletePostLike(postId, userId);
+            cineSquareRepository.decreasePostLikeCount(postId);
+            return false;
+        }
     }
 
 }
