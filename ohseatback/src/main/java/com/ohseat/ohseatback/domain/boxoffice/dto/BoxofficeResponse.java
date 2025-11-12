@@ -16,4 +16,5 @@ public class BoxofficeResponse {
     private String openDt;     // 개봉일
     private String audiAcc;    // 누적 관객수
     private String posterUrl;  // KMDb 포스터 URL
+    private String certification;  // 영화관람등급
 }

@@ -13,9 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.web.client.RestClientException;
 import org.json.JSONException;
@@ -74,7 +72,11 @@ public class BoxofficeService {
                 String rank = movie.getString("rank");
                 String audiAcc = movie.optString("audiAcc", "");
 
-                String posterUrl = getPosterFromTmdb(movieNm, openDt);
+                Map<String, String> tmdbInfo = getMovieInfoFromTmdb(movieNm, openDt);
+
+                String posterUrl = tmdbInfo != null ? tmdbInfo.get("posterUrl") : "";
+                String certification = tmdbInfo != null ? tmdbInfo.get("certification") : "";
+
 
                 list.add(BoxofficeResponse.builder()
                         .rank(rank)
@@ -82,6 +84,7 @@ public class BoxofficeService {
                         .openDt(openDt)
                         .audiAcc(audiAcc)
                         .posterUrl(posterUrl)
+                        .certification(certification)
                         .build());
             }
         } catch (RestClientException e) {
@@ -95,40 +98,66 @@ public class BoxofficeService {
         return list;
     }
 
-    private String getPosterFromTmdb(String movieNm, String openDt) {
+    private Map<String, String> getMovieInfoFromTmdb(String movieNm, String openDt) {
         try {
             String encodedTitle = URLEncoder.encode(movieNm, StandardCharsets.UTF_8);
-            String url = TMDB_URL
+            String searchUrl = TMDB_URL
                     + "?api_key=" + TMDB_KEY
                     + "&query=" + encodedTitle
                     + "&language=ko-KR";
 
-
-            String response = restTemplate.getForObject(url, String.class);
-            if (response == null) {
-                log.warn("TMDB API 응답이 null 입니다. 영화명: {}", movieNm);
-                return "";
-            }
+            String response = restTemplate.getForObject(searchUrl, String.class);
+            if (response == null) return null;
 
             JSONObject json = new JSONObject(response);
             JSONArray results = json.optJSONArray("results");
+            if (results == null || results.isEmpty()) return null;
 
-            if (results != null && results.length() > 0) {
-                String posterPath = results.getJSONObject(0).optString("poster_path", "");
-                if (!posterPath.isEmpty()) {
-                    return "https://image.tmdb.org/t/p/w500" + posterPath;
-                } else {
-                    log.info("TMDB 결과에 poster_path 없음. 영화명: {}", movieNm);
+            JSONObject movie = results.getJSONObject(0);
+            int movieId = movie.optInt("id");
+            String posterPath = movie.optString("poster_path", "");
+
+            String posterUrl = posterPath.isEmpty()
+                    ? ""
+                    : "https://image.tmdb.org/t/p/w500" + posterPath;
+
+            // 등급 조회
+            String ratingUrl = "https://api.themoviedb.org/3/movie/" + movieId
+                    + "/release_dates?api_key=" + TMDB_KEY;
+
+            String ratingResponse = restTemplate.getForObject(ratingUrl, String.class);
+            String certification = "";
+
+            if (ratingResponse != null) {
+                JSONObject ratingJson = new JSONObject(ratingResponse);
+                JSONArray resultsArr = ratingJson.optJSONArray("results");
+                if (resultsArr != null) {
+                    for (int i = 0; i < resultsArr.length(); i++) {
+                        JSONObject country = resultsArr.getJSONObject(i);
+                        if ("KR".equals(country.optString("iso_3166_1"))) {
+                            JSONArray releaseDates = country.optJSONArray("release_dates");
+                            if (releaseDates != null && !releaseDates.isEmpty()) {
+                                certification = releaseDates.getJSONObject(0)
+                                        .optString("certification", "");
+                                break;
+                            }
+                        }
+                    }
                 }
-            } else {
-                log.info("TMDB 검색 결과 없음. 영화명: {}", movieNm);
             }
+            Map<String, String> info = new HashMap<>();
+            info.put("posterUrl", posterUrl);
+            info.put("certification", certification);
+            return info;
         } catch (RestClientException e) {
             log.error("TMDB API 호출 실패. 영화명: {}", movieNm, e);
         } catch (Exception e) {
             log.error("TMDB 포스터 처리 중 예외 발생. 영화명: {}", movieNm, e);
         }
 
-        return "";
+        Map<String, String> info = new HashMap<>();
+        info.put("posterUrl", "");
+        info.put("certification", "");
+        return info;
     }
 }
