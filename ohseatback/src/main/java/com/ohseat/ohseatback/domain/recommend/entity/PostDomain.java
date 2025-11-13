@@ -20,6 +20,9 @@ public class PostDomain {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년MM월dd일 HH시mm분", timezone = "Asia/Seoul")
     private Timestamp createdAt;
 
+    private Integer prevId;
+    private Integer nextId;
+
     // FK
     private Integer multiplexId;
     private Integer areaId;

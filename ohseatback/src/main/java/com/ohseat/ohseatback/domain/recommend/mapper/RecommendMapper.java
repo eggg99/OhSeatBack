@@ -55,6 +55,8 @@ public interface RecommendMapper {
     List<CommentDomain> getCommentList(@Param("postId") Integer postId);
     // 댓글 입력
     void putComment(Integer commenterId, Integer postId, String content);
+    // 댓글 수정
+    void updateComment(String content, Integer commentId);
 
     // 포스트 등록
     void putPost(PostDomain domain);

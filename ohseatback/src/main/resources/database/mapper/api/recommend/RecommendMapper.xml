@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ohseat.ohseatback.domain.recommend.mapper.RecommendMapper">
-    <!--둘러보기 - 최근언급많이 된 영화관 조회-->
+    <!--최근 언급 많이 된 영화관 조회-->
     <select id="getTrendingCinema" resultType="com.ohseat.ohseatback.domain.recommend.dto.CinemaDTO">
         SELECT
             p.cinema_id,
@@ -26,6 +26,7 @@
             total_like desc
             limit 5;
     </select>
+
     <!--영화관 리스트 조회-->
     <select id="getCinemaList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity">
         SELECT *
@@ -83,6 +84,19 @@
         </if>
     </select>
 
+    <!--게시글 상세 조회 : 이전글시퀀스, 다음글시퀀스 추가-->
+    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
+        <![CDATA[
+            SELECT
+                (SELECT post_id FROM post WHERE post_id < #{postId} ORDER BY post_id DESC LIMIT 1) AS prev_id,
+                (SELECT post_id FROM post WHERE post_id > #{postId} ORDER BY post_id ASC LIMIT 1) AS next_id,
+                p.*
+            FROM post p
+            WHERE p.post_id = #{postId}
+        ]]>
+    </select>
+
+
     <!-- 유저 정보 리스트 조회 -->
     <select id="getUserList" resultType="com.ohseat.ohseatback.domain.user.entity.User">
         SELECT user_id, nickname
@@ -100,7 +114,7 @@
         WHERE user_id =#{id}
     </select>
 
-    <!-- comment 개수 -->
+    <!-- 댓글 개수 -->
     <select id="getCommentCountMap" resultType="map">
         SELECT post_id, COUNT(*) AS commentCount
         FROM post_comment
@@ -111,7 +125,7 @@
         GROUP BY post_id
     </select>
 
-    <!-- comment 1개 개수 조회 -->
+    <!-- 댓글 1개 개수 조회 -->
     <select id="getCommentCount" resultType="Long">
         SELECT  COUNT(*)
         FROM post_comment
@@ -125,18 +139,17 @@
         WHERE post_id = #{postId}
     </select>
 
-    <!--게시글 상세 조회 -->
-    <select id="getPostDetail" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
-        SELECT *
-        FROM post
-        WHERE post_id = #{postId}
-    </select>
-
     <!--댓글 작성 -->
     <insert id="putComment" parameterType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
-        INSERT INTO comment (commenter_id, post_id, content)
+        INSERT INTO post_comment (commenter_id, post_id, content)
         VALUES (#{commenterId}, #{postId}, #{content})
     </insert>
+
+    <update id="updateComment" parameterType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
+        UPDATE post_comment
+          SET  content = #{content}
+        WHERE comment_id = #{commentId}
+    </update>
 
     <!-- 게시글 작성 -->
     <insert id="putPost" parameterType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain" useGeneratedKeys="true" keyProperty="postId">
@@ -206,6 +219,7 @@
         where post_id = #{postId}
     </update>
 
+    <!--가장 최근 게시글 top3-->
     <select id="getPostListRecentTop3" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         select
             p.post_id,

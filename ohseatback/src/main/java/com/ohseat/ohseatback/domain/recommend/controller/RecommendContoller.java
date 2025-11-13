@@ -78,14 +78,21 @@ public class RecommendContoller {
     }
 
     // 댓글 작성
-    @PutMapping("/comment")
+    @PostMapping("/comment")
     public ResponseEntity<String> putComment(@RequestBody CommentDTO dto) {
         recommendService.putComment(dto.getCommenterId(), dto.getPostId(), dto.getContent());
         return ResponseEntity.ok("댓글 추가 완료");
     }
 
+    // 댓글 수정
+    @PutMapping("/comment/edit/{commentId}")
+    public ResponseEntity<String> editComment(@RequestBody CommentDTO dto, @PathVariable Integer commentId) {
+        recommendService.updateComment(dto.getContent(), commentId);
+        return ResponseEntity.ok("댓글 수정 완료");
+    }
+
     // 게시글 작성
-    @PutMapping("/post/reg")
+    @PostMapping("/post/reg")
     public ResponseEntity<Integer> putPost(@RequestBody PostDomain domain) {
         Integer postId = recommendService.putPost(
                 domain.getAuthorId(),

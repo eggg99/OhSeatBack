@@ -17,6 +17,9 @@ public class PostDTO {
     private Integer likeCount;
     private boolean liked;
 
+    private Integer prevId;
+    private Integer nextId;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private Timestamp createdAt;
     private Long commentCount;

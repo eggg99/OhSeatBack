@@ -172,6 +172,8 @@ public class RecommendService {
         dto.setAuthorId((post.getAuthorId()));
         dto.setLikeCount(post.getLikeCount());
         dto.setLiked(isLikeYn == 1);
+        dto.setPrevId(post.getPrevId());
+        dto.setNextId(post.getNextId());
         return dto;
     }
 
@@ -215,6 +217,11 @@ public class RecommendService {
 
     public void putComment(Integer commenterId, Integer postId, String content) {
         recommendMapper.putComment(commenterId, postId, content);
+    }
+
+    public void updateComment(String content, Integer commentId) {
+        // 입력한 사용자와 다른 경우 유효성 검사 처리해야함
+        recommendMapper.updateComment(content, commentId);
     }
 
     public Integer putPost(Integer userId, Integer multiplexId, Integer areaId, String cinemaId, String screenId, String title, String content) {
