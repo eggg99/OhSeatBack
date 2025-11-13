@@ -1,5 +1,6 @@
 package com.ohseat.ohseatback.domain.cinesquare.mapper;
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -31,4 +32,16 @@ public interface CineSquareRepository {
 
     // 게시글 삭제
     void deletePost(Integer postId, Integer authorId);
+
+    // 댓글
+    List<CommentDTO> getCommentList(Integer postId);
+    void insertComment(Integer commenterId, Integer postId, String content);
+    void deleteComment(Integer commentId);
+
+    // 좋아요
+    int isPostLiked(Integer postId, Integer userId);
+    void insertPostLike(Integer postId, Integer userId);
+    void deletePostLike(Integer postId, Integer userId);
+    void increasePostLikeCount(Integer postId);
+    void decreasePostLikeCount(Integer postId);
 }

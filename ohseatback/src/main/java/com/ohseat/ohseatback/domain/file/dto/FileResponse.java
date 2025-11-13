@@ -14,6 +14,7 @@ public class FileResponse {
     private String fileUrl;
     private Integer fileSize;
     private String fileType;
+    private String isRepresentative;
 
     public static FileResponse from(FileEntity entity) {
         return FileResponse.builder()
@@ -22,6 +23,7 @@ public class FileResponse {
                 .fileUrl(entity.getFileUrl())
                 .fileSize(entity.getFileSize())
                 .fileType(entity.getFileType())
+                .isRepresentative(entity.getIsRepresentative())
                 .build();
     }
 }

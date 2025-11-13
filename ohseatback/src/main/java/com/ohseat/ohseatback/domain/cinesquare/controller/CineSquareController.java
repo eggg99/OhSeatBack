@@ -1,6 +1,7 @@
 package com.ohseat.ohseatback.domain.cinesquare.controller;
 
 
+import com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
@@ -20,8 +21,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,10 +54,23 @@ public class CineSquareController {
         List<CineSquareResponse> dtoList = posts.stream()
                 .map(post -> {
                     CineSquareResponse dto = cineSquareMapper.toResponseDto(post);
-                    dto.setFiles(fileService.getFiles("CINESQUARE_POST", post.getPostId())
+
+                    // 파일 정보 조회
+                    List<FileResponse> files = fileService.getFiles("CINESQUARE_POST", post.getPostId())
                             .stream()
                             .map(FileResponse::from)
-                            .collect(Collectors.toList()));
+                            .collect(Collectors.toList());
+
+                    // 대표 이미지 + 갯수만 세팅
+                    FileResponse representativeFile = files.stream()
+                            .filter(f -> "Y".equalsIgnoreCase(f.getIsRepresentative()))
+                            .findFirst()
+                            .orElse(null);
+
+                    dto.setRepresentativeFile(representativeFile);
+                    dto.setTotalFiles(files.size());
+                    dto.setFiles(null); // 목록에서는 전체 파일 리스트 비워둠 (응답 최소화)
+
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -83,7 +99,9 @@ public class CineSquareController {
     // 게시글 작성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createPost(@RequestPart("data") CineSquareRequest request,
-                                             @RequestPart(value = "files", required = false)List<MultipartFile> files) throws IOException {
+                                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                             @RequestPart(value = "representatives", required = false) List<String> representatives
+    ) throws IOException {
         // 1. 게시글 저장
         CineSquare post = new CineSquare();
         post.setCategoryId(request.getCategoryId());
@@ -97,7 +115,8 @@ public class CineSquareController {
 
         // 2. 파일 저장 (있을 때만)
         if (files != null && !files.isEmpty()) {
-            fileService.saveFiles(files, "CINESQUARE_POST", post.getPostId());
+            // representatives가 null이면 기존 규칙으로 동작
+            fileService.saveFiles(files, representatives,"CINESQUARE_POST", post.getPostId());
         }
 
         return ResponseEntity.ok("게시글 등록 완료");
@@ -132,5 +151,32 @@ public class CineSquareController {
     public ResponseEntity<List<LocationResponse>> searchLocation(@RequestParam("searchValue") String searchValue) {
         List<LocationResponse> location = locationService.search(searchValue);
         return ResponseEntity.ok(location);
+    }
+
+    // 댓글 목록 조회
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Integer postId) {
+        return ResponseEntity.ok(cineSquareService.getCommentList(postId));
+    }
+
+    // 댓글 작성
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<String> addComment(@PathVariable Integer postId, @RequestBody Map<String, String> body) {
+        cineSquareService.insertComment(postId, body.get("content"));
+        return ResponseEntity.ok("댓글 작성 완료");
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Integer commentId) {
+        cineSquareService.deleteComment(commentId);
+        return ResponseEntity.ok("댓글 삭제 완료");
+    }
+
+    // 좋아요 토글
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<Map<String, Boolean>> toggleLike(@PathVariable Integer postId) {
+        boolean liked = cineSquareService.toggleLike(postId);
+        return ResponseEntity.ok(Map.of("liked", liked));
     }
 }

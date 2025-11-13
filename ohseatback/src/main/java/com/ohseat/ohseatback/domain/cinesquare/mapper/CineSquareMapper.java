@@ -14,6 +14,11 @@ public class CineSquareMapper {
     private final UserService userService;
 
     public CineSquareResponse toResponseDto(CineSquare post) {
+
+        if (post == null) {
+            return null;
+        }
+
         return CineSquareResponse.builder()
                 .postId(post.getPostId())
                 .categoryId(post.getCategoryId())
