@@ -13,7 +13,7 @@
             COUNT(*) AS post_count,
             SUM(p.like_count) AS total_like
         FROM post p
-                 JOIN cinema c ON p.cinema_id = c.cinema_id
+        JOIN cinema c ON p.cinema_id = c.cinema_id
         WHERE p.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
         GROUP BY
             p.cinema_id,
@@ -74,13 +74,13 @@
     <!-- 게시글 개수 조회 -->
     <select id="countPosts" resultType="long">
         SELECT COUNT(*)
-        FROM post
+        FROM post p
         WHERE 1=1
         <if test="cinemaId != 'all_c'">
             AND p.cinema_id = #{cinemaId}
         </if>
         <if test="screenId != 'all_s'">
-            AND screen_id = #{screenId}
+            AND p.screen_id = #{screenId}
         </if>
     </select>
 
@@ -90,8 +90,11 @@
             SELECT
                 (SELECT post_id FROM post WHERE post_id < #{postId} ORDER BY post_id DESC LIMIT 1) AS prev_id,
                 (SELECT post_id FROM post WHERE post_id > #{postId} ORDER BY post_id ASC LIMIT 1) AS next_id,
-                p.*
+                p.*,
+                c.cinema_name,
+                c.cinema_addr
             FROM post p
+            JOIN cinema c ON p.cinema_id = c.cinema_id
             WHERE p.post_id = #{postId}
         ]]>
     </select>
@@ -99,9 +102,9 @@
 
     <!-- 유저 정보 리스트 조회 -->
     <select id="getUserList" resultType="com.ohseat.ohseatback.domain.user.entity.User">
-        SELECT user_id, nickname
-        FROM users
-        WHERE user_id IN
+        SELECT u.user_id, u.nickname
+        FROM users u
+        WHERE u.user_id IN
         <foreach collection="userIds" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -109,34 +112,34 @@
 
     <!-- 유저 정보 1명 조회 -->
     <select id="getUser" resultType="com.ohseat.ohseatback.domain.user.entity.User">
-        SELECT user_id, nickname
-        FROM users
-        WHERE user_id =#{id}
+        SELECT u.user_id, u.nickname
+        FROM users u
+        WHERE u.user_id =#{id}
     </select>
 
     <!-- 댓글 개수 -->
     <select id="getCommentCountMap" resultType="map">
-        SELECT post_id, COUNT(*) AS commentCount
-        FROM post_comment
-        WHERE post_id IN
+        SELECT p.post_id, COUNT(*) AS commentCount
+        FROM post_comment p
+        WHERE p.post_id IN
         <foreach collection="postIds" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
-        GROUP BY post_id
+        GROUP BY p.post_id
     </select>
 
     <!-- 댓글 1개 개수 조회 -->
     <select id="getCommentCount" resultType="Long">
         SELECT  COUNT(*)
-        FROM post_comment
-        WHERE post_id =#{id}
+        FROM post_comment p
+        WHERE p.post_id =#{id}
     </select>
 
     <!-- 댓글 리스트 조회 -->
     <select id="getCommentList" resultType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         SELECT *
-        FROM post_comment
-        WHERE post_id = #{postId}
+        FROM post_comment p
+        WHERE p.post_id = #{postId}
     </select>
 
     <!--댓글 작성 -->

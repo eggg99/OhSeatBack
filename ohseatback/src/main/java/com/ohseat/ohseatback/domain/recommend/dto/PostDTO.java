@@ -20,7 +20,7 @@ public class PostDTO {
     private Integer prevId;
     private Integer nextId;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm", timezone = "Asia/Seoul")
     private Timestamp createdAt;
     private Long commentCount;
     private Integer multiplexId;
@@ -30,5 +30,6 @@ public class PostDTO {
     private Integer authorId;
     private String multiplexName;
     private String cinemaName;
+    private String cinemaAddr;
     private String screenName;
 }

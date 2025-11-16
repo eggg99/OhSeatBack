@@ -174,6 +174,8 @@ public class RecommendService {
         dto.setLiked(isLikeYn == 1);
         dto.setPrevId(post.getPrevId());
         dto.setNextId(post.getNextId());
+        dto.setCinemaName(post.getCinemaName());
+        dto.setCinemaAddr(post.getCinemaAddr());
         return dto;
     }
 
