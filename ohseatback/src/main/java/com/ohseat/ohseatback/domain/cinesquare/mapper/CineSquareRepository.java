@@ -2,9 +2,11 @@ package com.ohseat.ohseatback.domain.cinesquare.mapper;
 
 import com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
+import com.ohseat.ohseatback.domain.cinesquare.entity.CommentDomain;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 //MyBatis 인터페이스
@@ -27,6 +29,9 @@ public interface CineSquareRepository {
             @Param("orderBy") String orderBy
     );
 
+    // 전체 인기글 조회 (일주일 기준)
+    List<CineSquare> selectWeeklyRanking(LocalDateTime startDate, LocalDateTime endDate, int limit);
+
     // 게시글 수정
     void updatePost(CineSquare post);
 
@@ -35,7 +40,9 @@ public interface CineSquareRepository {
 
     // 댓글
     List<CommentDTO> getCommentList(Integer postId);
+    CommentDomain getCommentById(Integer commentId);
     void insertComment(Integer commenterId, Integer postId, String content);
+    void updateComment(Integer commentId, Integer commenterId, String content);
     void deleteComment(Integer commentId);
 
     // 좋아요
@@ -44,4 +51,12 @@ public interface CineSquareRepository {
     void deletePostLike(Integer postId, Integer userId);
     void increasePostLikeCount(Integer postId);
     void decreasePostLikeCount(Integer postId);
+
+    // 댓글, 좋아요 카운트
+    int countCommentsByPostId(Integer postId);
+    int countLikesByPostId(Integer postId);
+
+    // 이전 글 / 다음 글
+    Integer selectPrevPostId(Integer categoryId, Integer postId);
+    Integer selectNextPostId(Integer categoryId, Integer postId);
 }

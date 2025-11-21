@@ -30,4 +30,19 @@
         DELETE FROM files WHERE file_id = #{fileId}
     </delete>
 
+    <!--  대표 이미지 변경  -->
+    <update id="updateRepresentative" parameterType="com.ohseat.ohseatback.domain.file.entity.FileEntity">
+        UPDATE files
+        SET is_representative = #{isRepresentative}
+        WHERE file_id = #{fileId}
+    </update>
+
+<!--  이미 업로드된 파일을 엔티티에 연결  -->
+    <update id="updateEntityId">
+        UPDATE files
+        SET entity_id = #{entityId},
+            entity_type = #{entityType}
+        WHERE file_id = #{fileId}
+    </update>
+
 </mapper>
