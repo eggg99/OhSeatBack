@@ -14,9 +14,4 @@ public interface FileMapper {
     List<FileEntity> selectFilesByEntity(String entityType, Integer entityId);
 
     void deleteFile(Integer fileId);
-
-    void updateRepresentative(FileEntity file);
-
-    // 게시글 수정 시 newFileIds 처리용
-    void updateEntityId(Integer fileId, Integer entityId, String entityType);
 }

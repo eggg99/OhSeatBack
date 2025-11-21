@@ -46,8 +46,7 @@
         cs.created_at    AS createdAt,
         cs.author_id     AS authorId,
         cs.city          AS city,
-        cs.district      AS district,
-        (SELECT COUNT(*) FROM comments_cinesquare cc WHERE cc.post_id = cs.post_id) AS commentCount
+        cs.district      AS district
         FROM cinesquare cs
         JOIN category c ON cs.category_id = c.category_id
         <where>
@@ -62,30 +61,7 @@
             </if>
         </where>
 
-        ORDER BY ${orderBy}, cs.post_id DESC
-        LIMIT #{limit}
-    </select>
-
-    <!--  전체 인기글 조회(일주일 기준)  -->
-    <select id="selectWeeklyRanking" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
-        SELECT
-        cs.post_id       AS postId,
-        cs.category_id   AS categoryId,
-        c.category_name  AS categoryName,
-        cs.title         AS title,
-        cs.content       AS content,
-        cs.views         AS views,
-        cs.created_at    AS createdAt,
-        cs.author_id     AS authorId,
-        cs.city          AS city,
-        cs.district      AS district,
-        cs.like_count    AS likeCount
-        FROM cinesquare cs
-        JOIN category c ON cs.category_id = c.category_id
-
-        WHERE cs.created_at BETWEEN #{startDate} AND #{endDate}
-
-        ORDER BY cs.like_count DESC, cs.post_id DESC
+        ORDER BY ${orderBy}
         LIMIT #{limit}
     </select>
 
@@ -117,32 +93,11 @@
         ORDER BY c.created_at DESC
     </select>
 
-    <!--  댓글 단건 조회  -->
-    <select id="getCommentById" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CommentDomain">
-        SELECT
-        c.comment_id AS   commentId,
-        c.post_id AS      postId,
-        c.commenter_id AS commenterId,
-        c.content AS      content,
-        c.created_at AS   createdAt,
-        c.updated_at AS   updatedAt
-        FROM comments_cinesquare c
-        WHERE c.comment_id = #{commentId}
-    </select>
-
     <!--  댓글 추가  -->
     <insert id="insertComment">
         INSERT INTO comments_cinesquare (commenter_id, post_id, content)
         VALUES (#{commenterId}, #{postId}, #{content})
     </insert>
-
-    <!--  댓글 수정  -->
-    <update id="updateComment">
-        UPDATE comments_cinesquare
-        SET content = #{content}, updated_at = NOW()
-        WHERE comment_id = #{commentId}
-        AND commenter_id = #{commenterId}
-    </update>
 
     <!--  댓글 삭제  -->
     <delete id="deleteComment">
@@ -186,37 +141,4 @@
         AND like_count > 0
     </update>
 
-    <!--  댓글 카운트  -->
-    <select id="countCommentsByPostId" parameterType="int" resultType="int">
-        SELECT COUNT(*)
-        FROM comments_cinesquare
-        WHERE post_id = #{postId}
-    </select>
-
-    <!--  좋아요 카운트  -->
-    <select id="countLikesByPostId" parameterType="int" resultType="int">
-        SELECT COUNT(*)
-        FROM post_like_cinesquare
-        WHERE post_id = #{postId}
-    </select>
-
-    <!--  이전 글  -->
-    <select id="selectPrevPostId" resultType="int">
-        SELECT post_id
-        FROM cinesquare
-        WHERE category_id = #{categoryId}
-        AND post_id <![CDATA[ < ]]> #{postId}
-        ORDER BY post_id DESC
-        LIMIT 1
-    </select>
-
-    <!--  다음 글  -->
-    <select id="selectNextPostId" resultType="int">
-        SELECT post_id
-        FROM cinesquare
-        WHERE category_id = #{categoryId}
-        AND post_id > #{postId}
-        ORDER BY post_id ASC
-        LIMIT 1
-    </select>
 </mapper>

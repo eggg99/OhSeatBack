@@ -78,24 +78,15 @@ public class CineSquareController {
         return ResponseEntity.ok(dtoList);
     }
 
-    // 전체 인기글 조회 (일주일 기준)
-    @GetMapping("/ranking/week")
-    public ResponseEntity<List<CineSquareResponse>> getWeeklyRanking(
-            @RequestParam(defaultValue = "10") int limit
-    ) {
-        return ResponseEntity.ok(cineSquareService.getWeeklyRanking(limit));
-    }
-
-
     // 단건 조회
     @GetMapping("/{postId}")
     public ResponseEntity<CineSquareResponse> getPost(@PathVariable Integer postId) {
-        CineSquareResponse response = cineSquareService.getPost(postId);
-
-        if (response == null) {
+        CineSquare post = cineSquareService.getPost(postId);
+        if (post == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
         }
 
+        CineSquareResponse response = cineSquareMapper.toResponseDto(post);
         response.setFiles(fileService.getFiles("CINESQUARE_POST", postId)
                 .stream()
                 .map(FileResponse::from)
@@ -108,8 +99,8 @@ public class CineSquareController {
     // 게시글 작성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createPost(@RequestPart("data") CineSquareRequest request,
-                                             @RequestPart(value = "newFileIds", required = false) List<Integer> newFileIds,
-                                             @RequestPart(value = "representativeFileId", required = false) Integer representativeFileId
+                                             @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                             @RequestPart(value = "representatives", required = false) List<String> representatives
     ) throws IOException {
         // 1. 게시글 저장
         CineSquare post = new CineSquare();
@@ -122,26 +113,23 @@ public class CineSquareController {
 
         cineSquareService.createPost(post);
 
-        // 새로 업로드한 임시 파일 attach + 대표 이미지 지정
-        if (newFileIds != null && !newFileIds.isEmpty()) {
-            fileService.attachFilesToEntity(newFileIds, "CINESQUARE_POST", post.getPostId());
-        }
-        if (representativeFileId != null) {
-            fileService.setRepresentativeFile(representativeFileId, "CINESQUARE_POST", post.getPostId());
+        // 2. 파일 저장 (있을 때만)
+        if (files != null && !files.isEmpty()) {
+            // representatives가 null이면 기존 규칙으로 동작
+            fileService.saveFiles(files, representatives,"CINESQUARE_POST", post.getPostId());
         }
 
         return ResponseEntity.ok("게시글 등록 완료");
     }
 
     // 게시글 수정
-    @PutMapping("/{postId}")
+    @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updatePost(@PathVariable Integer postId,
                                              @RequestPart("data") CineSquareRequest request,
-                                             @RequestPart(value = "newFileIds", required = false) List<Integer> newFileIds,
-                                             @RequestPart(value = "deleteFileIds", required = false) List<Integer> deleteFileIds,
-                                             @RequestPart(value = "representativeFileId", required = false) Integer representativeFileId
+                                             @RequestPart(value = "new_files", required = false) List<MultipartFile> newFiles,
+                                             @RequestPart(value = "delete_files_ids", required = false) List<Integer> deleteFileIds
     ) throws IOException {
-        cineSquareService.updatePost(postId, request, newFileIds, deleteFileIds, representativeFileId);
+        cineSquareService.updatePost(postId, request, newFiles, deleteFileIds);
         return ResponseEntity.ok("게시글 수정 완료");
     }
 
@@ -176,14 +164,6 @@ public class CineSquareController {
     public ResponseEntity<String> addComment(@PathVariable Integer postId, @RequestBody Map<String, String> body) {
         cineSquareService.insertComment(postId, body.get("content"));
         return ResponseEntity.ok("댓글 작성 완료");
-    }
-
-    // 댓글 수정
-    @PatchMapping("/comments/{commentId}")
-    public ResponseEntity<String> updateComment(@PathVariable Integer commentId, @RequestBody Map<String, String> body) {
-        String content = body.get("content");
-        cineSquareService.updateComment(commentId, content);
-        return ResponseEntity.ok("댓글 수정 완료");
     }
 
     // 댓글 삭제

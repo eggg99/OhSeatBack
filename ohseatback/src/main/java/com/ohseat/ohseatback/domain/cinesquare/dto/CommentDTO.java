@@ -9,8 +9,7 @@ public class CommentDTO {
     private Integer commentId;
     private Integer postId;
     private Integer commenterId;
+    private String authorNickname;
     private String content;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String authorNickname;
 }
