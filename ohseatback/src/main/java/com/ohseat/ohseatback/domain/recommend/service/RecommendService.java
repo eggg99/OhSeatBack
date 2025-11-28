@@ -135,7 +135,7 @@ public class RecommendService {
         int end = Math.min((start + pageable.getPageSize()), dtoList.size());
         List<PostDTO> pagedList = dtoList.subList(start, end);
 
-        long totalCount = recommendMapper.countPosts(cinemaId, screenId);
+        long totalCount = recommendMapper.countPosts(multiplexId, areaId,cinemaId, screenId);
         return new PageImpl<>(pagedList, pageable, totalCount);
     }
 

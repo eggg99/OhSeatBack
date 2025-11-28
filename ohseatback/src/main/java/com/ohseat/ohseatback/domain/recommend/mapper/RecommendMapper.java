@@ -33,6 +33,8 @@ public interface RecommendMapper {
     );
 
     long countPosts(
+            @Param("multiplexId") Integer multiplexId,
+            @Param("areaId") String areaId,
             @Param("cinemaId") String cinemaId,
             @Param("screenId") String screenId
     );

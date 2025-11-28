@@ -76,6 +76,12 @@
         SELECT COUNT(*)
         FROM post p
         WHERE 1=1
+        <if test="multiplexId != 0">
+            AND p.multiplex_id = #{multiplexId}
+        </if>
+        <if test="areaId != '00'">
+            AND p.area_id = #{areaId}
+        </if>
         <if test="cinemaId != 'all_c'">
             AND p.cinema_id = #{cinemaId}
         </if>
