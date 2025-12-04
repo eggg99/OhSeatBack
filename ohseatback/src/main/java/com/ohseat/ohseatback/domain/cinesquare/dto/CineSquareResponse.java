@@ -22,8 +22,10 @@ public class CineSquareResponse {
     private String content;
     private Integer views;
     private LocalDateTime createdAt;
+
     private Integer authorId;
     private String authorNickname;
+
     private String city;
     private String district;
 
@@ -31,4 +33,12 @@ public class CineSquareResponse {
     private List<FileResponse> files;           // 단건 조회 시 전체 파일 리스트
     private FileResponse representativeFile;    // 목록 조회 시 대표 이미지 1개
     private Integer totalFiles;                 // 목록 조회 시 파일 총 개수
+
+    // 댓글, 좋아요 카운트
+    private Integer commentCount;
+    private Integer likeCount;
+
+    // 이전 글 / 다음 글
+    private Integer prevPostId;
+    private Integer nextPostId;
 }
