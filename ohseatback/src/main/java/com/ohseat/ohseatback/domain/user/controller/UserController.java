@@ -65,12 +65,14 @@ public class UserController {
             throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
-        String token = jwtTokenProvider.createToken(user.getUserId());
+        // JWT 생성 시 role 포함
+        String token = jwtTokenProvider.createToken(user.getUserId(), user.getRole());
 
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("userId", String.valueOf(user.getUserId()));
         resultMap.put("email", user.getEmail());
         resultMap.put("nickname", user.getNickname());
+        resultMap.put("role", user.getRole());
         resultMap.put("token", token);
 
         return ResponseEntity.ok(resultMap);

@@ -17,4 +17,5 @@ public class User {
     private String phoneNumber;
     private Timestamp createdAt;
     private String captchaToken;        // 캡차토큰필드 추가
+    private String role;                // USER / ADMIN
 }

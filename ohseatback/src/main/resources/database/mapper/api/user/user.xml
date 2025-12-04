@@ -26,7 +26,7 @@
 
     <!--  로그인  -->
     <select id="findByEmail" parameterType="string" resultType="com.ohseat.ohseatback.domain.user.entity.User">
-        SELECT user_id, email, nickname, password
+        SELECT user_id, email, nickname, password, role
         FROM users
         WHERE email = #{email}
     </select>
@@ -50,7 +50,7 @@
 
     <!-- 마이페이지 조회 -->
     <select id="selectUserById" parameterType="int" resultType="com.ohseat.ohseatback.domain.user.entity.User">
-        SELECT user_id, name, email, nickname, phone_number, created_at
+        SELECT user_id, name, email, nickname, phone_number, created_at, role
         FROM users
         WHERE user_id = #{userId}
     </select>

@@ -59,4 +59,8 @@ public interface CineSquareRepository {
     // 이전 글 / 다음 글
     Integer selectPrevPostId(Integer categoryId, Integer postId);
     Integer selectNextPostId(Integer categoryId, Integer postId);
+
+    // 관리자 글 작성 / 삭제
+    void insertNoticePost(CineSquare post);
+    void deletePostByAdmin(Integer postId);
 }

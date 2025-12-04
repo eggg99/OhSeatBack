@@ -51,11 +51,15 @@ public class FileService {
         return fileMapper.selectFileById(fileId);
     }
 
-    public void deleteFile(Integer fileId) throws IOException {
+    public void deleteFile(Integer fileId) {
         FileEntity file = fileMapper.selectFileById(fileId);
         if (file != null) {
-            fileUtils.deleteFile(file.getFileUrl());
-            fileMapper.deleteFile(fileId);
+            try {
+                fileUtils.deleteFile(file.getFileUrl());
+                fileMapper.deleteFile(fileId);
+            } catch (IOException e) {
+                throw new RuntimeException("파일 삭제 실패 : " + fileId, e);
+            }
         }
     }
 }

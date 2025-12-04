@@ -47,7 +47,6 @@ public class JwtAuthenticationFilter extends GenericFilter {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userId, null, null);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-
                 } else {
                     // 기존 로그인용 토큰 처리
                     Integer userId = jwtTokenProvider.getUserIdFromToken(token);
@@ -60,7 +59,6 @@ public class JwtAuthenticationFilter extends GenericFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-
             }
         }
 

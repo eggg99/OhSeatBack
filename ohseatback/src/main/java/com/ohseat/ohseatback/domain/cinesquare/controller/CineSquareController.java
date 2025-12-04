@@ -8,7 +8,6 @@ import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.service.LocationService;
 import com.ohseat.ohseatback.domain.file.dto.FileResponse;
-import com.ohseat.ohseatback.domain.file.entity.FileEntity;
 import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
@@ -19,9 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

@@ -23,13 +23,14 @@ public class JwtTokenProvider {
     }
 
     // 로그인용 토큰 생성
-    public String createToken(Integer userId) {
+    public String createToken(Integer userId, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("type", "auth")
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -48,6 +49,12 @@ public class JwtTokenProvider {
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    //  JWT에서 role 클레임 추출
+    public String getUserRoleFromToken(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("role", String.class);
     }
 
     // 토큰에서 type 클레임 추출 ("auth" or "changePw")
