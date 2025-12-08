@@ -1,6 +1,7 @@
 package com.ohseat.ohseatback.domain.cinesquare.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohseat.ohseatback.domain.cinesquare.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.cinesquare.dto.LocationResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
@@ -104,11 +105,14 @@ public class CineSquareController {
 
     // 게시글 작성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> createPost(@RequestPart("data") CineSquareRequest request,
-                                             @RequestPart(value = "newFileIds", required = false) List<Integer> newFileIds,
-                                             @RequestPart(value = "representativeFileId", required = false) Integer representativeFileId
+    public ResponseEntity<String> createPost(
+            @RequestParam("data") String dataJson,
+            @RequestParam(value = "newFileIds", required = false) List<Integer> newFileIds,
+            @RequestParam(value = "representativeFileId", required = false) Integer representativeFileId
     ) throws IOException {
-        // 1. 게시글 저장
+        ObjectMapper mapper = new ObjectMapper();
+        CineSquareRequest request = mapper.readValue(dataJson, CineSquareRequest.class);
+
         CineSquare post = new CineSquare();
         post.setCategoryId(request.getCategoryId());
         post.setTitle(request.getTitle());
@@ -119,7 +123,6 @@ public class CineSquareController {
 
         cineSquareService.createPost(post);
 
-        // 새로 업로드한 임시 파일 attach + 대표 이미지 지정
         if (newFileIds != null && !newFileIds.isEmpty()) {
             fileService.attachFilesToEntity(newFileIds, "CINESQUARE_POST", post.getPostId());
         }
@@ -133,11 +136,14 @@ public class CineSquareController {
     // 게시글 수정
     @PutMapping("/{postId}")
     public ResponseEntity<String> updatePost(@PathVariable Integer postId,
-                                             @RequestPart("data") CineSquareRequest request,
-                                             @RequestPart(value = "newFileIds", required = false) List<Integer> newFileIds,
-                                             @RequestPart(value = "deleteFileIds", required = false) List<Integer> deleteFileIds,
-                                             @RequestPart(value = "representativeFileId", required = false) Integer representativeFileId
+                                             @RequestParam("data") String dataJson,
+                                             @RequestParam(value = "newFileIds", required = false) List<Integer> newFileIds,
+                                             @RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds,
+                                             @RequestParam(value = "representativeFileId", required = false) Integer representativeFileId
     ) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        CineSquareRequest request = mapper.readValue(dataJson, CineSquareRequest.class);
+
         cineSquareService.updatePost(postId, request, newFileIds, deleteFileIds, representativeFileId);
         return ResponseEntity.ok("게시글 수정 완료");
     }
