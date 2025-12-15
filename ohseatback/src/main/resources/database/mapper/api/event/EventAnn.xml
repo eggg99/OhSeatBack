@@ -14,12 +14,31 @@
         SELECT event_id, category_id, title, content, views, created_at
         FROM event
         WHERE event_se = 'ANN'
+        <if test="categoryId != 0">
+            AND category_id = #{categoryId}
+        </if>
         ORDER BY event_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!--  전체 게시글 개수  -->
+    <select id="selectAnnTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM event
+        WHERE event_se = 'ANN'
+    </select>
+
+    <!--  카테고리별 게시글 개수  -->
+    <select id="selectAnnCategoryCount" resultType="int">
+        SELECT COUNT(*)
+        FROM event
+        WHERE event_se = 'ANN'
+        AND category_id = #{categoryId}
     </select>
 
     <!--  ANN 상세 조회  -->
     <select id="selectAnnEventDetail" resultType="com.ohseat.ohseatback.domain.event.dto.EventAnnDetailResponse">
-        SELECT event_id, category_id, title, content, views, created_at
+        SELECT event_id, category_id, title, content, views, created_at, like_count
         FROM event
         WHERE event_id = #{eventId}
         AND event_se = 'ANN'
@@ -33,6 +52,64 @@
         WHERE event_id = #{eventId}
     </update>
 
+    <!--  이전글  -->
+    <select id="selectPrevEventId" resultType="int">
+        SELECT event_id
+        FROM event
+        WHERE event_se = 'ANN'
+        AND category_id = #{categoryId}
+        AND event_id <![CDATA[ < ]]> #{eventId}
+        ORDER BY event_id DESC
+        LIMIT 1
+    </select>
+
+    <!--  다음글  -->
+    <select id="selectNextEventId" resultType="int">
+        SELECT event_id
+        FROM event
+        WHERE event_se = 'ANN'
+        AND category_id = #{categoryId}
+        AND event_id > #{eventId}
+        ORDER BY event_id ASC
+        LIMIT 1
+    </select>
+
+    <!--  좋아요 여부  -->
+    <select id="isEventLiked" resultType="int">
+        SELECT COUNT(*)
+        FROM event_like
+        WHERE event_id = #{eventId}
+        AND user_id = #{userId}
+    </select>
+
+    <!--  좋아요 추가  -->
+    <insert id="insertEventLike">
+        INSERT INTO event_like (event_id, user_id)
+        VALUES (#{eventId}, #{userId})
+    </insert>
+
+    <!--  좋아요 삭제  -->
+    <delete id="deleteEventLike">
+        DELETE FROM event_like
+        WHERE event_id = #{eventId}
+        AND user_id = #{userId}
+    </delete>
+
+    <!--  좋아요 카운트 증가  -->
+    <update id="increaseEventLikeCount">
+        UPDATE event
+        SET like_count = like_count + 1
+        WHERE event_id = #{eventId}
+    </update>
+
+    <!--  좋아요 카운트 감소  -->
+    <update id="decreaseEventLikeCount">
+        UPDATE event
+        SET like_count = like_count - 1
+        WHERE event_id = #{eventId}
+        AND like_count > 0
+    </update>
+
     <!--  ANN 수정  -->
     <update id="updateAnnEvent">
         UPDATE event
@@ -42,6 +119,7 @@
         content = #{request.content}
         WHERE event_id = #{eventId}
         AND event_se = 'ANN'
+        AND author_id = #{authorId}
     </update>
 
     <!--  ANN 삭제  -->
@@ -49,6 +127,7 @@
         DELETE FROM event
         WHERE event_id = #{eventId}
         AND event_se = 'ANN'
+        AND author_id = #{authorId}
     </delete>
 
 </mapper>
