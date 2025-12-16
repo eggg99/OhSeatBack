@@ -22,17 +22,17 @@ public class EventAnnService {
     }
 
     // 이벤트 당첨발표 전체 게시글 조회
-    public EventAnnListWrapperResponse list(Integer categoryId, int page, int size) {
+    public EventAnnListWrapperResponse list(Integer categoryId, String searchValue, String orderType, int page, int size) {
         int totalCount;
         if (categoryId == 0) {
-            totalCount = eventAnnMapper.selectAnnTotalCount();
+            totalCount = eventAnnMapper.selectAnnTotalCount(searchValue);
         } else {
-            totalCount = eventAnnMapper.selectAnnCategoryCount(categoryId);
+            totalCount = eventAnnMapper.selectAnnCategoryCount(categoryId, searchValue);
         }
 
         int offset = page * size;
 
-        List<EventAnnListResponse> list = eventAnnMapper.selectAnnEventList(categoryId, offset, size);
+        List<EventAnnListResponse> list = eventAnnMapper.selectAnnEventList(categoryId, searchValue, orderType, offset, size);
 
         EventAnnListWrapperResponse response = new EventAnnListWrapperResponse();
         response.setTotalCount(totalCount);

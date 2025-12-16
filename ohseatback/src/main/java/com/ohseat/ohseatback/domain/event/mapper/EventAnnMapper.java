@@ -13,13 +13,13 @@ public interface EventAnnMapper {
     int insertAnnEvent(EventAnnRequest request);
 
     // ANN 리스트 조회
-    List<EventAnnListResponse> selectAnnEventList(@Param("categoryId") Integer categoryId, @Param("offset") int offset, @Param("size") int size);
+    List<EventAnnListResponse> selectAnnEventList(@Param("categoryId") Integer categoryId, @Param("searchValue") String searchValue, @Param("orderType") String orderType, @Param("offset") int offset, @Param("size") int size);
 
     // 전체 게시글 개수
-    int selectAnnTotalCount();
+    int selectAnnTotalCount(@Param("searchValue") String searchValue);
 
     // 카테고리별 게시글 개수
-    int selectAnnCategoryCount(@Param("categoryId") Integer categoryId);
+    int selectAnnCategoryCount(@Param("categoryId") Integer categoryId, @Param("searchValue") String searchValue);
 
     // ANN 상세 조회
     EventAnnDetailResponse selectAnnEventDetail(@Param("eventId") Integer eventId);

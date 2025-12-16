@@ -5,8 +5,8 @@
 
     <!--  ANN 이벤트 등록  -->
     <insert id="insertAnnEvent" useGeneratedKeys="true" keyProperty="eventId">
-        INSERT INTO event (event_se, category_id, author_id, title, content)
-        VALUES ('ANN', #{categoryId}, #{authorId}, #{title}, #{content})
+        INSERT INTO event (event_se, category_id, author_id, title, content, is_notice)
+        VALUES ('ANN', #{categoryId}, #{authorId}, #{title}, #{content}, 1)
     </insert>
 
     <!--  ANN 리스트 조회 -->
@@ -17,7 +17,20 @@
         <if test="categoryId != 0">
             AND category_id = #{categoryId}
         </if>
-        ORDER BY event_id DESC
+        <if test="searchValue != null and searchValue != ''">
+            AND ( title LIKE CONCAT('%', #{searchValue}, '%')
+            OR content LIKE CONCAT('%', #{searchValue}, '%')
+            )
+        </if>
+
+        <choose>
+            <when test="orderType == 'likes'">
+                ORDER BY like_count DESC, event_id DESC
+            </when>
+            <otherwise>
+                ORDER BY event_id DESC
+            </otherwise>
+        </choose>
         LIMIT #{size} OFFSET #{offset}
     </select>
 
@@ -26,6 +39,11 @@
         SELECT COUNT(*)
         FROM event
         WHERE event_se = 'ANN'
+        <if test="searchValue != null and searchValue != ''">
+            AND ( title LIKE CONCAT('%', #{searchValue}, '%')
+            OR content LIKE CONCAT('%', #{searchValue}, '%')
+            )
+        </if>
     </select>
 
     <!--  카테고리별 게시글 개수  -->
@@ -34,6 +52,11 @@
         FROM event
         WHERE event_se = 'ANN'
         AND category_id = #{categoryId}
+        <if test="searchValue != null and searchValue != ''">
+            AND ( title LIKE CONCAT('%', #{searchValue}, '%')
+            OR content LIKE CONCAT('%', #{searchValue}, '%')
+            )
+        </if>
     </select>
 
     <!--  ANN 상세 조회  -->

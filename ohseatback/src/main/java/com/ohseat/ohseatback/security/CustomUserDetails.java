@@ -27,7 +27,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = user.getRole();
+        String role = user.getRole().toUpperCase();
         return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
