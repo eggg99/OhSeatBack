@@ -27,6 +27,9 @@
             <when test="orderType == 'likes'">
                 ORDER BY like_count DESC, event_id DESC
             </when>
+            <when test="orderType == 'views'">
+                ORDER BY views DESC, event_id DESC
+            </when>
             <otherwise>
                 ORDER BY event_id DESC
             </otherwise>

@@ -3,7 +3,11 @@ package com.ohseat.ohseatback.domain.event.service;
 import com.ohseat.ohseatback.domain.event.dto.*;
 import com.ohseat.ohseatback.domain.event.mapper.EventAnnMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
+import com.ohseat.ohseatback.utils.CustomPageUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,23 +26,21 @@ public class EventAnnService {
     }
 
     // 이벤트 당첨발표 전체 게시글 조회
-    public EventAnnListWrapperResponse list(Integer categoryId, String searchValue, String orderType, int page, int size) {
-        int totalCount;
-        if (categoryId == 0) {
-            totalCount = eventAnnMapper.selectAnnTotalCount(searchValue);
-        } else {
-            totalCount = eventAnnMapper.selectAnnCategoryCount(categoryId, searchValue);
-        }
+    public Page<EventAnnListResponse> list(Integer categoryId, String searchValue, String orderType, int page, int size) {
+        // 1. Pageable 생성
+        Pageable pageable = CustomPageUtils.getPageable(page, size);
 
-        int offset = page * size;
+        // 2. 전체 개수
+        long totalCount = (categoryId == 0)
+                ? eventAnnMapper.selectAnnTotalCount(searchValue)
+                : eventAnnMapper.selectAnnCategoryCount(categoryId, searchValue);
 
+        // 3. DB 조회 (LIMIT X OFFSET)
+        int offset = (int) pageable.getOffset();
         List<EventAnnListResponse> list = eventAnnMapper.selectAnnEventList(categoryId, searchValue, orderType, offset, size);
 
-        EventAnnListWrapperResponse response = new EventAnnListWrapperResponse();
-        response.setTotalCount(totalCount);
-        response.setList(list);
-
-        return response;
+       // 4. Page 객체로 반환
+        return new PageImpl<>(list, pageable, totalCount);
     }
 
     // 이벤트 당첨발표 게시글 상세 조회

@@ -3,6 +3,7 @@ package com.ohseat.ohseatback.domain.event.controller;
 import com.ohseat.ohseatback.domain.event.dto.*;
 import com.ohseat.ohseatback.domain.event.service.EventAnnService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,20 +14,13 @@ public class EventAnnController {
 
     private final EventAnnService eventAnnService;
 
-//    // 이벤트 당첨발표 게시글 등록
-//    @PostMapping
-//    public ResponseEntity<EventAnnWriteResponse> create(@RequestBody EventAnnRequest request) {
-//        request.setAuthorId(SecurityUtil.getCurrentUserId());
-//        return ResponseEntity.ok(eventAnnService.create(request));
-//    }
-
-    // 이벤트 당첨발표 전체 게시글 조회 >> request 수정 필요
+    // 이벤트 당첨발표 전체 게시글 조회
     @GetMapping("/list")
-    public ResponseEntity<EventAnnListWrapperResponse> list(
+    public ResponseEntity<Page<EventAnnListResponse>> list(
             @RequestParam(defaultValue = "0") Integer searchType,
             @RequestParam(required = false) String searchValue,
             @RequestParam(defaultValue = "latest") String orderType,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(eventAnnService.list(searchType, searchValue, orderType, page, size));
@@ -51,19 +45,5 @@ public class EventAnnController {
         eventAnnService.unlike(eventId);
         return ResponseEntity.ok().build();
     }
-
-//    // 이벤트 당첨발표 게시글 수정 >> msg 성공, 실패 여부 보내야함
-//    @PutMapping("/{eventId}")
-//    public ResponseEntity<Void> update(@PathVariable Integer eventId, @RequestBody EventAnnRequest request) {
-//        eventAnnService.update(eventId, request);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    // 이벤트 당첨발표 게시글 삭제 >> msg 성공, 실패 여부
-//    @DeleteMapping("/{eventId}")
-//    public ResponseEntity<Void> delete(@PathVariable Integer eventId) {
-//        eventAnnService.delete(eventId);
-//        return ResponseEntity.ok().build();
-//    }
 
 }
