@@ -26,18 +26,18 @@ public class EventAnnService {
     }
 
     // 이벤트 당첨발표 전체 게시글 조회
-    public Page<EventAnnListResponse> list(Integer categoryId, String searchValue, String orderType, int page, int size) {
+    public Page<EventAnnListResponse> list(Integer categoryId, Integer searchType, String searchValue, String orderType, int page, int size) {
         // 1. Pageable 생성
         Pageable pageable = CustomPageUtils.getPageable(page, size);
 
         // 2. 전체 개수
         long totalCount = (categoryId == 0)
-                ? eventAnnMapper.selectAnnTotalCount(searchValue)
-                : eventAnnMapper.selectAnnCategoryCount(categoryId, searchValue);
+                ? eventAnnMapper.selectAnnTotalCount(searchType, searchValue)
+                : eventAnnMapper.selectAnnCategoryCount(categoryId, searchType, searchValue);
 
         // 3. DB 조회 (LIMIT X OFFSET)
         int offset = (int) pageable.getOffset();
-        List<EventAnnListResponse> list = eventAnnMapper.selectAnnEventList(categoryId, searchValue, orderType, offset, size);
+        List<EventAnnListResponse> list = eventAnnMapper.selectAnnEventList(categoryId, searchType, searchValue, orderType, offset, size);
 
        // 4. Page 객체로 반환
         return new PageImpl<>(list, pageable, totalCount);

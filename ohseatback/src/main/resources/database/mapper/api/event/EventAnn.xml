@@ -18,7 +18,8 @@
             AND category_id = #{categoryId}
         </if>
         <if test="searchValue != null and searchValue != ''">
-            AND ( title LIKE CONCAT('%', #{searchValue}, '%')
+            AND (
+            title LIKE CONCAT('%', #{searchValue}, '%')
             OR content LIKE CONCAT('%', #{searchValue}, '%')
             )
         </if>
