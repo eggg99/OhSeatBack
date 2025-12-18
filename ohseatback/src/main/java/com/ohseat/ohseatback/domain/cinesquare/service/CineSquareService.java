@@ -49,6 +49,10 @@ public class CineSquareService {
         int commentCount = cineSquareRepository.countCommentsByPostId(postId);
         int likeCount = cineSquareRepository.countLikesByPostId(postId);
 
+        // 좋아요 여부
+        Integer userId = SecurityUtil.getCurrentUserId();
+        boolean liked = isLiked(postId);
+
         // Prev / Next
         Integer prevPostId = cineSquareRepository.selectPrevPostId(post.getCategoryId(), postId);
         Integer nextPostId = cineSquareRepository.selectNextPostId(post.getCategoryId(), postId);
@@ -62,6 +66,7 @@ public class CineSquareService {
         response.setLikeCount(likeCount);
         response.setPrevPostId(prevPostId);
         response.setNextPostId(nextPostId);
+        response.setIsLiked(liked);
 
         return response;
     }
@@ -212,6 +217,29 @@ public class CineSquareService {
             cineSquareRepository.decreasePostLikeCount(postId);
             return false;
         }
+    }
+
+    // 좋아요 개수
+    public int likeCount(Integer postId) {
+        return cineSquareRepository.countLikesByPostId(postId);
+    }
+
+    // 좋아요 여부
+    public boolean isLiked(Integer postId) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+        boolean liked = false;
+        if (userId != null) {
+            liked = cineSquareRepository.isPostLiked(postId, userId) > 0;
+        }
+        return liked;
+    }
+
+    // 댓글 개수
+    public int commentCount(Integer postId) {
+        return cineSquareRepository.countCommentsByPostId(postId);
+    }
+    public List<CineSquare> getRandomList() {
+        return cineSquareRepository.selectRandomList();
     }
 
 }

@@ -110,7 +110,8 @@
         c.commenter_id AS commenterId,
         u.nickname AS authorNickname,
         c.content,
-        c.created_at AS createdAt
+        c.created_at AS createdAt,
+        c.updated_at AS updatedAt
         FROM comments_cinesquare c
         JOIN users u ON c.commenter_id = u.user_id
         WHERE c.post_id = #{postId}
@@ -232,4 +233,19 @@
         DELETE FROM cinesquare
         WHERE post_id = #{postId}
     </delete>
+
+    <!-- 메인 - 랜덤 4개 게시글 가져오기 -->
+    <select id="selectRandomList" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
+        SELECT
+            c.post_id,
+            c.title,
+            c.created_at,
+            c.category_id,
+            cat.category_name
+        FROM cinesquare c
+        JOIN category cat ON c.category_id = cat.category_id
+        ORDER BY RAND()
+        LIMIT 4;
+    </select>
+
 </mapper>

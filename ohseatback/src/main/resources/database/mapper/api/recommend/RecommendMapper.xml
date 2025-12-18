@@ -156,7 +156,7 @@
 
     <update id="updateComment" parameterType="com.ohseat.ohseatback.domain.recommend.entity.CommentDomain">
         UPDATE post_comment
-          SET  content = #{content}
+          SET  content = #{content}, updated_at = NOW()
         WHERE comment_id = #{commentId}
     </update>
 

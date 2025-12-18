@@ -12,4 +12,5 @@ public class CommentDomain {
     private Integer commenterId;
     private String content;
     private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

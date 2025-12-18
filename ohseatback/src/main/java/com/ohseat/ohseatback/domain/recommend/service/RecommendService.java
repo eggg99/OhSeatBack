@@ -205,6 +205,7 @@ public class RecommendService {
                     dto.setCommenterId(comment.getCommenterId());
                     dto.setContent(comment.getContent());
                     dto.setCreatedAt(comment.getCreatedAt());
+                    dto.setUpdatedAt(comment.getUpdatedAt());
 
                     User user = userMap.get(comment.getCommenterId());
                     if (user != null) {

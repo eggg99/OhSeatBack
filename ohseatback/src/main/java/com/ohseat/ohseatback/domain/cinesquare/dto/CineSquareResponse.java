@@ -38,6 +38,9 @@ public class CineSquareResponse {
     private Integer commentCount;
     private Integer likeCount;
 
+    // 좋아요여부
+    private Boolean isLiked;
+
     // 이전 글 / 다음 글
     private Integer prevPostId;
     private Integer nextPostId;

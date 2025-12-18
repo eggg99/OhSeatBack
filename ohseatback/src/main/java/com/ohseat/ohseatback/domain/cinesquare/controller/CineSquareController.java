@@ -69,6 +69,14 @@ public class CineSquareController {
                     dto.setTotalFiles(files.size());
                     dto.setFiles(null); // 목록에서는 전체 파일 리스트 비워둠 (응답 최소화)
 
+                    // 댓글 개수
+                    dto.setCommentCount(cineSquareService.commentCount(post.getPostId()));
+
+                    // 좋아요 여부
+                    dto.setIsLiked(cineSquareService.isLiked(post.getPostId()));
+                    // 좋아요 개수
+                    dto.setLikeCount(cineSquareService.likeCount(post.getPostId()));
+
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -201,5 +209,10 @@ public class CineSquareController {
     public ResponseEntity<Map<String, Boolean>> toggleLike(@PathVariable Integer postId) {
         boolean liked = cineSquareService.toggleLike(postId);
         return ResponseEntity.ok(Map.of("liked", liked));
+    }
+
+    @GetMapping("/main/random")
+    public ResponseEntity<List<CineSquare>> random() {
+        return ResponseEntity.ok(cineSquareService.getRandomList());
     }
 }

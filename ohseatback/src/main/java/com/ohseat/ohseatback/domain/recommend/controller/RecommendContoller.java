@@ -85,7 +85,7 @@ public class RecommendContoller {
     }
 
     // 댓글 수정
-    @PutMapping("/comment/edit/{commentId}")
+    @PatchMapping("/comment/edit/{commentId}")
     public ResponseEntity<String> editComment(@RequestBody CommentDTO dto, @PathVariable Integer commentId) {
         recommendService.updateComment(dto.getContent(), commentId);
         return ResponseEntity.ok("댓글 수정 완료");

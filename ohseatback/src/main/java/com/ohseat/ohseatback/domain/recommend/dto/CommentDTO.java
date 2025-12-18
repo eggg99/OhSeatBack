@@ -16,4 +16,5 @@ public class CommentDTO {
     private String authorNickname;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년MM월dd일 HH시mm분", timezone = "Asia/Seoul")
     private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

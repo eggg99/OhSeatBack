@@ -63,4 +63,6 @@ public interface CineSquareRepository {
     // 관리자 글 작성 / 삭제
     void insertNoticePost(CineSquare post);
     void deletePostByAdmin(Integer postId);
+
+    List<CineSquare> selectRandomList();
 }

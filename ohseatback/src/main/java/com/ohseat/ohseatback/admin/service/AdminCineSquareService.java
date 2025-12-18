@@ -6,6 +6,7 @@ import com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
 import com.ohseat.ohseatback.domain.file.entity.FileEntity;
 import com.ohseat.ohseatback.domain.file.service.FileService;
+import com.ohseat.ohseatback.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +24,13 @@ public class AdminCineSquareService {
     // 관리자 공지 등록
     @Transactional
     public void createNotice(CineSquareRequest request) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+
         CineSquare post = new CineSquare();
         post.setCategoryId(request.getCategoryId());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setAuthorId(null); // 관리자 작성으로 처리
+        post.setAuthorId(userId); // 관리자 작성으로 처리
         post.setCity(request.getCity());
         post.setDistrict(request.getDistrict());
         post.setIsNotice(true); // 관리자 공지로 설정
