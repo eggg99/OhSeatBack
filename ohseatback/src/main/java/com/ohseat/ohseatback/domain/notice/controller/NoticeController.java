@@ -15,10 +15,16 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-    // 공지사항 리스트 조회 (최대 3개)
+    // cinesquare 공지사항 전체 조회
     @GetMapping
     public List<NoticeListResponse> list (@RequestParam String targetBoard) {
         return noticeService.getActiveNotices(targetBoard);
+    }
+
+    // recommend 공지사항 전체 조회
+    @GetMapping("/top")
+    public List<NoticeListResponse> topNotices(@RequestParam String targetBoard) {
+        return noticeService.getTopPinnedNotices(targetBoard);
     }
 
     // 공지사항 상세 조회

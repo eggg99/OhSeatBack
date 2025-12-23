@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AdminCineSquareService {
-
+/*
     private final CineSquareRepository cineSquareRepository;
     private final FileService fileService;
 
@@ -35,7 +35,7 @@ public class AdminCineSquareService {
         post.setDistrict(request.getDistrict());
 //        post.setIsNotice(true); // 관리자 공지로 설정
 
-        cineSquareRepository.insertNoticePost(post);
+//        cineSquareRepository.insertNoticePost(post);
     }
 
     // 관리자 글 삭제
@@ -46,5 +46,5 @@ public class AdminCineSquareService {
         for (FileEntity f : files) fileService.deleteFile(f.getFileId());
         cineSquareRepository.deletePostByAdmin(postId);
     }
-
+*/
 }

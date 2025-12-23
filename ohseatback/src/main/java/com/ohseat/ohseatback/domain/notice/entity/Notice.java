@@ -1,10 +1,12 @@
 package com.ohseat.ohseatback.domain.notice.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Notice {
     private Integer noticeId;
     private String targetBoard;     // CINESQUARE / RECOMMEND

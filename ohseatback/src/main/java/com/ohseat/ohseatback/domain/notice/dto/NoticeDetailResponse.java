@@ -10,10 +10,11 @@ import java.time.LocalDateTime;
 public class NoticeDetailResponse {
 
     private Long noticeId;
+    private String targetBoard;
     private String title;
     private String content;
     private Long authorId;
-    private String authorName;
+    private String authorNickName;
     private LocalDateTime createdAt;
     private int views;
 }

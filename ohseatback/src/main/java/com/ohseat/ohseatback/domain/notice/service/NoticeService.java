@@ -15,12 +15,20 @@ public class NoticeService {
 
     private final NoticeMapper noticeMapper;
 
+    // cinesquare 공지사항 전체 조회
     @Transactional(readOnly = true)
     public List<NoticeListResponse> getActiveNotices(String targetBoard) {
         return noticeMapper.selectActiveNotices(targetBoard);
     }
 
-    @Transactional
+    // recommend 공지사항 전체 조회
+    @Transactional(readOnly = true)
+    public List<NoticeListResponse> getTopPinnedNotices(String targetBoard) {
+        return noticeMapper.selectTopPinnedNotices(targetBoard);
+    }
+
+    // 공지 상세 조회
+    @Transactional(readOnly = true)
     public NoticeDetailResponse getNoticeDetail(Long noticeId) {
         noticeMapper.increaseViews(noticeId);
         return noticeMapper.selectNoticeDetail(noticeId);

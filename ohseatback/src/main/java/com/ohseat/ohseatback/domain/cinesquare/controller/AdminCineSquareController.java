@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminCineSquareController {
-
+/*
     private final AdminCineSquareService adminCineSquareService;
 
 //    // 관리자 - 공지 글 작성
@@ -28,4 +28,6 @@ public class AdminCineSquareController {
         adminCineSquareService.deletePost(postId);
         return ResponseEntity.ok("관리자에 의해 게시글 삭제됨");
     }
+
+ */
 }

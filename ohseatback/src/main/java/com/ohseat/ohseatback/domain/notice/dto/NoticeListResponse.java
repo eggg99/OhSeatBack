@@ -10,9 +10,10 @@ import java.time.LocalDateTime;
 public class NoticeListResponse {
 
     private Long noticeId;
+    private String targetBoard;
     private String title;
     private Long authorId;
-    private String authorName;
+    private String authorNickName;
     private LocalDateTime createdAt;
     private int views;
     private int isPinned;

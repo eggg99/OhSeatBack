@@ -1,9 +1,12 @@
 package com.ohseat.ohseatback.domain.notice.controller;
 
+import com.ohseat.ohseatback.domain.notice.dto.NoticeActiveReqeust;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeCreateRequest;
+import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
 import com.ohseat.ohseatback.domain.notice.service.AdminNoticeService;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +24,31 @@ public class AdminNoticeController {
         Integer adminId = SecurityUtil.getCurrentUserId();
         adminNoticeService.createNotice(request, adminId);
     }
+    
+    // 공지사항 수정
+    @PutMapping("/{noticeId}")
+    public ResponseEntity<Void> update(@PathVariable Long noticeId, @RequestBody NoticeUpdateRequest request) {
+        adminNoticeService.updateNotice(noticeId, request);
+        return ResponseEntity.ok().build();
+    }
 
     // 공지사항 삭제 (비노출)
     @DeleteMapping("/{noticeId}")
     public void deactive(@PathVariable Long noticeId) {
         adminNoticeService.deactiveNotice(noticeId);
+    }
+
+    // 고정 활성 / 비활성 업데이트
+    @PatchMapping("/{noticeId}/active")
+    public ResponseEntity<Void> updateActive(@PathVariable Long noticeId, @RequestBody NoticeActiveReqeust reqeust) {
+        adminNoticeService.updateActiveStatus(noticeId, reqeust.isActive());
+        return ResponseEntity.ok().build();
+    }
+
+    // 고정 / 해제 토글
+    @PatchMapping("/{noticeId}/pin")
+    public void togglePinned(@PathVariable Long noticeId) {
+        adminNoticeService.togglePinned(noticeId);
     }
 
 }

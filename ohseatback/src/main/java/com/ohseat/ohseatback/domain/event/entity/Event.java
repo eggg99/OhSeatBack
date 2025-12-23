@@ -1,11 +1,13 @@
 package com.ohseat.ohseatback.domain.event.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Event {
     private Integer eventId;
     private String eventSe;     // EVT / ANN
