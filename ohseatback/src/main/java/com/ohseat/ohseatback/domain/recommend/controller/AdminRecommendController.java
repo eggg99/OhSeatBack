@@ -1,7 +1,7 @@
-package com.ohseat.ohseatback.admin.controller;
+package com.ohseat.ohseatback.domain.recommend.controller;
 
 
-import com.ohseat.ohseatback.admin.service.AdminRecommendService;
+import com.ohseat.ohseatback.domain.notice.service.AdminRecommendService;
 import com.ohseat.ohseatback.domain.recommend.entity.PostDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.ohseat.ohseatback.admin.service;
+package com.ohseat.ohseatback.domain.notice.service;
 
 
 import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareRequest;
@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 
+// 삭제 예정
 @Service
 @RequiredArgsConstructor
 public class AdminCineSquareService {
@@ -33,7 +33,7 @@ public class AdminCineSquareService {
         post.setAuthorId(userId); // 관리자 작성으로 처리
         post.setCity(request.getCity());
         post.setDistrict(request.getDistrict());
-        post.setIsNotice(true); // 관리자 공지로 설정
+//        post.setIsNotice(true); // 관리자 공지로 설정
 
         cineSquareRepository.insertNoticePost(post);
     }

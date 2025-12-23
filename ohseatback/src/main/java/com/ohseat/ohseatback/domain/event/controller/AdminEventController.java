@@ -1,4 +1,4 @@
-package com.ohseat.ohseatback.admin.controller;
+package com.ohseat.ohseatback.domain.event.controller;
 
 import com.ohseat.ohseatback.domain.event.dto.EventAnnRequest;
 import com.ohseat.ohseatback.domain.event.dto.EventAnnWriteResponse;

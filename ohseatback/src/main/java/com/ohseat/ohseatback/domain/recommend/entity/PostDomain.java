@@ -23,8 +23,6 @@ public class PostDomain {
     private Integer prevId;
     private Integer nextId;
 
-    private Boolean isNotice;
-
     // FK
     private Integer multiplexId;
     private Integer areaId;

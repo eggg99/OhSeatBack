@@ -17,6 +17,4 @@ public class CineSquare {
     // 위치
     private String city;
     private String district;
-
-    private Boolean isNotice;
 }
