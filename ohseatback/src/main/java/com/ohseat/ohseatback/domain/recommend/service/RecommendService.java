@@ -1,5 +1,6 @@
 package com.ohseat.ohseatback.domain.recommend.service;
 
+import com.ohseat.ohseatback.domain.common.policy.PostDeletePolicy;
 import com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity;
 import com.ohseat.ohseatback.domain.recommend.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.recommend.entity.PostDomain;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecommendService {
     private final RecommendMapper recommendMapper;
+    private final PostDeletePolicy postDeletePolicy;
 
     public List<CinemaDTO> getTrendingCinema() {
         return recommendMapper.getTrendingCinema();
@@ -246,6 +248,17 @@ public class RecommendService {
     }
 
     public void deletePost(Integer postId) {
+        Integer currentUserId = SecurityUtil.getCurrentUserId();
+        String role = SecurityUtil.getCurrentUserRole();
+
+        PostDomain post = recommendMapper.getPostDetail(postId);
+        if (post == null) {
+            throw new RuntimeException("게시글 없음");
+        }
+
+        // 관리자/사용자 체크
+        postDeletePolicy.check(post.getAuthorId(), currentUserId, role);
+
         recommendMapper.deletePost(postId);
     }
 

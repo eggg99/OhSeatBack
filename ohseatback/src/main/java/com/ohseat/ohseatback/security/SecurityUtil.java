@@ -22,4 +22,14 @@ public class SecurityUtil {
 
         return null;
     }
+
+    public static String getCurrentUserRole() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) return null;
+
+        return auth.getAuthorities().stream()
+                .map(a -> a.getAuthority().replace("ROLE_", "").toLowerCase())
+                .findFirst()
+                .orElse(null);
+    }
 }

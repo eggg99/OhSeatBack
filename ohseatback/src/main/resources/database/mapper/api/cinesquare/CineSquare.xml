@@ -99,7 +99,7 @@
     <!--  글 삭제  -->
     <delete id="deletePost" parameterType="int">
         DELETE FROM cinesquare
-        WHERE post_id = #{postId} AND author_id = #{authorId}
+        WHERE post_id = #{postId}
     </delete>
 
     <!--  댓글 목록  -->

@@ -36,7 +36,7 @@ public interface CineSquareRepository {
     void updatePost(CineSquare post);
 
     // 게시글 삭제
-    void deletePost(Integer postId, Integer authorId);
+    void deletePost(Integer postId);
 
     // 댓글
     List<CommentDTO> getCommentList(Integer postId);

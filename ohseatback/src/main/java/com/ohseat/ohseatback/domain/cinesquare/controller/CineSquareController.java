@@ -159,7 +159,7 @@ public class CineSquareController {
     // 게시글 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Integer postId) throws IOException {
-        cineSquareService.deletePostWithFiles(postId, SecurityUtil.getCurrentUserId());
+        cineSquareService.deletePostWithFiles(postId);
         return ResponseEntity.ok("게시글 삭제 완료");
     }
 

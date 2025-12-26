@@ -8,6 +8,7 @@ import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
+import com.ohseat.ohseatback.domain.common.policy.PostDeletePolicy;
 import com.ohseat.ohseatback.domain.file.entity.FileEntity;
 import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
@@ -31,6 +32,7 @@ public class CineSquareService {
     private final CineSquareMapper cineSquareMapper;
     private final LocationUtils locationUtils;
     private final FileService fileService;
+    private final PostDeletePolicy postDeletePolicy;
 
     // 게시글 등록
     public void createPost(CineSquare post) { cineSquareRepository.insertPost(post); }
@@ -140,18 +142,20 @@ public class CineSquareService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePostWithFiles(Integer postId, Integer authorId) throws IOException {
+    public void deletePostWithFiles(Integer postId) throws IOException {
         CineSquare post = cineSquareRepository.selectPostById(postId);
         if (post == null) throw new PostNotFoundException("게시글이 존재하지 않습니다.");
-        if (!post.getAuthorId().equals(authorId))
-            throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
+
+        Integer currentUserId = SecurityUtil.getCurrentUserId();
+
+        postDeletePolicy.check(post.getAuthorId(), currentUserId, SecurityUtil.getCurrentUserRole());
 
         List<FileEntity> files = fileService.getFiles("CINESQUARE_POST", postId);
         for(FileEntity file : files) {
             fileService.deleteFile(file.getFileId());
         }
 
-        cineSquareRepository.deletePost(postId, authorId);
+        cineSquareRepository.deletePost(postId);
     }
 
     public LocationResponse getLocation (double longitude, double latitude) {
