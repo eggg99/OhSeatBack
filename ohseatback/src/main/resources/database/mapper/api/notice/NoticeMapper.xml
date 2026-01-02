@@ -9,25 +9,25 @@
         VALUES (#{targetBoard}, #{authorId}, #{title}, #{content})
     </insert>
 
-    <!--  cinesquare 공지사항 전체 조회  -->
-    <select id="selectActiveNotices" resultType="com.ohseat.ohseatback.domain.notice.dto.NoticeListResponse">
+    <!--  관리자 공지사항 전체 조회  -->
+    <select id="selectAdminNoticeList" resultType="com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse">
         SELECT
         n.notice_id,
         n.target_board,
         n.title,
         n.author_id,
-        u.nickname AS authorNickName,
+        u.nickname AS authorNickname,
         n.created_at,
         n.views,
-        n.is_pinned
+        n.is_pinned,
+        n.is_active
         FROM notice n
         JOIN users u ON n.author_id = u.user_id
         WHERE n.target_board = #{targetBoard}
-        AND n.is_active = 1
-        ORDER BY n.is_pinned DESC, n.created_at DESC
+        ORDER BY n.created_at DESC
     </select>
 
-    <!--  recommend 공지사항 전체 조회  -->
+    <!-- 공지사항 전체 조회  -->
     <select id="selectTopPinnedNotices" resultType="com.ohseat.ohseatback.domain.notice.dto.NoticeListResponse">
         SELECT
         n.notice_id,
@@ -89,7 +89,7 @@
         UPDATE notice
         SET is_active = #{isActive},
             is_pinned = CASE
-                WHEN #{isActive} = 0 THEN 0
+                WHEN CAST(#{isActive} AS UNSIGNED) = 0 THEN 0
                 ELSE is_pinned
             END
         WHERE notice_id = #{noticeId}

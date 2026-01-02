@@ -256,7 +256,7 @@ public class RecommendService {
             throw new RuntimeException("게시글 없음");
         }
 
-        // 관리자/사용자 체크
+        // 관리자 / 사용자 체크
         postDeletePolicy.check(post.getAuthorId(), currentUserId, role);
 
         recommendMapper.deletePost(postId);

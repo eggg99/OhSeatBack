@@ -1,5 +1,6 @@
 package com.ohseat.ohseatback.domain.notice.service;
 
+import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeCreateRequest;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
 import com.ohseat.ohseatback.domain.notice.mapper.NoticeMapper;
@@ -7,12 +8,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AdminNoticeService {
 
     private final NoticeMapper noticeMapper;
     private static final int MAX_PINNED = 3;
+
+    // 관리자 공지사항 전체 조회
+    @Transactional(readOnly = true)
+    public List<NoticeAdminListResponse> getAdminNoticeList(String targetBoard) {
+        return noticeMapper.selectAdminNoticeList(targetBoard);
+    }
 
     // 공지사항 작성
     @Transactional

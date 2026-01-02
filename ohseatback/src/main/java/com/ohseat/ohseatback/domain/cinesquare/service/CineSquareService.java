@@ -148,6 +148,7 @@ public class CineSquareService {
 
         Integer currentUserId = SecurityUtil.getCurrentUserId();
 
+        // 관리자 / 사용자 체크
         postDeletePolicy.check(post.getAuthorId(), currentUserId, SecurityUtil.getCurrentUserRole());
 
         List<FileEntity> files = fileService.getFiles("CINESQUARE_POST", postId);

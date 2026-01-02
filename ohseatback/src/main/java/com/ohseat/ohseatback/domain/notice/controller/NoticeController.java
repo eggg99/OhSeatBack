@@ -15,12 +15,6 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-    // cinesquare 공지사항 전체 조회
-    @GetMapping
-    public List<NoticeListResponse> list (@RequestParam String targetBoard) {
-        return noticeService.getActiveNotices(targetBoard);
-    }
-
     // recommend 공지사항 전체 조회
     @GetMapping("/top")
     public List<NoticeListResponse> topNotices(@RequestParam String targetBoard) {

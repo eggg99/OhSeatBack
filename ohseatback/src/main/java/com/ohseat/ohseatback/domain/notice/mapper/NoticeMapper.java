@@ -1,5 +1,6 @@
 package com.ohseat.ohseatback.domain.notice.mapper;
 
+import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeDetailResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeListResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
@@ -14,10 +15,10 @@ public interface NoticeMapper {
     // 공지사항 작성
     void insertNotice(@Param("targetBoard") String targetBoard, @Param("authorId") Integer authorId, @Param("title") String title, @Param("content") String content);
 
-    // cinesquare 공지사항 전체 조회
-    List<NoticeListResponse> selectActiveNotices(String targetBoard);
+    // 관리자 공지사항 전체 조회
+    List<NoticeAdminListResponse> selectAdminNoticeList(String targetBoard);
 
-    // recommend 공지사항 전체 조회
+    // 공지사항 전체 조회
     List<NoticeListResponse> selectTopPinnedNotices(String targetBoard);
 
     // 공지사항 상세 조회

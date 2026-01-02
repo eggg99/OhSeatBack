@@ -15,12 +15,6 @@ public class NoticeService {
 
     private final NoticeMapper noticeMapper;
 
-    // cinesquare 공지사항 전체 조회
-    @Transactional(readOnly = true)
-    public List<NoticeListResponse> getActiveNotices(String targetBoard) {
-        return noticeMapper.selectActiveNotices(targetBoard);
-    }
-
     // recommend 공지사항 전체 조회
     @Transactional(readOnly = true)
     public List<NoticeListResponse> getTopPinnedNotices(String targetBoard) {

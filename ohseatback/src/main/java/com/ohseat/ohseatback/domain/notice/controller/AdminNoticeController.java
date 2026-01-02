@@ -1,6 +1,7 @@
 package com.ohseat.ohseatback.domain.notice.controller;
 
-import com.ohseat.ohseatback.domain.notice.dto.NoticeActiveReqeust;
+import com.ohseat.ohseatback.domain.notice.dto.NoticeActiveRequest;
+import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeCreateRequest;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
 import com.ohseat.ohseatback.domain.notice.service.AdminNoticeService;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/notices")
@@ -17,6 +20,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdminNoticeController {
 
     private final AdminNoticeService adminNoticeService;
+
+    // 관리자 공지사항 전체 조회
+    @GetMapping
+    public List<NoticeAdminListResponse> list(@RequestParam String targetBoard) {
+        return adminNoticeService.getAdminNoticeList(targetBoard);
+    }
 
     // 공지사항 작성
     @PostMapping
@@ -40,8 +49,9 @@ public class AdminNoticeController {
 
     // 고정 활성 / 비활성 업데이트
     @PatchMapping("/{noticeId}/active")
-    public ResponseEntity<Void> updateActive(@PathVariable Long noticeId, @RequestBody NoticeActiveReqeust reqeust) {
-        adminNoticeService.updateActiveStatus(noticeId, reqeust.isActive());
+    public ResponseEntity<Void> updateActive(@PathVariable Long noticeId, @RequestBody NoticeActiveRequest request) {
+        System.out.println("isActive = " + request.isActive());
+        adminNoticeService.updateActiveStatus(noticeId, request.isActive());
         return ResponseEntity.ok().build();
     }
 
