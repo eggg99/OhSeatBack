@@ -142,7 +142,7 @@ public class CineSquareService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePostWithFiles(Integer postId) throws IOException {
+    public void deletePostWithFiles(Integer postId) {
         CineSquare post = cineSquareRepository.selectPostById(postId);
         if (post == null) throw new PostNotFoundException("게시글이 존재하지 않습니다.");
 
