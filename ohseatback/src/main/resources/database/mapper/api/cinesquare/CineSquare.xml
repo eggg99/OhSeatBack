@@ -31,7 +31,7 @@
     <update id="increaseViewCount" parameterType="int">
         UPDATE cinesquare
         SET views = views + 1
-        WHERE post_id = ${postId}
+        WHERE post_id = #{postId}
     </update>
 
     <!--  카테고리별 전체 글 조회 (페이징 + 정렬) -->

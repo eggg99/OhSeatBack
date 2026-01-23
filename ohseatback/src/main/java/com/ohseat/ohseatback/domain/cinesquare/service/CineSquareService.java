@@ -14,6 +14,8 @@ import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.security.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import com.ohseat.ohseatback.utils.LocationUtils;
 import lombok.RequiredArgsConstructor;
@@ -33,26 +35,28 @@ public class CineSquareService {
     private final LocationUtils locationUtils;
     private final FileService fileService;
     private final PostDeletePolicy postDeletePolicy;
+    private final ViewCountService viewCountService;
 
     // 게시글 등록
     public void createPost(CineSquare post) { cineSquareRepository.insertPost(post); }
 
     // 단건 조회
     @Transactional
-    public CineSquareResponse getPost(Integer postId) {
+    public CineSquareResponse getPost(Integer postId, HttpServletRequest request, HttpServletResponse response) {
         // 존재 여부 확인
         CineSquare post = cineSquareRepository.selectPostById(postId);
         if (post == null) return null;
 
-        // 조회수 증가
-        cineSquareRepository.increaseViewCount(postId);
+        Integer userId = SecurityUtil.getCurrentUserId();
+
+        // 조회수 증가 (회원 + 24시간 1회)
+        viewCountService.increaseIfNeeded(postId, userId, post.getAuthorId(), request, response);
 
         // 댓글, 좋아요 수
         int commentCount = cineSquareRepository.countCommentsByPostId(postId);
         int likeCount = cineSquareRepository.countLikesByPostId(postId);
 
         // 좋아요 여부
-        Integer userId = SecurityUtil.getCurrentUserId();
         boolean liked = isLiked(postId);
 
         // Prev / Next
@@ -63,14 +67,14 @@ public class CineSquareService {
         CineSquare updatedPost =  cineSquareRepository.selectPostById(postId);
 
         // DTO 생성
-        CineSquareResponse response = cineSquareMapper.toResponseDto(updatedPost);
-        response.setCommentCount(commentCount);
-        response.setLikeCount(likeCount);
-        response.setPrevPostId(prevPostId);
-        response.setNextPostId(nextPostId);
-        response.setIsLiked(liked);
+        CineSquareResponse responseDto = cineSquareMapper.toResponseDto(updatedPost);
+        responseDto.setCommentCount(commentCount);
+        responseDto.setLikeCount(likeCount);
+        responseDto.setPrevPostId(prevPostId);
+        responseDto.setNextPostId(nextPostId);
+        responseDto.setIsLiked(liked);
 
-        return response;
+        return responseDto;
     }
 
     // 카테고리별 게시글 무한 스크롤 조회

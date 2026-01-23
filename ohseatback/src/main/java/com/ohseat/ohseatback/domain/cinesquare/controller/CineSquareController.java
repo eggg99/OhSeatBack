@@ -15,6 +15,8 @@ import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.domain.cinesquare.service.CineSquareService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -92,23 +94,22 @@ public class CineSquareController {
         return ResponseEntity.ok(cineSquareService.getWeeklyRanking(limit));
     }
 
-
     // 단건 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<CineSquareResponse> getPost(@PathVariable Integer postId) {
-        CineSquareResponse response = cineSquareService.getPost(postId);
+    public ResponseEntity<CineSquareResponse> getPost(@PathVariable Integer postId, HttpServletRequest request, HttpServletResponse response) {
+        CineSquareResponse dto = cineSquareService.getPost(postId, request, response);
 
         if (response == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
         }
 
-        response.setFiles(fileService.getFiles("CINESQUARE_POST", postId)
+        dto.setFiles(fileService.getFiles("CINESQUARE_POST", postId)
                 .stream()
                 .map(FileResponse::from)
                 .collect(Collectors.toList())
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(dto);
     }
 
     // 게시글 작성
