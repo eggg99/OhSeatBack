@@ -43,7 +43,6 @@
         WHERE n.target_board = #{targetBoard}
         AND n.is_active = 1
         ORDER BY n.is_pinned DESC, n.created_at DESC
-        LIMIT 3
     </select>
 
     <!--  공지사항 상세 조회  -->

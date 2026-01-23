@@ -15,7 +15,7 @@ import java.util.List;
 public class AdminNoticeService {
 
     private final NoticeMapper noticeMapper;
-    private static final int MAX_PINNED = 3;
+    private static final int MAX_PINNED = 1;
 
     // 관리자 공지사항 전체 조회
     @Transactional(readOnly = true)
