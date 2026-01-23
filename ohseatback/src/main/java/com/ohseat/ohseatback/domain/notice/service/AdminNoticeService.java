@@ -31,7 +31,7 @@ public class AdminNoticeService {
 
     // 공지사항 수정
     @Transactional
-    public void updateNotice(Long noticeId, NoticeUpdateRequest request) {
+    public void updateNotice(Integer noticeId, NoticeUpdateRequest request) {
         int updated = noticeMapper.updateNotice(noticeId, request);
         if(updated == 0) {
             throw new IllegalStateException("수정 권한이 없거나 게시글이 존재하지 않습니다.");
@@ -40,13 +40,13 @@ public class AdminNoticeService {
 
     // 공지사항 삭제 (비노출)
     @Transactional
-    public void deactiveNotice(Long noticeId) {
+    public void deactiveNotice(Integer noticeId) {
         noticeMapper.deactiveNotice(noticeId);
     }
 
     // 고정 활성 / 비활성 업데이트
     @Transactional
-    public void updateActiveStatus(Long noticeId, boolean isActive) {
+    public void updateActiveStatus(Integer noticeId, boolean isActive) {
         int updated = noticeMapper.updateActiveStatus(noticeId, isActive);
 
         if (updated == 0) {
@@ -56,7 +56,7 @@ public class AdminNoticeService {
 
     // 고정 / 해제 토글
     @Transactional
-    public void togglePinned(Long noticeId) {
+    public void togglePinned(Integer noticeId) {
 
         Integer currentPinned = noticeMapper.selectPinnedStatus(noticeId);
         if (currentPinned == null) {

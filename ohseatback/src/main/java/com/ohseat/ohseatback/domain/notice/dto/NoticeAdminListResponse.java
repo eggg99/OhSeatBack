@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NoticeAdminListResponse {
 
-    private Long noticeId;
+    private Integer noticeId;
     private String targetBoard;
     private String title;
-    private Long authorId;
+    private Integer authorId;
     private String authorNickname;
     private LocalDateTime createdAt;
     private int views;

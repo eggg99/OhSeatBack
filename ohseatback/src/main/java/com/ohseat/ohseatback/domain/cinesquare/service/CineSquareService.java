@@ -9,6 +9,7 @@ import com.ohseat.ohseatback.domain.cinesquare.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
 import com.ohseat.ohseatback.domain.common.policy.PostDeletePolicy;
+import com.ohseat.ohseatback.domain.common.service.ViewCountService;
 import com.ohseat.ohseatback.domain.file.entity.FileEntity;
 import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
@@ -49,8 +50,10 @@ public class CineSquareService {
 
         Integer userId = SecurityUtil.getCurrentUserId();
 
-        // 조회수 증가 (회원 + 24시간 1회)
-        viewCountService.increaseIfNeeded(postId, userId, post.getAuthorId(), request, response);
+        // 조회수 증가
+        if (viewCountService.canIncrease("cinesquare", postId, userId, post.getAuthorId(), request, response)) {
+            cineSquareRepository.increaseViewCount(postId);
+        };
 
         // 댓글, 좋아요 수
         int commentCount = cineSquareRepository.countCommentsByPostId(postId);

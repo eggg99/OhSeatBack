@@ -22,31 +22,31 @@ public interface NoticeMapper {
     List<NoticeListResponse> selectTopPinnedNotices(String targetBoard);
 
     // 공지사항 상세 조회
-    NoticeDetailResponse selectNoticeDetail(Long noticeId);
+    NoticeDetailResponse selectNoticeDetail(Integer noticeId);
 
     // 조회수 증가
-    void increaseViews(Long noticeId);
+    void increaseViews(Integer noticeId);
 
     // 공지사항 수정
-    int updateNotice(@Param("noticeId") Long noticeId, @Param("request") NoticeUpdateRequest request);
+    int updateNotice(@Param("noticeId") Integer noticeId, @Param("request") NoticeUpdateRequest request);
 
     // 공지사항 삭제 (비노출)
-    void deactiveNotice(Long noticeId); // is_active = 0
+    void deactiveNotice(Integer noticeId); // is_active = 0
 
     // 고정 활성 / 비활성 업데이트
-    int updateActiveStatus(@Param("noticeId") Long noticeId, @Param("isActive") boolean isActive);
+    int updateActiveStatus(@Param("noticeId") Integer noticeId, @Param("isActive") boolean isActive);
 
     // 고정 / 해제 토글
     // 1-1. 현재 고정 여부 조회
-    Integer selectPinnedStatus(Long noticeId);
+    Integer selectPinnedStatus(Integer noticeId);
 
     // 1-2. 고정 공지 개수 조회 (board별)
     int countPinnedNotices(String targetBoard);
 
     // 1-3. 고정 / 해제 토글
-    int updatePinnedStatus(@Param("noticeId") Long noticeId, @Param("isPinned") int isPinned);
+    int updatePinnedStatus(@Param("noticeId") Integer noticeId, @Param("isPinned") int isPinned);
 
     // 1-4. noticeId -> targetBoard 조회
-    String selectTargetBoardByNoticeId(Long noticeId);
+    String selectTargetBoardByNoticeId(Integer noticeId);
 
 }

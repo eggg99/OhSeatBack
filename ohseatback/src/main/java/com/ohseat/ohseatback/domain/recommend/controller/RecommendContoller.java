@@ -6,6 +6,8 @@ import com.ohseat.ohseatback.domain.recommend.dto.CommentDTO;
 import com.ohseat.ohseatback.domain.recommend.dto.PostDTO;
 import com.ohseat.ohseatback.domain.recommend.dto.ScreenDTO;
 import com.ohseat.ohseatback.domain.recommend.service.RecommendService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -137,8 +139,8 @@ public class RecommendContoller {
 
     // 조회수 증가
     @PostMapping("/incrementViews/{postId}")
-    public ResponseEntity<String>  increaseViewCount(@PathVariable Integer postId) {
-        recommendService.incrementViewCount(postId);
+    public ResponseEntity<String>  increaseViewCount(@PathVariable Integer postId, HttpServletRequest request, HttpServletResponse response) {
+        recommendService.incrementViewCount(postId, request, response);
         return ResponseEntity.ok("조회수 증가 완료");
     }
 

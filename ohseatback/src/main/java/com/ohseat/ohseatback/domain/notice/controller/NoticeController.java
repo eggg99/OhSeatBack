@@ -3,6 +3,8 @@ package com.ohseat.ohseatback.domain.notice.controller;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeDetailResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeListResponse;
 import com.ohseat.ohseatback.domain.notice.service.NoticeService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +25,8 @@ public class NoticeController {
 
     // 공지사항 상세 조회
     @GetMapping("/{noticeId}")
-    public NoticeDetailResponse detail(@PathVariable Long noticeId) {
-        return noticeService.getNoticeDetail(noticeId);
+    public NoticeDetailResponse detail(@PathVariable Integer noticeId, HttpServletRequest request, HttpServletResponse response) {
+        return noticeService.getNoticeDetail(noticeId, request, response);
     }
 
 }

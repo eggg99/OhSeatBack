@@ -36,20 +36,20 @@ public class AdminNoticeController {
     
     // 공지사항 수정
     @PutMapping("/{noticeId}")
-    public ResponseEntity<Void> update(@PathVariable Long noticeId, @RequestBody NoticeUpdateRequest request) {
+    public ResponseEntity<Void> update(@PathVariable Integer noticeId, @RequestBody NoticeUpdateRequest request) {
         adminNoticeService.updateNotice(noticeId, request);
         return ResponseEntity.ok().build();
     }
 
     // 공지사항 삭제 (비노출)
     @DeleteMapping("/{noticeId}")
-    public void deactive(@PathVariable Long noticeId) {
+    public void deactive(@PathVariable Integer noticeId) {
         adminNoticeService.deactiveNotice(noticeId);
     }
 
     // 고정 활성 / 비활성 업데이트
     @PatchMapping("/{noticeId}/active")
-    public ResponseEntity<Void> updateActive(@PathVariable Long noticeId, @RequestBody NoticeActiveRequest request) {
+    public ResponseEntity<Void> updateActive(@PathVariable Integer noticeId, @RequestBody NoticeActiveRequest request) {
         System.out.println("isActive = " + request.isActive());
         adminNoticeService.updateActiveStatus(noticeId, request.isActive());
         return ResponseEntity.ok().build();
@@ -57,7 +57,7 @@ public class AdminNoticeController {
 
     // 고정 / 해제 토글
     @PatchMapping("/{noticeId}/pin")
-    public void togglePinned(@PathVariable Long noticeId) {
+    public void togglePinned(@PathVariable Integer noticeId) {
         adminNoticeService.togglePinned(noticeId);
     }
 
