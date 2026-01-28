@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class EventAnnDetailResponse {
     private Integer eventId;
     private Integer categoryId;
+    private Integer authorId;
     private String title;
     private String content;
     private Integer views;

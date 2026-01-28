@@ -98,7 +98,7 @@
 
     <!--  ANN 상세 조회  -->
     <select id="selectAnnEventDetail" resultType="com.ohseat.ohseatback.domain.event.dto.EventAnnDetailResponse">
-        SELECT event_id, category_id, title, content, views, created_at, like_count
+        SELECT event_id, category_id, author_id, title, content, views, created_at, like_count
         FROM event
         WHERE event_id = #{eventId}
         AND event_se = 'ANN'

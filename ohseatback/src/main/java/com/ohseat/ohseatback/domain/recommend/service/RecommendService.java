@@ -1,5 +1,7 @@
 package com.ohseat.ohseatback.domain.recommend.service;
 
+import com.ohseat.ohseatback.domain.common.policy.PostDeletePolicy;
+import com.ohseat.ohseatback.domain.common.service.ViewCountService;
 import com.ohseat.ohseatback.domain.recommend.entity.CinemaEntity;
 import com.ohseat.ohseatback.domain.recommend.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.recommend.entity.PostDomain;
@@ -11,6 +13,8 @@ import com.ohseat.ohseatback.domain.recommend.dto.ScreenDTO;
 import com.ohseat.ohseatback.domain.recommend.mapper.RecommendMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Page;
@@ -24,6 +28,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecommendService {
     private final RecommendMapper recommendMapper;
+    private final PostDeletePolicy postDeletePolicy;
+    private final ViewCountService viewCountService;
 
     public List<CinemaDTO> getTrendingCinema() {
         return recommendMapper.getTrendingCinema();
@@ -140,10 +146,11 @@ public class RecommendService {
     }
 
     public PostDTO getPostDetail(Integer postId) {
-        int isLikeYn = 0;
-
         // 1. 게시글 1개 조회
         PostDomain post = recommendMapper.getPostDetail(postId);
+        if (post == null) {
+            throw new RuntimeException("게시글 없음");
+        }
 
         // 2. 작성자 1명 조회
         User author = recommendMapper.getUser(post.getAuthorId());
@@ -152,8 +159,10 @@ public class RecommendService {
         Long commentCount = recommendMapper.getCommentCount(post.getPostId());
 
         // 4. 현재 로그인 유저 좋아요 여부
-        if(SecurityUtil.getCurrentUserId()!= null){
-            isLikeYn = recommendMapper.isPostLike(post.getPostId(), SecurityUtil.getCurrentUserId());
+        int isLikeYn = 0;
+        Integer userId = SecurityUtil.getCurrentUserId();
+        if(userId != null){
+            isLikeYn = recommendMapper.isPostLike(post.getPostId(), userId);
         }
 
         // 4. DTO 생성
@@ -246,6 +255,17 @@ public class RecommendService {
     }
 
     public void deletePost(Integer postId) {
+        Integer currentUserId = SecurityUtil.getCurrentUserId();
+        String role = SecurityUtil.getCurrentUserRole();
+
+        PostDomain post = recommendMapper.getPostDetail(postId);
+        if (post == null) {
+            throw new RuntimeException("게시글 없음");
+        }
+
+        // 관리자 / 사용자 체크
+        postDeletePolicy.check(post.getAuthorId(), currentUserId, role);
+
         recommendMapper.deletePost(postId);
     }
 
@@ -254,7 +274,17 @@ public class RecommendService {
     }
 
     // 조회수 증가
-    public void incrementViewCount(Integer postId) { recommendMapper.incrementViewCount(postId);}
+    public void incrementViewCount(Integer postId, HttpServletRequest request, HttpServletResponse response) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+        PostDomain post = recommendMapper.getPostDetail(postId);
+
+        if (post == null) return;
+
+        if (viewCountService.canIncrease("recommend", postId, userId, post.getAuthorId(), request, response)) {
+            recommendMapper.incrementViewCount(postId);
+        }
+
+    }
 
     // 좋아요 업데이트
     public Map<String, Boolean> updatePostLike (Integer postId) {

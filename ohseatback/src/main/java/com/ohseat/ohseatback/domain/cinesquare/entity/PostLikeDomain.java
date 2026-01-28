@@ -1,10 +1,12 @@
 package com.ohseat.ohseatback.domain.cinesquare.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class PostLikeDomain {
     private Integer postLikeId;
     private Integer postId;

@@ -8,11 +8,15 @@ import com.ohseat.ohseatback.domain.cinesquare.dto.CineSquareResponse;
 import com.ohseat.ohseatback.domain.cinesquare.entity.CommentDomain;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareRepository;
+import com.ohseat.ohseatback.domain.common.policy.PostDeletePolicy;
+import com.ohseat.ohseatback.domain.common.service.ViewCountService;
 import com.ohseat.ohseatback.domain.file.entity.FileEntity;
 import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.security.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import com.ohseat.ohseatback.utils.LocationUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,26 +35,31 @@ public class CineSquareService {
     private final CineSquareMapper cineSquareMapper;
     private final LocationUtils locationUtils;
     private final FileService fileService;
+    private final PostDeletePolicy postDeletePolicy;
+    private final ViewCountService viewCountService;
 
     // 게시글 등록
     public void createPost(CineSquare post) { cineSquareRepository.insertPost(post); }
 
     // 단건 조회
     @Transactional
-    public CineSquareResponse getPost(Integer postId) {
+    public CineSquareResponse getPost(Integer postId, HttpServletRequest request, HttpServletResponse response) {
         // 존재 여부 확인
         CineSquare post = cineSquareRepository.selectPostById(postId);
         if (post == null) return null;
 
+        Integer userId = SecurityUtil.getCurrentUserId();
+
         // 조회수 증가
-        cineSquareRepository.increaseViewCount(postId);
+        if (viewCountService.canIncrease("cinesquare", postId, userId, post.getAuthorId(), request, response)) {
+            cineSquareRepository.increaseViewCount(postId);
+        };
 
         // 댓글, 좋아요 수
         int commentCount = cineSquareRepository.countCommentsByPostId(postId);
         int likeCount = cineSquareRepository.countLikesByPostId(postId);
 
         // 좋아요 여부
-        Integer userId = SecurityUtil.getCurrentUserId();
         boolean liked = isLiked(postId);
 
         // Prev / Next
@@ -61,14 +70,14 @@ public class CineSquareService {
         CineSquare updatedPost =  cineSquareRepository.selectPostById(postId);
 
         // DTO 생성
-        CineSquareResponse response = cineSquareMapper.toResponseDto(updatedPost);
-        response.setCommentCount(commentCount);
-        response.setLikeCount(likeCount);
-        response.setPrevPostId(prevPostId);
-        response.setNextPostId(nextPostId);
-        response.setIsLiked(liked);
+        CineSquareResponse responseDto = cineSquareMapper.toResponseDto(updatedPost);
+        responseDto.setCommentCount(commentCount);
+        responseDto.setLikeCount(likeCount);
+        responseDto.setPrevPostId(prevPostId);
+        responseDto.setNextPostId(nextPostId);
+        responseDto.setIsLiked(liked);
 
-        return response;
+        return responseDto;
     }
 
     // 카테고리별 게시글 무한 스크롤 조회
@@ -140,18 +149,21 @@ public class CineSquareService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePostWithFiles(Integer postId, Integer authorId) throws IOException {
+    public void deletePostWithFiles(Integer postId) {
         CineSquare post = cineSquareRepository.selectPostById(postId);
         if (post == null) throw new PostNotFoundException("게시글이 존재하지 않습니다.");
-        if (!post.getAuthorId().equals(authorId))
-            throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
+
+        Integer currentUserId = SecurityUtil.getCurrentUserId();
+
+        // 관리자 / 사용자 체크
+        postDeletePolicy.check(post.getAuthorId(), currentUserId, SecurityUtil.getCurrentUserRole());
 
         List<FileEntity> files = fileService.getFiles("CINESQUARE_POST", postId);
         for(FileEntity file : files) {
             fileService.deleteFile(file.getFileId());
         }
 
-        cineSquareRepository.deletePost(postId, authorId);
+        cineSquareRepository.deletePost(postId);
     }
 
     public LocationResponse getLocation (double longitude, double latitude) {

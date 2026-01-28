@@ -78,6 +78,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("NULL_POINTER", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /** 비즈니스 상태 오류 (ex. 고정 공지 1개 제한) */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
+        return buildErrorResponse("ILLEGAL_STATE", ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
     /** 알 수 없는 예외 처리 */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {

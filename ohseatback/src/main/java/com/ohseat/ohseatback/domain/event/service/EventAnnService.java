@@ -1,9 +1,12 @@
 package com.ohseat.ohseatback.domain.event.service;
 
+import com.ohseat.ohseatback.domain.common.service.ViewCountService;
 import com.ohseat.ohseatback.domain.event.dto.*;
 import com.ohseat.ohseatback.domain.event.mapper.EventAnnMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +21,7 @@ import java.util.List;
 public class EventAnnService {
 
     private final EventAnnMapper eventAnnMapper;
+    private final ViewCountService viewCountService;
 
     // 이벤트 당첨발표 게시글 등록
     public EventAnnWriteResponse create(EventAnnRequest request) {
@@ -44,22 +48,29 @@ public class EventAnnService {
     }
 
     // 이벤트 당첨발표 게시글 상세 조회
-    public EventAnnDetailResponse detail(Integer eventId) {
+    public EventAnnDetailResponse detail(Integer eventId, HttpServletRequest request, HttpServletResponse response) {
         Integer userId = SecurityUtil.getCurrentUserId();
 
-        eventAnnMapper.increaseViews(eventId);
+        // 최초 조회
+        EventAnnDetailResponse responseDto = eventAnnMapper.selectAnnEventDetail(eventId);
 
-        EventAnnDetailResponse response = eventAnnMapper.selectAnnEventDetail(eventId);
+        // 조회수 증가
+        if (viewCountService.canIncrease("event", eventId, userId, responseDto.getAuthorId(), request, response)) {
+            eventAnnMapper.increaseViews(eventId);
+        }
+
+        // 증가 반영된 데이터 재조회
+        responseDto = eventAnnMapper.selectAnnEventDetail(eventId);
 
         // 좋아요 여부
         boolean liked = eventAnnMapper.isEventLiked(eventId, userId) > 0;
-        response.setIsLiked(liked);
+        responseDto.setIsLiked(liked);
 
         // 이전글 / 다음글
-        response.setPrevSeq(eventAnnMapper.selectPrevEventId(response.getCategoryId(), eventId));
-        response.setNextSeq(eventAnnMapper.selectNextEventId(response.getCategoryId(), eventId));
+        responseDto.setPrevSeq(eventAnnMapper.selectPrevEventId(responseDto.getCategoryId(), eventId));
+        responseDto.setNextSeq(eventAnnMapper.selectNextEventId(responseDto.getCategoryId(), eventId));
 
-        return response;
+        return responseDto;
     }
 
     // 좋아요

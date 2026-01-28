@@ -31,7 +31,7 @@
     <update id="increaseViewCount" parameterType="int">
         UPDATE cinesquare
         SET views = views + 1
-        WHERE post_id = ${postId}
+        WHERE post_id = #{postId}
     </update>
 
     <!--  카테고리별 전체 글 조회 (페이징 + 정렬) -->
@@ -99,7 +99,7 @@
     <!--  글 삭제  -->
     <delete id="deletePost" parameterType="int">
         DELETE FROM cinesquare
-        WHERE post_id = #{postId} AND author_id = #{authorId}
+        WHERE post_id = #{postId}
     </delete>
 
     <!--  댓글 목록  -->
@@ -220,19 +220,6 @@
         ORDER BY post_id ASC
         LIMIT 1
     </select>
-
-    <!--  관리자 공지 등록  -->
-    <insert id="insertNoticePost" parameterType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare"
-            useGeneratedKeys="true" keyProperty="postId">
-        INSERT INTO cinesquare (category_id, title, content, author_id, created_at, views, city, district, is_notice)
-        VALUES (#{categoryId}, #{title}, #{content}, #{authorId}, NOW(), 0, #{city}, #{district}, 1)
-    </insert>
-
-    <!--  관리자 글 삭제  -->
-    <delete id="deletePostByAdmin" parameterType="int">
-        DELETE FROM cinesquare
-        WHERE post_id = #{postId}
-    </delete>
 
     <!-- 메인 - 랜덤 4개 게시글 가져오기 -->
     <select id="selectRandomList" resultType="com.ohseat.ohseatback.domain.cinesquare.entity.CineSquare">
