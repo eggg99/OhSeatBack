@@ -26,5 +26,4 @@ public class Event {
     private Integer likeCount;
 
     private LocalDateTime createdAt;
-    private Boolean isNotice;
 }

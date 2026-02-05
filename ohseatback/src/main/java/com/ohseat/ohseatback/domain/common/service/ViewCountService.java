@@ -13,10 +13,13 @@ public class ViewCountService {
     private static final int COOKIE_EXPIRE = 60 * 60 * 24; // 1일
 
     /**
-     * @param prefix 게시판 구분 (recommend, cinesquare, notice, event ...)
+     * @param prefix 게시판 구분 (recommend, cinesquare, notice, event, event_ann ...)
+     * @param postId 게시글 ID
+     * @param userId 현재 로그인 유저 (nullable)
+     * @param authorId 게시글 작성자 (nullable)
      */
     public boolean canIncrease(String prefix, Integer postId, Integer userId, Integer authorId, HttpServletRequest request, HttpServletResponse response) {
-        // 작성자 제외
+        // 작성자 제외 (authorId 있을 때만)
         if (userId != null && authorId != null && Objects.equals(userId, authorId))
             return false;
 

@@ -5,8 +5,8 @@
 
     <!--  파일 등록  -->
     <insert id="insertFile" parameterType="com.ohseat.ohseatback.domain.file.entity.FileEntity" useGeneratedKeys="true" keyProperty="fileId">
-        INSERT INTO files (file_name, file_url, file_size, file_type, entity_id, entity_type, is_representative, uploaded_at)
-        VALUES (#{fileName}, #{fileUrl}, #{fileSize}, #{fileType}, #{entityId}, #{entityType}, #{isRepresentative}, NOW())
+        INSERT INTO files (file_name, file_url, file_size, file_type, entity_id, entity_type, file_role, is_representative, uploaded_at)
+        VALUES (#{fileName}, #{fileUrl}, #{fileSize}, #{fileType}, #{entityId}, #{entityType}, #{fileRole}, #{isRepresentative}, NOW())
     </insert>
 
     <!--  단건 조회  -->

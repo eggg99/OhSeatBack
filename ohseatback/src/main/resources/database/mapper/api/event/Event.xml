@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohseat.ohseatback.domain.event.mapper.EventMapper">
+
+    <!--  이벤트 전체 조회  -->
+    <select id="selectEventList" resultType="com.ohseat.ohseatback.domain.event.dto.EventListResponseDTO">
+        SELECT
+            e.event_id,
+            e.category_id,
+            e.title,
+            e.start_dt AS startDt,
+            e.end_dt AS endDt,
+            e.views,
+            e.like_count,
+            f.file_url AS imgUrl
+        FROM event e
+        LEFT JOIN files f
+            ON f.entity_type = 'EVENT'
+            AND f.entity_id = e.event_id
+            AND f.file_role = 'THUMB'
+        WHERE e.event_se = 'EVT'
+        
+        <choose>
+            <!-- 검색 중 + 특정 카테고리 선택 -->
+            <when test="searchValue != null and searchValue != '' and searchType > 0">
+                AND e.category_id = #{searchType}
+            </when>
+
+            <!-- 일반 목록 조회 -->
+            <otherwise>
+                <if test="categoryId != 0">
+                    AND e.category_id = #{categoryId}
+                </if>
+            </otherwise>
+        </choose>
+
+        <if test="searchValue != null and searchValue != ''">
+            AND e.title LIKE CONCAT('%', #{searchValue}, '%')
+        </if>
+
+        <choose>
+            <when test="orderType == 'likes'">
+                ORDER BY e.like_count DESC, e.event_id DESC
+            </when>
+            <when test="orderType == 'views'">
+                ORDER BY e.views DESC, e.event_id DESC
+            </when>
+            <otherwise>
+                ORDER BY e.event_id DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!--  전체 게시글 개수  -->
+    <select id="selectEventTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM event
+        WHERE event_se = 'EVT'
+        
+        <choose>
+            <when test="searchValue != null and searchValue != '' and searchType > 0">
+                AND category_id = #{searchType}
+            </when>
+        </choose>
+        
+        <if test="searchValue != null and searchValue != ''">
+            AND title LIKE CONCAT('%', #{searchValue}, '%')
+        </if>
+    </select>
+
+    <!--  카테고리별 게시글 개수  -->
+    <select id="selectEventCategoryCount" resultType="int">
+        SELECT COUNT(*)
+        FROM event
+        WHERE event_se = 'EVT'
+        
+        <choose>
+            <when test="searchValue != null and searchValue != '' and searchType > 0">
+                AND category_id = #{searchType}
+            </when>
+            <otherwise>
+                AND category_id = #{categoryId}
+            </otherwise>
+        </choose>
+
+        <if test="searchValue != null and searchValue != ''">
+            AND title LIKE CONCAT('%', #{searchValue}, '%')
+        </if>
+    </select>
+    
+    <!--  이벤트 상세 조회  -->
+    <select id="selectEventDetail" resultType="com.ohseat.ohseatback.domain.event.dto.EventDetailResponseDTO">
+        SELECT
+        event_id,
+        e.category_id,
+        e.author_id,
+        e.title,
+        e.ann_count,
+        e.start_dt,
+        e.end_dt,
+        e.views,
+        e.like_count
+        FROM event e
+        WHERE e.event_id = #{eventId}
+    </select>
+
+    <!--  조회수 증가  -->
+    <update id="increaseViews">
+        UPDATE event
+        SET views = views + 1
+        WHERE event_id = #{eventId}
+    </update>
+
+    <!--  이전글  -->
+    <select id="selectPrevEventId" resultType="int">
+        SELECT event_id
+        FROM event
+        WHERE category_id = #{categoryId}
+        AND event_id <![CDATA[ < ]]> #{eventId}
+        AND event_se = 'EVT'
+        ORDER BY event_id DESC
+        LIMIT 1
+    </select>
+
+    <!--  다음글  -->
+    <select id="selectNextEventId" resultType="int">
+        SELECT event_id
+        FROM event
+        WHERE category_id = #{categoryId}
+        AND event_id > #{eventId}
+        AND event_se = 'EVT'
+        ORDER BY event_id ASC
+        LIMIT 1
+    </select>
+
+    <!--  게시글 작성  -->
+    <insert id="insertEvent" useGeneratedKeys="true" keyProperty="eventId">
+        INSERT INTO event (event_se, category_id, author_id, title, ann_count, start_dt, end_dt)
+        VALUES ('EVT', #{categoryId}, #{authorId}, #{title}, #{annCount}, #{startDt}, #{endDt})
+    </insert>
+
+    <!--  게시글 수정  -->
+    <update id="updateEvent">
+        UPDATE event
+        SET
+        category_id = #{categoryId},
+        title = #{title},
+        ann_count = #{annCount},
+        start_dt = #{startDt},
+        end_dt = #{endDt}
+        WHERE event_id = #{eventId}
+    </update>
+
+    <!--  게시글 삭제  -->
+    <delete id="deleteEvent">
+        DELETE FROM event WHERE event_id = #{eventId}
+    </delete>
+
+</mapper>

@@ -19,6 +19,7 @@ public class FileEntity {
     private String fileType;            // 확장자(MIME or ext)
     private Integer entityId;           // 연결된 엔티티의 PK
     private String entityType;          // PROFILE / CINESQUARE_POST / COMMENT
+    private String fileRole;            // POSTER, THUMB, BANNER, CONTENT
     private String isRepresentative;    // 대표 이미지 여부 (Y/N)
     private LocalDateTime uploadedAt;          // 업로드 시각
 }

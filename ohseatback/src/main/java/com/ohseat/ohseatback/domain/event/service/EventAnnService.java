@@ -22,6 +22,7 @@ public class EventAnnService {
 
     private final EventAnnMapper eventAnnMapper;
     private final ViewCountService viewCountService;
+    private final EventInteractionService eventInteractionService;
 
     // 이벤트 당첨발표 게시글 등록
     public EventAnnWriteResponse create(EventAnnRequest request) {
@@ -55,7 +56,7 @@ public class EventAnnService {
         EventAnnDetailResponse responseDto = eventAnnMapper.selectAnnEventDetail(eventId);
 
         // 조회수 증가
-        if (viewCountService.canIncrease("event", eventId, userId, responseDto.getAuthorId(), request, response)) {
+        if (viewCountService.canIncrease("event_ann", eventId, userId, responseDto.getAuthorId(), request, response)) {
             eventAnnMapper.increaseViews(eventId);
         }
 
@@ -63,7 +64,7 @@ public class EventAnnService {
         responseDto = eventAnnMapper.selectAnnEventDetail(eventId);
 
         // 좋아요 여부
-        boolean liked = eventAnnMapper.isEventLiked(eventId, userId) > 0;
+        boolean liked = eventInteractionService.isLiked(eventId, userId);
         responseDto.setIsLiked(liked);
 
         // 이전글 / 다음글
@@ -78,20 +79,14 @@ public class EventAnnService {
     public void like(Integer eventId) {
         Integer userId = SecurityUtil.getCurrentUserId();
 
-        if(eventAnnMapper.isEventLiked(eventId, userId) == 0) {
-            eventAnnMapper.insertEventLike(eventId, userId);
-            eventAnnMapper.increaseEventLikeCount(eventId);
-        }
+        eventInteractionService.like(eventId, userId);
     }
 
     // 좋아요 취소
     public void unlike(Integer eventId) {
         Integer userId = SecurityUtil.getCurrentUserId();
 
-        if(eventAnnMapper.isEventLiked(eventId, userId) > 0) {
-            eventAnnMapper.deleteEventLike(eventId, userId);
-            eventAnnMapper.decreaseEventLikeCount(eventId);
-        }
+        eventInteractionService.unlike(eventId, userId);
     }
 
     // 이벤트 당첨발표 게시글 수정
