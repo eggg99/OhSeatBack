@@ -65,7 +65,7 @@ public class EventAnnService {
 
         // 좋아요 여부
         boolean liked = eventInteractionService.isLiked(eventId, userId);
-        responseDto.setIsLiked(liked);
+        responseDto.setLiked(liked);
 
         // 이전글 / 다음글
         responseDto.setPrevSeq(eventAnnMapper.selectPrevEventId(responseDto.getCategoryId(), eventId));
@@ -78,14 +78,12 @@ public class EventAnnService {
     @Transactional
     public void like(Integer eventId) {
         Integer userId = SecurityUtil.getCurrentUserId();
-
         eventInteractionService.like(eventId, userId);
     }
 
     // 좋아요 취소
     public void unlike(Integer eventId) {
         Integer userId = SecurityUtil.getCurrentUserId();
-
         eventInteractionService.unlike(eventId, userId);
     }
 

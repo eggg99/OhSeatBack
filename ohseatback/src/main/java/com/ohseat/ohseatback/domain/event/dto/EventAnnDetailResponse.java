@@ -15,7 +15,7 @@ public class EventAnnDetailResponse {
     private LocalDateTime createdAt;
 
     private Integer likeCount;  // 좋아요 개수
-    private Boolean isLiked;      // 좋아요 여부
+    private boolean liked;      // 좋아요 여부
     private Integer prevSeq;    // 이전글
     private Integer nextSeq;    // 다음글
 

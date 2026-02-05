@@ -42,6 +42,20 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventDetail(eventId, request, response));
     }
 
+    // 좋아요
+    @PostMapping("/{eventId}/like")
+    public ResponseEntity<Map<String, String>> like(@PathVariable Integer eventId) {
+        eventService.like(eventId);
+        return ResponseEntity.ok(Map.of("msg", "좋아요 성공"));
+    }
+
+    // 좋아요 취소
+    @DeleteMapping("/{eventId}/like")
+    public ResponseEntity<Map<String, String>> unlike(@PathVariable Integer eventId) {
+        eventService.unlike(eventId);
+        return ResponseEntity.ok(Map.of("msg", "좋아요 취소 성공"));
+    }
+
     // 게시글 작성
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -54,7 +68,7 @@ public class EventController {
         int eventId = eventService.createEvent(dto, SecurityUtil.getCurrentUserId(), poster, thumbnail, banner, contentFiles);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("id", eventId);
+        result.put("eventId", eventId);
         result.put("msg", "이벤트 등록 성공");
 
         return ResponseEntity.ok(result);
@@ -63,7 +77,7 @@ public class EventController {
     // 게시글 수정
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{eventId}")
-    public ResponseEntity<Map<String, String>> updateEvent(@PathVariable int eventId, @RequestPart("data")EventUpdateRequestDTO dto,
+    public ResponseEntity<Map<String, String>> updateEvent(@PathVariable int eventId, @RequestPart("data") EventUpdateRequestDTO dto,
                                                            @RequestPart(value = "new_poster", required = false) MultipartFile newPoster, @RequestPart(value = "delete_poster_ids", required = false) List<Integer> deletePosterIds,
                                                            @RequestPart(value = "new_thumbnail", required = false) MultipartFile newThumbnail, @RequestPart(value = "delete_thumbnail_ids", required = false) List<Integer> deleteThumbnailIds,
                                                            @RequestPart(value = "new_banner", required = false) MultipartFile newBanner, @RequestPart(value = "delete_banner_ids", required = false) List<Integer> deleteBannerIds,

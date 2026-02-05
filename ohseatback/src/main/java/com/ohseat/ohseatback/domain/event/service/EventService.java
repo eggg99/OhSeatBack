@@ -30,6 +30,7 @@ public class EventService {
     private final EventMapper eventMapper;
     private final FileService fileService;
     private final ViewCountService viewCountService;
+    private final EventInteractionService eventInteractionService;
 
     // 이벤트 전체 조회
     public Page<EventListResponseDTO> getEventList(Integer categoryId, Integer searchType, String searchValue, String orderType, int page, int size) {
@@ -68,10 +69,27 @@ public class EventService {
 
         dto.setFiles(fileService.getFiles("EVENT", eventId, "CONTENT"));
 
+        boolean liked = eventInteractionService.isLiked(eventId, userId);
+        dto.setLiked(liked);
+
         dto.setPrevSeq(eventMapper.selectPrevEventId(eventId, dto.getCategoryId()));
         dto.setNextSeq(eventMapper.selectNextEventId(eventId, dto.getCategoryId()));
 
         return dto;
+    }
+
+    // 좋아요
+    @Transactional
+    public void like(Integer eventId) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+        eventInteractionService.like(eventId, userId);
+    }
+
+    // 좋아요 취소
+    @Transactional
+    public void unlike(Integer eventId) {
+        Integer userId = SecurityUtil.getCurrentUserId();
+        eventInteractionService.unlike(eventId, userId);
     }
 
     // 게시글 작성
