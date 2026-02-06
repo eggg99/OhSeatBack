@@ -45,4 +45,12 @@
         WHERE file_id = #{fileId}
     </update>
 
+    <!--  수정 시 빈 파일 삭제용  -->
+    <delete id="deleteEmptyFiles">
+        DELETE FROM files
+        WHERE entity_type = #{entityType}
+        AND entity_id = #{entityId}
+        AND file_size = 0
+    </delete>
+
 </mapper>

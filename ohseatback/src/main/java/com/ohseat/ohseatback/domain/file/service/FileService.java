@@ -65,7 +65,7 @@ public class FileService {
 
     // event 로직 추가
     public void save(MultipartFile file, Integer entityId, String entityType, String role) {
-        if (file == null) return;
+        if (file == null || file.isEmpty()) return;
 
         try {
             FileEntity entity = fileUtils.storeFile(file, entityType, entityId);
@@ -102,5 +102,18 @@ public class FileService {
         for (Integer id : ids) {
             deleteFile(id);
         }
+    }
+
+    public void deleteByEntityAndRole(String entityType, Integer entityId, String role) {
+        List<FileEntity> files = fileMapper.selectFilesByEntity(entityType, entityId);
+        for (FileEntity f : files) {
+            if (role.equals(f.getFileRole())) {
+                deleteFile(f.getFileId());
+            }
+        }
+    }
+
+    public void deleteEmptyFiles(String entityType, Integer entityId) {
+        fileMapper.deleteEmptyFiles(entityType, entityId);
     }
 }

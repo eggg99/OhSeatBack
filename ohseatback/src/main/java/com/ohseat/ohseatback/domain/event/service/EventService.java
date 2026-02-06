@@ -123,6 +123,9 @@ public class EventService {
                             MultipartFile newBanner, List<Integer> deleteBannerIds,
                             List<MultipartFile> newFiles, List<Integer> deleteFileIds) {
 
+        // 과거에 쌓인 빈 파일 전부 정리
+        fileService.deleteEmptyFiles("EVENT", eventId);
+
         // 이벤트 기본 정보 수정
         Event event = new Event();
         event.setEventId(eventId);
@@ -134,18 +137,28 @@ public class EventService {
 
         eventMapper.updateEvent(event);
 
-        // 파일 삭제 (기존 파일 유지)
-        fileService.deleteFiles(deletePosterIds);
-        fileService.deleteFiles(deleteThumbnailIds);
-        fileService.deleteFiles(deleteBannerIds);
-        fileService.deleteFiles(deleteFileIds);
+        // 새 파일 추가 및 기존 파일 삭제
+        // POSTER
+        if (newPoster != null && !newPoster.isEmpty()) {
+            fileService.deleteByEntityAndRole("EVENT", eventId, "POSTER");
+            fileService.save(newPoster, eventId, "EVENT", "POSTER");
+        }
 
-        // 새 파일 추가
-        fileService.save(newPoster, eventId, "EVENT", "POSTER");
-        fileService.save(newThumbnail, eventId, "EVENT", "THUMB");
-        fileService.save(newBanner, eventId, "EVENT", "BANNER");
+        // THUMB
+        if (newThumbnail != null && !newThumbnail.isEmpty()) {
+            fileService.deleteByEntityAndRole("EVENT", eventId, "THUMB");
+            fileService.save(newThumbnail, eventId, "EVENT", "THUMB");
+        }
+
+        // BANNER
+        if (newBanner != null && !newBanner.isEmpty()) {
+            fileService.deleteByEntityAndRole("EVENT", eventId, "BANNER");
+            fileService.save(newBanner, eventId, "EVENT", "BANNER");
+        }
+
+        // CONTENT
+        fileService.deleteFiles(deleteFileIds); // 선택 삭제
         fileService.save(newFiles, eventId, "EVENT", "CONTENT");
-
     }
 
     // 게시글 삭제
