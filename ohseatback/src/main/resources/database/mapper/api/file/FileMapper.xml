@@ -11,14 +11,14 @@
 
     <!--  단건 조회  -->
     <select id="selectFileById" resultType="com.ohseat.ohseatback.domain.file.entity.FileEntity">
-        SELECT file_id, file_name, file_url, file_size, file_type, entity_id, entity_type, is_representative, uploaded_at
+        SELECT file_id, file_name, file_url, file_size, file_type, entity_id, entity_type, file_role, is_representative, uploaded_at
         FROM files
         WHERE file_id = #{fileId}
     </select>
 
     <!--  특정 게시글/댓글/회원의 파일 목록 조회  -->
     <select id="selectFilesByEntity" resultType="com.ohseat.ohseatback.domain.file.entity.FileEntity">
-        SELECT file_id, file_name, file_url, file_size, file_type, entity_id, entity_type, is_representative, uploaded_at
+        SELECT file_id, file_name, file_url, file_size, file_type, entity_id, entity_type, file_role, is_representative, uploaded_at
         FROM files
         WHERE entity_type = #{entityType}
         AND entity_id = #{entityId}
