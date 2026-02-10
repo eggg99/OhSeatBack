@@ -121,7 +121,7 @@ public class EventService {
                             MultipartFile newPoster, List<Integer> deletePosterIds,
                             MultipartFile newThumbnail, List<Integer> deleteThumbnailIds,
                             MultipartFile newBanner, List<Integer> deleteBannerIds,
-                            List<MultipartFile> newFiles, List<Integer> deleteFileIds) {
+                            List<MultipartFile> newContentFiles, List<Integer> deleteContentIds) {
 
         // 과거에 쌓인 빈 파일 전부 정리
         fileService.deleteEmptyFiles("EVENT", eventId);
@@ -157,8 +157,8 @@ public class EventService {
         }
 
         // CONTENT
-        fileService.deleteFiles(deleteFileIds); // 선택 삭제
-        fileService.save(newFiles, eventId, "EVENT", "CONTENT");
+        fileService.deleteFiles(deleteContentIds); // 선택 삭제
+        fileService.save(newContentFiles, eventId, "EVENT", "CONTENT");
     }
 
     // 게시글 삭제

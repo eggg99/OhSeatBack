@@ -81,9 +81,9 @@ public class EventController {
                                                            @RequestPart(value = "new_poster", required = false) MultipartFile newPoster, @RequestPart(value = "delete_poster_ids", required = false) List<Integer> deletePosterIds,
                                                            @RequestPart(value = "new_thumbnail", required = false) MultipartFile newThumbnail, @RequestPart(value = "delete_thumbnail_ids", required = false) List<Integer> deleteThumbnailIds,
                                                            @RequestPart(value = "new_banner", required = false) MultipartFile newBanner, @RequestPart(value = "delete_banner_ids", required = false) List<Integer> deleteBannerIds,
-                                                           @RequestPart(value = "new_files", required = false) List<MultipartFile> newFiles, @RequestPart(value = "delete_files_ids", required = false) List<Integer> deleteFileIds) {
+                                                           @RequestPart(value = "new_content", required = false) List<MultipartFile> newContentFiles, @RequestPart(value = "delete_content_ids", required = false) List<Integer> deleteContentIds) {
 
-        eventService.updateEvent(eventId, dto, newPoster, deletePosterIds, newThumbnail, deleteThumbnailIds, newBanner, deleteBannerIds, newFiles, deleteFileIds);
+        eventService.updateEvent(eventId, dto, newPoster, deletePosterIds, newThumbnail, deleteThumbnailIds, newBanner, deleteBannerIds, newContentFiles, deleteContentIds);
 
         return ResponseEntity.ok(Map.of("msg", "이벤트 수정 성공"));
     }
