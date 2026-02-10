@@ -64,7 +64,7 @@ public class EventController {
                                                            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
                                                            @RequestPart(value = "banner", required = false) MultipartFile banner,
                                                            @RequestPart(value = "content", required = false)List<MultipartFile> contentFiles) {
-        // ??? authorId의 행방 찾기
+
         int eventId = eventService.createEvent(dto, SecurityUtil.getCurrentUserId(), poster, thumbnail, banner, contentFiles);
 
         Map<String, Object> result = new HashMap<>();

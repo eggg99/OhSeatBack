@@ -132,4 +132,19 @@ public class UserService {
         userRepository.deleteUserById(userId);
     }
 
+    // 닉네임 중복 확인
+    public boolean isNicknameDuplicated(Integer userId, String nickname) {
+
+        // 비로그인 상태 -> 회원가입
+        if (userId == null) {
+            return userRepository.existsByNickname(nickname) > 0;
+        }
+
+        // 로그인 상태 -> 마이페이지
+        User user = new User();
+        user.setUserId(userId);
+        user.setNickname(nickname);
+
+        return userRepository.countByNickname(user) > 0;
+    }
 }

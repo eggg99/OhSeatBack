@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 "/api/rcmd/**",
                                 "/api/user/findPw",
                                 "/api/user/findEmail",
+                                "/api/user/check-nickname",
                                 "/api/user/login",
                                 "/api/user/join").permitAll()
 

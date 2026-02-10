@@ -14,7 +14,7 @@
         SELECT COUNT(*) FROM users WHERE email = #{email}
     </select>
 
-    <!--  닉네임 중복 확인  -->
+    <!--  회원가입 닉네임 중복 확인  -->
     <select id="existsByNickname" parameterType="string" resultType="int">
         SELECT COUNT(*) FROM users WHERE nickname = #{nickname}
     </select>
@@ -62,6 +62,7 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--  마이페이지 닉네임 중복 확인  -->
     <select id="countByNickname" parameterType="com.ohseat.ohseatback.domain.user.entity.User" resultType="int">
         SELECT COUNT(*)
         FROM users

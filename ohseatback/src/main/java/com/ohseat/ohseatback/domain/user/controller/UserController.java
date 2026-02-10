@@ -1,10 +1,7 @@
 package com.ohseat.ohseatback.domain.user.controller;
 
+import com.ohseat.ohseatback.domain.user.dto.*;
 import com.ohseat.ohseatback.domain.user.entity.User;
-import com.ohseat.ohseatback.domain.user.dto.JoinRequest;
-import com.ohseat.ohseatback.domain.user.dto.LoginRequest;
-import com.ohseat.ohseatback.domain.user.dto.PasswordChangeRequest;
-import com.ohseat.ohseatback.domain.user.dto.UserUpdateRequest;
 import com.ohseat.ohseatback.exception.business.InvalidPasswordException;
 import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.exception.business.UserNotFoundException;
@@ -119,7 +116,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
     /**
      * 마이페이지 조회
      * @return user
@@ -182,5 +178,29 @@ public class UserController {
     public ResponseEntity<String> deleteMyPage(@PathVariable Integer userId) {
         userService.deleteMyPage(userId);
         return ResponseEntity.ok("회원정보 삭제 완료");
+    }
+
+    /**
+     * 닉네임 중복 확인
+     */
+    @PostMapping("/check-nickname")
+    public ResponseEntity<Map<String, Object>> checkNickname(@RequestBody @Valid NicknameCheckRequest request) {
+
+        Integer userId = null;
+
+        // 로그인 상태면 userId 있음
+        try {
+            userId = SecurityUtil.getCurrentUserId();
+        } catch (Exception ignored) {
+            // 비로그인 상태 (회원가입)
+        }
+
+        boolean duplicated = userService.isNicknameDuplicated(userId, request.getNickname());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("duplicated", duplicated);
+        result.put("message", duplicated ? "이미 사용 중인 닉네임입니다." : "사용 가능한 닉네임입니다.");
+
+        return ResponseEntity.ok(result);
     }
 }
