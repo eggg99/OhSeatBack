@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohseat.ohseatback.domain.event.mapper.EventInteractionMapper">
+
+    <!--  좋아요 여부  -->
+    <select id="isEventLiked" resultType="int">
+        SELECT COUNT(*)
+        FROM event_like
+        WHERE event_id = #{eventId}
+        AND user_id = #{userId}
+    </select>
+
+    <!--  좋아요 추가  -->
+    <insert id="insertEventLike">
+        INSERT INTO event_like (event_id, user_id)
+        VALUES (#{eventId}, #{userId})
+    </insert>
+
+    <!--  좋아요 삭제  -->
+    <delete id="deleteEventLike">
+        DELETE FROM event_like
+        WHERE event_id = #{eventId}
+        AND user_id = #{userId}
+    </delete>
+
+    <!--  좋아요 카운트 증가  -->
+    <update id="increaseEventLikeCount">
+        UPDATE event
+        SET like_count = like_count + 1
+        WHERE event_id = #{eventId}
+    </update>
+
+    <!--  좋아요 카운트 감소  -->
+    <update id="decreaseEventLikeCount">
+        UPDATE event
+        SET like_count = like_count - 1
+        WHERE event_id = #{eventId}
+        AND like_count > 0
+    </update>
+
+</mapper>

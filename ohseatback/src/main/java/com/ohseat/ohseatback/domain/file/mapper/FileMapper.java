@@ -19,4 +19,6 @@ public interface FileMapper {
 
     // 게시글 수정 시 newFileIds 처리용
     void updateEntityId(Integer fileId, Integer entityId, String entityType);
+
+    void deleteEmptyFiles(String entityType, Integer entityId);
 }

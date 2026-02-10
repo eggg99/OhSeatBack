@@ -5,8 +5,8 @@
 
     <!--  ANN 이벤트 등록  -->
     <insert id="insertAnnEvent" useGeneratedKeys="true" keyProperty="eventId">
-        INSERT INTO event (event_se, category_id, author_id, title, content, is_notice)
-        VALUES ('ANN', #{categoryId}, #{authorId}, #{title}, #{content}, 1)
+        INSERT INTO event (event_se, category_id, author_id, title, content)
+        VALUES ('ANN', #{categoryId}, #{authorId}, #{title}, #{content})
     </insert>
 
     <!--  ANN 리스트 조회 -->
@@ -133,42 +133,6 @@
         ORDER BY event_id ASC
         LIMIT 1
     </select>
-
-    <!--  좋아요 여부  -->
-    <select id="isEventLiked" resultType="int">
-        SELECT COUNT(*)
-        FROM event_like
-        WHERE event_id = #{eventId}
-        AND user_id = #{userId}
-    </select>
-
-    <!--  좋아요 추가  -->
-    <insert id="insertEventLike">
-        INSERT INTO event_like (event_id, user_id)
-        VALUES (#{eventId}, #{userId})
-    </insert>
-
-    <!--  좋아요 삭제  -->
-    <delete id="deleteEventLike">
-        DELETE FROM event_like
-        WHERE event_id = #{eventId}
-        AND user_id = #{userId}
-    </delete>
-
-    <!--  좋아요 카운트 증가  -->
-    <update id="increaseEventLikeCount">
-        UPDATE event
-        SET like_count = like_count + 1
-        WHERE event_id = #{eventId}
-    </update>
-
-    <!--  좋아요 카운트 감소  -->
-    <update id="decreaseEventLikeCount">
-        UPDATE event
-        SET like_count = like_count - 1
-        WHERE event_id = #{eventId}
-        AND like_count > 0
-    </update>
 
     <!--  ANN 수정  -->
     <update id="updateAnnEvent">

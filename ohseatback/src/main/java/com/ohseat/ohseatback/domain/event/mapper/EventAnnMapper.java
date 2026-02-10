@@ -28,15 +28,6 @@ public interface EventAnnMapper {
     Integer selectPrevEventId(@Param("categoryId") Integer categoryId, @Param("eventId") Integer eventId);
     Integer selectNextEventId(@Param("categoryId") Integer categoryId, @Param("eventId") Integer eventId);
 
-    // 좋아요
-    int isEventLiked(@Param("eventId")Integer eventId, @Param("userId") Integer userId);
-
-    void insertEventLike(@Param("eventId") Integer eventId, @Param("userId") Integer userId);
-    void deleteEventLike(@Param("eventId") Integer eventId, @Param("userId") Integer userId);
-
-    void increaseEventLikeCount(@Param("eventId") Integer eventId);
-    void decreaseEventLikeCount(@Param("eventId") Integer eventId);
-
     // ANN 수정
     int updateAnnEvent(@Param("eventId") Integer eventId, @Param("authorId") Integer authorId, @Param("request") EventAnnRequest request);
 

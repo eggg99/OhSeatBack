@@ -44,13 +44,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // GET 전용 API (페이징, 조회용)
-                        .requestMatchers(HttpMethod.GET, "/api/cinesquare/**", "/api/boxoffice/**", "/api/event/announcement/**", "/api/notices/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/cinesquare/**", "/api/boxoffice/**", "/api/event/**", "/api/notices/**").permitAll()
 
                         // POST/PUT/DELETE 포함 모든 메서드 허용 API (로그인, 회원가입, 비밀번호 찾기 등)
                         .requestMatchers(
                                 "/api/rcmd/**",
                                 "/api/user/findPw",
                                 "/api/user/findEmail",
+                                "/api/user/check-nickname",
                                 "/api/user/login",
                                 "/api/user/join").permitAll()
 

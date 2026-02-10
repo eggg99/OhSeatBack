@@ -62,4 +62,58 @@ public class FileService {
             }
         }
     }
+
+    // event 로직 추가
+    public void save(MultipartFile file, Integer entityId, String entityType, String role) {
+        if (file == null || file.isEmpty()) return;
+
+        try {
+            FileEntity entity = fileUtils.storeFile(file, entityType, entityId);
+            entity.setFileRole(role);
+            entity.setIsRepresentative("N");
+            fileMapper.insertFile(entity);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save(List<MultipartFile> files, Integer entityId, String entityType, String role) {
+        if (files == null) return;
+        for (MultipartFile file : files) {
+            save(file, entityId, entityType, role);
+        }
+    }
+
+    public void deleteByEntity(String entityType, Integer entityId) {
+        List<FileEntity> files = fileMapper.selectFilesByEntity(entityType, entityId);
+        for (FileEntity f : files) {
+            deleteFile(f.getFileId());
+        }
+    }
+
+    public List<FileResponse> getFiles(String entityType, Integer entityId, String role) {
+        return fileMapper.selectFilesByEntity(entityType, entityId).stream()
+                .map(FileResponse::from)
+                .toList();
+    }
+
+    public void deleteFiles(List<Integer> ids) {
+        if (ids == null) return;
+        for (Integer id : ids) {
+            deleteFile(id);
+        }
+    }
+
+    public void deleteByEntityAndRole(String entityType, Integer entityId, String role) {
+        List<FileEntity> files = fileMapper.selectFilesByEntity(entityType, entityId);
+        for (FileEntity f : files) {
+            if (role.equals(f.getFileRole())) {
+                deleteFile(f.getFileId());
+            }
+        }
+    }
+
+    public void deleteEmptyFiles(String entityType, Integer entityId) {
+        fileMapper.deleteEmptyFiles(entityType, entityId);
+    }
 }
