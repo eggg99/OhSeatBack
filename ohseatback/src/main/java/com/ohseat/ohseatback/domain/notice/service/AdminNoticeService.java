@@ -4,7 +4,11 @@ import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeCreateRequest;
 import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
 import com.ohseat.ohseatback.domain.notice.mapper.NoticeMapper;
+import com.ohseat.ohseatback.utils.CustomPageUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +23,18 @@ public class AdminNoticeService {
 
     // 관리자 공지사항 전체 조회
     @Transactional(readOnly = true)
-    public List<NoticeAdminListResponse> getAdminNoticeList(String targetBoard) {
-        return noticeMapper.selectAdminNoticeList(targetBoard);
+    public Page<NoticeAdminListResponse> getAdminNoticeList(String targetBoard, int page, int size) {
+
+        Pageable pageable = CustomPageUtils.getPageable(page, size);
+
+        long totalCount = noticeMapper.selectAdminNoticeCount(targetBoard);
+
+        int offset =(int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+
+        List<NoticeAdminListResponse> list = noticeMapper.selectAdminNoticeList(targetBoard, offset, limit);
+
+        return new PageImpl<>(list, pageable, totalCount);
     }
 
     // 공지사항 작성

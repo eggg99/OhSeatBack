@@ -7,6 +7,7 @@ import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
 import com.ohseat.ohseatback.domain.notice.service.AdminNoticeService;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,10 @@ public class AdminNoticeController {
 
     // 관리자 공지사항 전체 조회
     @GetMapping
-    public List<NoticeAdminListResponse> list(@RequestParam String targetBoard) {
-        return adminNoticeService.getAdminNoticeList(targetBoard);
+    public ResponseEntity<Page<NoticeAdminListResponse>> list(@RequestParam String targetBoard,
+                                                              @RequestParam(defaultValue = "1") int page,
+                                                              @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(adminNoticeService.getAdminNoticeList(targetBoard, page, size));
     }
 
     // 공지사항 작성

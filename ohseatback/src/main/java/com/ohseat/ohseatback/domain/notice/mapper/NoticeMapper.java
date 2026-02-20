@@ -16,7 +16,10 @@ public interface NoticeMapper {
     void insertNotice(@Param("targetBoard") String targetBoard, @Param("authorId") Integer authorId, @Param("title") String title, @Param("content") String content);
 
     // 관리자 공지사항 전체 조회
-    List<NoticeAdminListResponse> selectAdminNoticeList(String targetBoard);
+    List<NoticeAdminListResponse> selectAdminNoticeList(@Param("targetBoard") String targetBoard, @Param("offset") int offset, @Param("limit") int limit);
+
+    // 전체 공지글 개수
+    int selectAdminNoticeCount(String targetBoard);
 
     // 공지사항 전체 조회
     List<NoticeListResponse> selectTopPinnedNotices(String targetBoard);
