@@ -1,12 +1,10 @@
 package com.ohseat.ohseatback.domain.event.service;
 
 import com.ohseat.ohseatback.domain.common.service.ViewCountService;
-import com.ohseat.ohseatback.domain.event.dto.EventCreateRequestDTO;
-import com.ohseat.ohseatback.domain.event.dto.EventDetailResponseDTO;
-import com.ohseat.ohseatback.domain.event.dto.EventListResponseDTO;
-import com.ohseat.ohseatback.domain.event.dto.EventUpdateRequestDTO;
+import com.ohseat.ohseatback.domain.event.dto.*;
 import com.ohseat.ohseatback.domain.event.entity.Event;
 import com.ohseat.ohseatback.domain.event.mapper.EventMapper;
+import com.ohseat.ohseatback.domain.file.dto.FileResponse;
 import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
@@ -31,6 +29,26 @@ public class EventService {
     private final FileService fileService;
     private final ViewCountService viewCountService;
     private final EventInteractionService eventInteractionService;
+
+    // 메인 이벤트 조회 (진행중+ 랜덤)
+    public List<EventMainResponseDTO> getMainEvents(int count) {
+
+        List<EventMainResponseDTO> list = eventMapper.selectRandomOngoingEvents(count);
+
+        list.forEach(dto -> {
+
+            dto.setEnd(dto.getEndDt().isBefore(LocalDate.now()));
+
+            dto.setFiles(
+                    fileService.getFiles("EVENT", dto.getEventId())
+                            .stream()
+                            .map(FileResponse::from)
+                            .toList()
+            );
+        });
+
+        return list;
+    }
 
     // 이벤트 전체 조회
     public Page<EventListResponseDTO> getEventList(Integer categoryId, Integer searchType, String searchValue, String orderType, int page, int size) {
@@ -167,6 +185,5 @@ public class EventService {
         fileService.deleteByEntity("EVENT", eventId);
         eventMapper.deleteEvent(eventId);
     }
-
 
 }
