@@ -2,6 +2,7 @@ package com.ohseat.ohseatback.domain.event.mapper;
 
 import com.ohseat.ohseatback.domain.event.dto.EventDetailResponseDTO;
 import com.ohseat.ohseatback.domain.event.dto.EventListResponseDTO;
+import com.ohseat.ohseatback.domain.event.dto.EventMainResponseDTO;
 import com.ohseat.ohseatback.domain.event.entity.Event;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,6 +12,9 @@ import java.util.List;
 
 @Mapper
 public interface EventMapper {
+
+    // 메인 이벤트 조회 (진행중+ 랜덤)
+    List<EventMainResponseDTO> selectRandomOngoingEvents(@Param("count") int count);
 
     // 이벤트 전체 조회
     List<EventListResponseDTO> selectEventList(@Param("categoryId") Integer categoryId, @Param("searchType") Integer searchType, @Param("searchValue") String searchValue, @Param("orderType") String orderType, @Param("offset") int offset, @Param("size") int size);

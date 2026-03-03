@@ -2,6 +2,7 @@ package com.ohseat.ohseatback.domain.event.controller;
 
 import com.ohseat.ohseatback.domain.event.dto.EventCreateRequestDTO;
 import com.ohseat.ohseatback.domain.event.dto.EventListResponseDTO;
+import com.ohseat.ohseatback.domain.event.dto.EventMainResponseDTO;
 import com.ohseat.ohseatback.domain.event.dto.EventUpdateRequestDTO;
 import com.ohseat.ohseatback.domain.event.service.EventService;
 import com.ohseat.ohseatback.security.SecurityUtil;
@@ -24,6 +25,12 @@ import java.util.Map;
 public class EventController {
 
     private final EventService eventService;
+
+    // 메인 이벤트 조회 (진행중+ 랜덤)
+    @GetMapping("/main")
+    public ResponseEntity<List<EventMainResponseDTO>> getMainEvents(@RequestParam(defaultValue = "2") int count) {
+        return ResponseEntity.ok(eventService.getMainEvents(count));
+    }
 
     // 이벤트 전체 조회
     @GetMapping("/list")

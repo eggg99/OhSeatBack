@@ -3,6 +3,23 @@
 
 <mapper namespace="com.ohseat.ohseatback.domain.event.mapper.EventMapper">
 
+    <!--  메인 이벤트 조회 (진행중+ 랜덤)  -->
+    <select id="selectRandomOngoingEvents" resultType="com.ohseat.ohseatback.domain.event.dto.EventMainResponseDTO">
+        SELECT
+            event_id,
+            category_id,
+            title,
+            start_dt,
+            end_dt,
+            ann_count
+        FROM event
+        WHERE event_se = 'EVT'
+            AND start_dt <![CDATA[ <= ]]> CURDATE()
+            AND end_dt <![CDATA[ >= ]]> CURDATE()
+        ORDER BY RAND()
+        LIMIT #{count}
+    </select>
+
     <!--  이벤트 전체 조회  -->
     <select id="selectEventList" resultType="com.ohseat.ohseatback.domain.event.dto.EventListResponseDTO">
         SELECT
