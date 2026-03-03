@@ -1,8 +1,6 @@
 package com.ohseat.ohseatback.domain.notice.service;
 
-import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeCreateRequest;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
+import com.ohseat.ohseatback.domain.notice.dto.*;
 import com.ohseat.ohseatback.domain.notice.mapper.NoticeMapper;
 import com.ohseat.ohseatback.utils.CustomPageUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +35,32 @@ public class AdminNoticeService {
         return new PageImpl<>(list, pageable, totalCount);
     }
 
+    // 관리자 공지사항 상세 조회 (비활성화 포함)
+    @Transactional(readOnly = true)
+    public NoticeDetailResponse getNoticeDetailForAdmin(Integer noticeId) {
+
+        NoticeDetailResponse notice = noticeMapper.selectNoticeDetailForAdmin(noticeId);
+
+        if (notice == null) {
+            throw new IllegalStateException("존재하지 않는 공지입니다.");
+        }
+
+        return notice;
+    }
+
     // 공지사항 작성
     @Transactional
-    public void createNotice(NoticeCreateRequest request, Integer adminId) {
-        noticeMapper.insertNotice(request.getTargetBoard(), adminId, request.getTitle(), request.getContent());
+    public Integer createNotice(NoticeCreateRequest request, Integer adminId) {
+
+        NoticeCreateCommand command = new NoticeCreateCommand();
+        command.setTargetBoard(request.getTargetBoard());
+        command.setAuthorId(adminId);
+        command.setTitle(request.getTitle());
+        command.setContent(request.getContent());
+
+        noticeMapper.insertNotice(command);
+
+        return command.getNoticeId();
     }
 
     // 공지사항 수정

@@ -4,7 +4,7 @@
 <mapper namespace="com.ohseat.ohseatback.domain.notice.mapper.NoticeMapper">
 
     <!--  공지사항 작성  -->
-    <insert id="insertNotice">
+    <insert id="insertNotice" parameterType="com.ohseat.ohseatback.domain.notice.dto.NoticeCreateCommand" useGeneratedKeys="true" keyProperty="noticeId">
         INSERT INTO notice (target_board, author_id, title, content)
         VALUES (#{targetBoard}, #{authorId}, #{title}, #{content})
     </insert>
@@ -26,6 +26,22 @@
         WHERE n.target_board = #{targetBoard}
         ORDER BY n.is_pinned DESC, n.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!--  관리자 공지사항 상세 조회 (비활성화 포함)  -->
+    <select id="selectNoticeDetailForAdmin" resultType="com.ohseat.ohseatback.domain.notice.dto.NoticeDetailResponse">
+        SELECT
+            n.notice_id,
+            n.target_board,
+            n.title,
+            n.content,
+            n.author_id,
+            u.nickname AS authorNickName,
+            n.created_at,
+            n.views
+        FROM notice n
+        JOIN users u ON n.author_id = u.user_id
+        WHERE n.notice_id = #{noticeId}
     </select>
 
     <!--  전체 공지글 개수  -->

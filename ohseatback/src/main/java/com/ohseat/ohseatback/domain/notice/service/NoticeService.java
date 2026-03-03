@@ -32,6 +32,10 @@ public class NoticeService {
         Integer userId = SecurityUtil.getCurrentUserId();
         NoticeDetailResponse notice = noticeMapper.selectNoticeDetail(noticeId);
 
+        if (notice == null) {
+            throw new IllegalStateException("존재하지 않거나 비활성화된 공지입니다.");
+        }
+
         if (viewCountService.canIncrease("notice", noticeId, userId, notice.getAuthorId(), request, response)) {
             noticeMapper.increaseViews(noticeId);
 
