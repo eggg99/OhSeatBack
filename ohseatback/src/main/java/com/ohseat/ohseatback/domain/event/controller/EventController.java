@@ -60,7 +60,7 @@ public class EventController {
     @DeleteMapping("/{eventId}/like")
     public ResponseEntity<Map<String, String>> unlike(@PathVariable Integer eventId) {
         eventService.unlike(eventId);
-        return ResponseEntity.ok(Map.of("msg", "좋아요 취소 성공"));
+        return ResponseEntity.ok(Map.of("msg", "좋아요 취소"));
     }
 
     // 게시글 작성
