@@ -66,6 +66,7 @@ public class EventAnnService {
         // 좋아요 여부
         boolean liked = eventInteractionService.isLiked(eventId, userId);
         responseDto.setLiked(liked);
+        System.out.println("liked : " + liked);
 
         // 이전글 / 다음글
         responseDto.setPrevSeq(eventAnnMapper.selectPrevEventId(responseDto.getCategoryId(), eventId));

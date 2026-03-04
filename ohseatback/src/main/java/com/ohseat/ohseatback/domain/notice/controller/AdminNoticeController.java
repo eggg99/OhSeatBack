@@ -1,9 +1,6 @@
 package com.ohseat.ohseatback.domain.notice.controller;
 
-import com.ohseat.ohseatback.domain.notice.dto.NoticeActiveRequest;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeCreateRequest;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
+import com.ohseat.ohseatback.domain.notice.dto.*;
 import com.ohseat.ohseatback.domain.notice.service.AdminNoticeService;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +27,19 @@ public class AdminNoticeController {
         return ResponseEntity.ok(adminNoticeService.getAdminNoticeList(targetBoard, page, size));
     }
 
+    // 관리자 공지사항 상세 조회 (비활성화 포함)
+    @GetMapping("/{noticeId}")
+    public NoticeDetailResponse detail(@PathVariable Integer noticeId) {
+        return adminNoticeService.getNoticeDetailForAdmin(noticeId);
+    }
+
     // 공지사항 작성
     @PostMapping
-    public void create(@RequestBody NoticeCreateRequest request) {
+    public ResponseEntity<NoticeCreateResponse> create(@RequestBody NoticeCreateRequest request) {
         Integer adminId = SecurityUtil.getCurrentUserId();
-        adminNoticeService.createNotice(request, adminId);
+        Integer noticeId = adminNoticeService.createNotice(request, adminId);
+
+        return ResponseEntity.ok(new NoticeCreateResponse(noticeId, "공지사항 등록 완료"));
     }
     
     // 공지사항 수정

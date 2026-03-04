@@ -1,9 +1,6 @@
 package com.ohseat.ohseatback.domain.notice.mapper;
 
-import com.ohseat.ohseatback.domain.notice.dto.NoticeAdminListResponse;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeDetailResponse;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeListResponse;
-import com.ohseat.ohseatback.domain.notice.dto.NoticeUpdateRequest;
+import com.ohseat.ohseatback.domain.notice.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,10 +10,13 @@ import java.util.List;
 public interface NoticeMapper {
 
     // 공지사항 작성
-    void insertNotice(@Param("targetBoard") String targetBoard, @Param("authorId") Integer authorId, @Param("title") String title, @Param("content") String content);
+    void insertNotice(NoticeCreateCommand command);
 
     // 관리자 공지사항 전체 조회
     List<NoticeAdminListResponse> selectAdminNoticeList(@Param("targetBoard") String targetBoard, @Param("offset") int offset, @Param("limit") int limit);
+
+    // 관리자 공지사항 상세 조회 (비활성화 포함)
+    NoticeDetailResponse selectNoticeDetailForAdmin(Integer noticeId);
 
     // 전체 공지글 개수
     int selectAdminNoticeCount(String targetBoard);
