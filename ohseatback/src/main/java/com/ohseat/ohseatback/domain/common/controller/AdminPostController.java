@@ -17,9 +17,9 @@ public class AdminPostController {
 
     // 관리자 게시글 다건 삭제
     @DeleteMapping("/bulk")
-    public ResponseEntity<Void> bulkDelete(@RequestBody AdminPostBulkDeleteRequest request) {
+    public ResponseEntity<String> bulkDelete(@RequestBody AdminPostBulkDeleteRequest request) {
         adminPostService.bulkDelete(request.getBoardType(), request.getPostIds());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("게시글 삭제 완료");
     }
 
 }

@@ -26,15 +26,15 @@ public class AdminEventController {
 
     // 이벤트 당첨발표 게시글 수정
     @PutMapping("/announcement/{eventId}")
-    public ResponseEntity<Void> update(@PathVariable Integer eventId, @RequestBody EventAnnRequest request) {
+    public ResponseEntity<String> update(@PathVariable Integer eventId, @RequestBody EventAnnRequest request) {
         eventAnnService.update(eventId, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("게시글 수정 완료");
     }
 
     // 이벤트 당첨발표 게시글 삭제
     @DeleteMapping("/announcement/{eventId}")
-    public ResponseEntity<Void> delete(@PathVariable Integer eventId) {
+    public ResponseEntity<String> delete(@PathVariable Integer eventId) {
         eventAnnService.delete(eventId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("게시글 삭제 완료");
     }
 }

@@ -11,7 +11,6 @@ import com.ohseat.ohseatback.domain.cinesquare.service.LocationService;
 import com.ohseat.ohseatback.domain.file.dto.FileResponse;
 import com.ohseat.ohseatback.domain.file.service.FileService;
 import com.ohseat.ohseatback.exception.business.PostNotFoundException;
-import com.ohseat.ohseatback.exception.business.UnauthorizedException;
 import com.ohseat.ohseatback.domain.cinesquare.mapper.CineSquareMapper;
 import com.ohseat.ohseatback.security.SecurityUtil;
 import com.ohseat.ohseatback.domain.cinesquare.service.CineSquareService;

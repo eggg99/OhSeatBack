@@ -80,17 +80,19 @@ public class AdminNoticeService {
 
     // 고정 활성 / 비활성 업데이트
     @Transactional
-    public void updateActiveStatus(Integer noticeId, boolean isActive) {
+    public boolean updateActiveStatus(Integer noticeId, boolean isActive) {
         int updated = noticeMapper.updateActiveStatus(noticeId, isActive);
 
         if (updated == 0) {
             throw new IllegalStateException("존재하지 않는 공지입니다.");
         }
+
+        return isActive;    // 변경된 상태 반환
     }
 
     // 고정 / 해제 토글
     @Transactional
-    public void togglePinned(Integer noticeId) {
+    public boolean togglePinned(Integer noticeId) {
 
         Integer currentPinned = noticeMapper.selectPinnedStatus(noticeId);
         if (currentPinned == null) {
@@ -103,7 +105,7 @@ public class AdminNoticeService {
             if (updated == 0) {
                 throw new IllegalStateException("고정 해제에 실패했습니다.");
             }
-            return;
+            return false;   // 해제됨
         }
 
         // 2. 고정하려는 경우
@@ -118,6 +120,8 @@ public class AdminNoticeService {
         if (updated == 0) {
             throw new IllegalStateException("고정 처리에 실패했습니다.");
         }
+
+        return true;    //  고정됨
     }
 
 }

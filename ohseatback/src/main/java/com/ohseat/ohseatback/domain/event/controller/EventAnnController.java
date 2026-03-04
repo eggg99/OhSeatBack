@@ -37,16 +37,16 @@ public class EventAnnController {
 
     // 좋아요
     @PostMapping("/{eventId}/like")
-    public ResponseEntity<Void> like(@PathVariable Integer eventId) {
+    public ResponseEntity<String> like(@PathVariable Integer eventId) {
         eventAnnService.like(eventId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("좋아요 성공");
     }
 
     // 좋아요 취소
     @DeleteMapping("/{eventId}/like")
-    public ResponseEntity<Void> unlike(@PathVariable Integer eventId) {
+    public ResponseEntity<String> unlike(@PathVariable Integer eventId) {
         eventAnnService.unlike(eventId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("좋아요 취소");
     }
 
 }
