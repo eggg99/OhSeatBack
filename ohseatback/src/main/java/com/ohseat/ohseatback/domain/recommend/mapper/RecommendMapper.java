@@ -16,7 +16,11 @@ import java.util.Map;
 @Mapper
 public interface RecommendMapper {
 
-    List<CinemaDTO> getTrendingCinema();
+    // 최근 언급 많이 된 영화관 조회 (최근 7일)
+    List<CinemaDTO> getTrendingCinemaWeekly();
+
+    // 최근 언급 많이 된 영화관 조회 (전체)
+    List<CinemaDTO> getTrendingCinemaAll();
 
     // 영화관 리스트 조회
     List<CinemaEntity> getCinemaList(Integer multiplexId, Integer areaId);

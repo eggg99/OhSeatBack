@@ -32,7 +32,33 @@ public class RecommendService {
     private final ViewCountService viewCountService;
 
     public List<CinemaDTO> getTrendingCinema() {
-        return recommendMapper.getTrendingCinema();
+
+        // 1. 최근 7일 영화관 조회
+        List<CinemaDTO> weeklyList =  recommendMapper.getTrendingCinemaWeekly();
+
+        // 2. 결과 Map (중복 제거)
+        Map<String, CinemaDTO> cinemaMap = new LinkedHashMap<>();
+
+        // 3. 최근 영화관 먼저 추가
+        for (CinemaDTO cinema : weeklyList) {
+            cinemaMap.put(cinema.getCinemaId(), cinema);
+            if (cinemaMap.size() == 5) {
+                return new ArrayList<>(cinemaMap.values());
+            }
+        }
+
+        // 4. 부족하면 전체 데이터 조회
+        List<CinemaDTO> allList = recommendMapper.getTrendingCinemaAll();
+
+        for (CinemaDTO cinema : allList) {
+            if (cinemaMap.size() == 5) {
+                break;
+            }
+
+            cinemaMap.putIfAbsent(cinema.getCinemaId(), cinema);
+        }
+
+        return new ArrayList<>(cinemaMap.values());
     }
 
     // 영화관 리스트 조회
