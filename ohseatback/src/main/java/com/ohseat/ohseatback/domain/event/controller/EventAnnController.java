@@ -23,7 +23,7 @@ public class EventAnnController {
             @RequestParam(defaultValue = "0") Integer searchType,
             @RequestParam(required = false) String searchValue,
             @RequestParam(defaultValue = "latest") String orderType,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(eventAnnService.list(categoryId, searchType, searchValue, orderType, page, size));

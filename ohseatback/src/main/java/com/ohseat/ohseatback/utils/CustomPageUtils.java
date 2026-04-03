@@ -30,18 +30,15 @@ public class CustomPageUtils {
     }
 
     public static Pageable getPageable(int page, int size, String sort) {
-        int adjustedPage = (page > 0) ? page - 1 : 0;
-        return PageRequest.of(adjustedPage, size, Sort.by(Sort.Direction.fromString(sort), "id"));
+        return PageRequest.of(Math.max(page, 0), size, Sort.by(Sort.Direction.fromString(sort), "id"));
     }
 
     public static Pageable getPageable(int page, int size, String sort, String sortColumn) {
-        int adjustedPage = (page > 0) ? page - 1 : 0;
-        return PageRequest.of(adjustedPage, size, Sort.by(Sort.Direction.fromString(sort), sortColumn));
+        return PageRequest.of(Math.max(page, 0), size, Sort.by(Sort.Direction.fromString(sort), sortColumn));
     }
 
     public static Pageable getPageable(int page, int size) {
-        int adjustedPage = (page > 0) ? page - 1 : 0;
-        return PageRequest.of(adjustedPage, size, Sort.by(Sort.Direction.fromString("DESC"), "id"));
+        return PageRequest.of(Math.max(page, 0), size, Sort.by(Sort.Direction.fromString("DESC"), "id"));
     }
 
     public static String makeOrderBy(Pageable pageable, Map<String, String> aliasMap) {

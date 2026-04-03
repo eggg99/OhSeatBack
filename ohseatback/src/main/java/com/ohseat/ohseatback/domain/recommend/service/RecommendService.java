@@ -16,8 +16,8 @@ import com.ohseat.ohseatback.utils.CustomPageUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -57,18 +57,24 @@ public class RecommendService {
 
     // 게시글 리스트 조회 (페이징)
     public Page<PostDTO> getPostList(Integer multiplexId, String areaId, String cinemaId, String screenId, String orderType, int page, int size) {
-        // 1. Pageable 생성 (CustomPageUtils 활용)
         Pageable pageable = CustomPageUtils.getPageable(page, size);
+        int offset = (int) pageable.getOffset();
+        long totalCount = recommendMapper.countPosts(multiplexId, areaId, cinemaId, screenId);
 
-        // 2. DB 조회
         List<PostDomain> postList = recommendMapper.getPostList(
                 multiplexId,
                 areaId,
                 cinemaId,
-                screenId
+                screenId,
+                orderType,
+                offset,
+                size
         );
 
-        // 3. User 매핑
+        if (postList.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, totalCount);
+        }
+
         Set<Integer> userIds = postList.stream()
                 .map(PostDomain::getAuthorId)
                 .collect(Collectors.toSet());
@@ -95,8 +101,6 @@ public class RecommendService {
                         map -> ((Long) map.get("commentCount")).intValue()
                 ));
 
-
-        // 5. Domain → DTO 변환
         List<PostDTO> dtoList = postList.stream()
                 .map(post -> {
                     PostDTO dto = new PostDTO();
@@ -121,28 +125,7 @@ public class RecommendService {
                 })
                 .collect(Collectors.toList());
 
-        // 6. 정렬
-        Comparator<PostDTO> comparator;
-        switch (orderType) {
-            case "views":
-                comparator = Comparator.comparing(PostDTO::getViews).reversed();
-                break;
-            case "comments":
-                comparator = Comparator.comparing(PostDTO::getCommentCount).reversed();
-                break;
-            case "latest":
-            default:
-                comparator = Comparator.comparing(PostDTO::getCreatedAt).reversed();
-        }
-        dtoList.sort(comparator);
-
-        // 7. Page 객체로 반환 (page 계산은 CustomPageUtils에 맡김)
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), dtoList.size());
-        List<PostDTO> pagedList = dtoList.subList(start, end);
-
-        long totalCount = recommendMapper.countPosts(multiplexId, areaId,cinemaId, screenId);
-        return new PageImpl<>(pagedList, pageable, totalCount);
+        return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
     public PostDTO getPostDetail(Integer postId) {

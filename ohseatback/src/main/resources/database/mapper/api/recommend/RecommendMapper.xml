@@ -51,10 +51,16 @@
     <select id="getPostList" resultType="com.ohseat.ohseatback.domain.recommend.entity.PostDomain">
         SELECT  p.*,
                 m.multiplex_name,
-                c.cinema_name
+                c.cinema_name,
+                COALESCE(pc.comment_count, 0) AS comment_count
         FROM post p
         LEFT JOIN multiplex m ON p.multiplex_id = m.multiplex_id
         LEFT JOIN cinema c ON p.cinema_id = c.cinema_id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS comment_count
+            FROM post_comment
+            GROUP BY post_id
+        ) pc ON p.post_id = pc.post_id
         WHERE 1=1
             <if test="multiplexId != 0">
                 AND p.multiplex_id = #{multiplexId}
@@ -68,7 +74,18 @@
             <if test="screenId != 'all_s'">
                 AND p.screen_id = #{screenId}
             </if>
-        ORDER BY p.created_at DESC
+        <choose>
+            <when test="orderType == 'views'">
+                ORDER BY p.views DESC, p.post_id DESC
+            </when>
+            <when test="orderType == 'comments'">
+                ORDER BY COALESCE(pc.comment_count, 0) DESC, p.post_id DESC
+            </when>
+            <otherwise>
+                ORDER BY p.created_at DESC, p.post_id DESC
+            </otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <!-- 게시글 개수 조회 -->
