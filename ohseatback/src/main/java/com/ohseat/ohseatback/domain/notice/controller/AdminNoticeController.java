@@ -22,7 +22,7 @@ public class AdminNoticeController {
     // 관리자 공지사항 전체 조회
     @GetMapping
     public ResponseEntity<Page<NoticeAdminListResponse>> list(@RequestParam String targetBoard,
-                                                              @RequestParam(defaultValue = "1") int page,
+                                                              @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(adminNoticeService.getAdminNoticeList(targetBoard, page, size));
     }

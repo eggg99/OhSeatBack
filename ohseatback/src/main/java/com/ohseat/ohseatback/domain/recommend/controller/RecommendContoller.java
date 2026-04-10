@@ -58,7 +58,7 @@ public class RecommendContoller {
             @RequestParam String cinemaId,
             @RequestParam String screenId,
             @RequestParam(defaultValue = "latest") String orderType,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<PostDTO> postList = recommendService.getPostList(multiplexId, areaId, cinemaId, screenId, orderType, page, size);
